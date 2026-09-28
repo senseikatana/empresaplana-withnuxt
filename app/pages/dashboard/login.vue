@@ -4,7 +4,6 @@ import { z } from "zod";
 
 const { t } = useI18n();
 const localePath = useLocalePath();
-const route = useRoute();
 const {
 	public: { demoLogin },
 } = useRuntimeConfig();
@@ -44,11 +43,7 @@ async function login(username: string, passkey: string) {
 			method: "POST",
 			body: { username, passkey },
 		});
-		const redirect =
-			typeof route.query.redirect === "string"
-				? route.query.redirect
-				: localePath("/dashboard");
-		await navigateTo(redirect);
+		await navigateTo(localePath("/dashboard"));
 	} catch {
 		error.value = t("app.auth.invalid");
 	} finally {

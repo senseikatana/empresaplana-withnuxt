@@ -233,11 +233,11 @@ const routes = computed(() => [
 						<span class="block text-[11px] uppercase tracking-wider text-outline mb-1">{{ hs.tripLabel }}</span>
 						<div class="flex items-center gap-3 pt-1.5">
 							<label class="flex items-center gap-1.5 cursor-pointer text-sm text-on-surface">
-								<input v-model="isRoundTrip" type="radio" :value="false" class="accent-teal-600" />
+								<input v-model="isRoundTrip" type="radio" name="trip-type" :value="false" class="accent-teal-600" />
 								{{ hs.oneWay }}
 							</label>
 							<label class="flex items-center gap-1.5 cursor-pointer text-sm text-on-surface">
-								<input v-model="isRoundTrip" type="radio" :value="true" class="accent-teal-600" />
+								<input v-model="isRoundTrip" type="radio" name="trip-type" :value="true" class="accent-teal-600" />
 								{{ hs.roundTrip }}
 							</label>
 						</div>

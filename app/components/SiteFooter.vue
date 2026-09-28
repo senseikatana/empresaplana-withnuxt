@@ -3,6 +3,7 @@ import { contact } from "~/data/contact";
 
 const { t } = useI18n();
 const localePath = useLocalePath();
+const dashboardHref = useDashboardHref();
 
 const year = new Date().getFullYear();
 const copyright = computed(() =>
@@ -115,7 +116,7 @@ const socialLinks = [
 				<a v-for="link in legalLinks" :key="link.href" class="hover:text-on-primary transition-colors" :href="localePath(link.href)">
 					{{ link.label }}
 				</a>
-				<a class="hover:text-on-primary transition-colors" :href="localePath('/dashboard')">
+				<a v-if="dashboardHref" class="hover:text-on-primary transition-colors" :href="dashboardHref">
 					{{ t("common.nav.intranet") }}
 				</a>
 			</div>

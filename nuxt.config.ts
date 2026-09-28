@@ -13,6 +13,10 @@ export default defineNuxtConfig({
 	runtimeConfig: {
 		public: {
 			staticDemo: process.env.NUXT_PUBLIC_STATIC_DEMO === "true",
+			// Origen de la app con servidor (insforge compute). El demo estático
+			// no tiene API ni sesión, así que sus enlaces de intranet apuntan
+			// aquí. Sin este valor el enlace se oculta en vez de dar un 404.
+			appUrl: process.env.NUXT_PUBLIC_APP_URL ?? "",
 			// Accesos demo del login de la intranet. Por defecto visibles
 			// (portfolio/demo); poner NUXT_PUBLIC_DEMO_LOGIN=false en producción
 			// real para ocultarlos.
@@ -75,6 +79,10 @@ export default defineNuxtConfig({
 		langDir: "locales",
 		defaultLocale: "ca",
 		strategy: "prefix_except_default",
+		// Sin esto la detección del navegador escribe la cookie
+		// `i18n_redirected` y manda a /es aunque el visitante vuelva a "/".
+		// El idioma se cambia solo con el selector del header.
+		detectBrowserLanguage: false,
 		baseUrl: "https://empresaplana.cat",
 		locales: [
 			{ code: "ca", language: "ca", name: "CA", file: "ca.json" },

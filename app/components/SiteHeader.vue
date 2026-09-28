@@ -7,6 +7,7 @@ const localePath = useLocalePath();
 const switchLocalePath = useSwitchLocalePath();
 
 const colorMode = useColorMode();
+const dashboardHref = useDashboardHref();
 const isDark = computed({
 	get: () => colorMode.value === "dark",
 	set: (value) => {
@@ -40,8 +41,9 @@ const menuOpen = ref(false);
 	<div class="w-full bg-surface-container-lowest border-b border-surface-variant hidden md:block">
 		<div class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop py-2 flex justify-end items-center gap-gutter text-sm font-label-md text-on-surface-variant">
 			<a
+				v-if="dashboardHref"
 				class="flex items-center gap-1 hover:text-deep-navy transition-colors"
-				:href="localePath('/dashboard')"
+				:href="dashboardHref"
 			>
 				<span class="material-symbols-outlined text-[18px]">admin_panel_settings</span>
 				{{ t("common.nav.intranet") }}
@@ -151,10 +153,10 @@ const menuOpen = ref(false);
 						{{ t("common.nav.bookNow") }}
 					</a>
 				</li>
-				<li class="py-stack-sm border-t border-surface-variant">
+				<li v-if="dashboardHref" class="py-stack-sm border-t border-surface-variant">
 					<a
 						class="flex items-center gap-1 font-label-md text-label-md text-deep-navy"
-						:href="localePath('/dashboard')"
+						:href="dashboardHref"
 						@click="menuOpen = false"
 					>
 						<span class="material-symbols-outlined text-[18px]">admin_panel_settings</span>

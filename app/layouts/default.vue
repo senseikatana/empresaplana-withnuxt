@@ -1,5 +1,5 @@
 <template>
-	<div class="bg-background font-body-md text-on-surface antialiased overflow-x-hidden min-h-screen flex flex-col">
+	<div class="bg-background font-body-md text-on-surface antialiased overflow-x-clip min-h-screen flex flex-col">
 		<SiteHeader />
 		<main class="flex-1">
 			<slot />

@@ -4,7 +4,6 @@ import { z } from "zod";
 
 const { t } = useI18n();
 const localePath = useLocalePath();
-const route = useRoute();
 
 const schema = z.object({
 	name: z.string().min(1).max(60),
@@ -38,11 +37,7 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
 	pending.value = true;
 	try {
 		await $fetch("/api/auth/register", { method: "POST", body: event.data });
-		const redirect =
-			typeof route.query.redirect === "string"
-				? route.query.redirect
-				: localePath("/dashboard");
-		await navigateTo(redirect);
+		await navigateTo(localePath("/dashboard"));
 	} catch (e) {
 		const status = (e as { statusCode?: number })?.statusCode;
 		const msg = (e as { data?: { statusMessage?: string } })?.data

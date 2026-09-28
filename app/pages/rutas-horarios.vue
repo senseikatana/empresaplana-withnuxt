@@ -20,11 +20,17 @@ const returnDate = ref("");
 const timeRange = ref("");
 const searchType = ref<"direct" | "transfer">("direct");
 
-const isRoundTrip = computed({
-	get: () => Boolean(returnDate.value),
-	set: (value: boolean) => {
-		returnDate.value = value ? returnDate.value || travelDate.value : "";
-	},
+const isRoundTrip = ref(false);
+
+// El radio es la fuente de verdad: derivarlo de returnDate hacía que elegir
+// "ida y vuelta" sin fecha de ida rebotase a "ida" (setter guardaba "").
+watch(isRoundTrip, (value) => {
+	returnDate.value = value ? returnDate.value || travelDate.value : "";
+});
+
+// Si se elige ida y vuelta antes de la fecha de ida, se propone la misma.
+watch(travelDate, (value) => {
+	if (isRoundTrip.value && !returnDate.value) returnDate.value = value;
 });
 
 const outbound = ref<SearchOutput | null>(null);
@@ -49,7 +55,10 @@ function applyQuery() {
 	if (route.query.from) origin.value = String(route.query.from);
 	if (route.query.to) destination.value = String(route.query.to);
 	if (route.query.date) travelDate.value = String(route.query.date);
-	if (route.query.return) returnDate.value = String(route.query.return);
+	if (route.query.return) {
+		returnDate.value = String(route.query.return);
+		isRoundTrip.value = true;
+	}
 	if (route.query.time) timeRange.value = String(route.query.time);
 	searchType.value = route.query.type === "transfer" ? "transfer" : "direct";
 }
@@ -77,7 +86,9 @@ async function runSearch() {
 					from: origin.value,
 					to: destination.value,
 					...(travelDate.value ? { date: travelDate.value } : {}),
-					...(returnDate.value ? { return: returnDate.value } : {}),
+					...(isRoundTrip.value && returnDate.value
+						? { return: returnDate.value }
+						: {}),
 					...(timeRange.value ? { time: timeRange.value } : {}),
 					...(searchType.value === "transfer" ? { type: "transfer" } : {}),
 				},
@@ -92,7 +103,7 @@ async function runSearch() {
 			type: searchType.value,
 		};
 		outbound.value = await search(params);
-		if (returnDate.value) {
+		if (isRoundTrip.value && returnDate.value) {
 			inbound.value = await search({
 				from: destination.value,
 				to: origin.value,
@@ -173,11 +184,11 @@ const popularCards = popularLines.lines.map((line) => ({
 							<span class="block text-[11px] uppercase tracking-wider text-outline mb-1">{{ t("homeSearch.tripLabel") }}</span>
 							<div class="flex items-center gap-3 pt-1.5">
 								<label class="flex items-center gap-1.5 cursor-pointer text-sm text-on-surface">
-									<input v-model="isRoundTrip" type="radio" :value="false" class="accent-teal-600" />
+									<input v-model="isRoundTrip" type="radio" name="trip-type" :value="false" class="accent-teal-600" />
 									{{ t("homeSearch.oneWay") }}
 								</label>
 								<label class="flex items-center gap-1.5 cursor-pointer text-sm text-on-surface">
-									<input v-model="isRoundTrip" type="radio" :value="true" class="accent-teal-600" />
+									<input v-model="isRoundTrip" type="radio" name="trip-type" :value="true" class="accent-teal-600" />
 									{{ t("homeSearch.roundTrip") }}
 								</label>
 							</div>
@@ -210,11 +221,11 @@ const popularCards = popularLines.lines.map((line) => ({
 				<div class="w-full max-w-5xl xl:max-w-6xl mx-auto flex flex-wrap items-center gap-6 justify-center md:justify-start">
 					<div class="flex items-center gap-6">
 						<label class="flex items-center gap-2 cursor-pointer">
-							<input v-model="searchType" type="radio" value="direct" class="w-4 h-4 text-coastal-teal" />
+							<input v-model="searchType" type="radio" name="search-type" value="direct" class="w-4 h-4 text-coastal-teal" />
 							<span class="font-body-md text-body-md text-on-surface-variant">{{ t("routes.search.direct") }}</span>
 						</label>
 						<label class="flex items-center gap-2 cursor-pointer">
-							<input v-model="searchType" type="radio" value="transfer" class="w-4 h-4 text-coastal-teal" />
+							<input v-model="searchType" type="radio" name="search-type" value="transfer" class="w-4 h-4 text-coastal-teal" />
 							<span class="font-body-md text-body-md text-on-surface-variant">{{ t("routes.search.withTransfers") }}</span>
 						</label>
 					</div>

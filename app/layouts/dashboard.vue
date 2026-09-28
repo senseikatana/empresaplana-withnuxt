@@ -13,9 +13,7 @@ useHead({ meta: [{ name: "robots", content: "noindex, nofollow" }] });
 // Guard de layout: corre en SSR y cliente para cualquier página del panel.
 await ensureSession();
 if (!user.value || !isRole(user.value.role)) {
-	await navigateTo(
-		`${localePath("/dashboard/login")}?redirect=${encodeURIComponent(route.fullPath)}`,
-	);
+	await navigateTo(localePath("/dashboard/login"));
 }
 if (user.value && user.value.emailVerified === false) {
 	await navigateTo(localePath("/dashboard/pending"));

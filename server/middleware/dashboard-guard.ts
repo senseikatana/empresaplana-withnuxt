@@ -22,11 +22,8 @@ export default defineEventHandler(async (event) => {
 
 	const session = await getSessionUser(event);
 	if (!session) {
-		return sendRedirect(
-			event,
-			`${loginPath}?redirect=${encodeURIComponent(path)}`,
-			302,
-		);
+		// Ruta limpia: sin query de retorno. El login siempre aterriza en el panel.
+		return sendRedirect(event, loginPath, 302);
 	}
 
 	if (VERIFICATION_FREE_PATHS.includes(normalized)) return;

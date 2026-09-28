@@ -38,16 +38,13 @@ export default defineNuxtRouteMiddleware(async (to) => {
 		emailVerified: session?.user?.emailVerified,
 	});
 	if (!role || !isRole(role)) {
-		// Query construido manualmente: navigateTo con string + query no
-		// garantiza la serialización del redirect en SSR.
-		const loginUrl = `${localePath("/dashboard/login")}?redirect=${encodeURIComponent(to.fullPath)}`;
-		return navigateTo(loginUrl);
+		// Ruta limpia: sin query de retorno. El login siempre aterriza en el panel.
+		return navigateTo(localePath("/dashboard/login"));
 	}
 
 	// El panel exige email verificado: sin verificar solo es accesible /dashboard/pending.
 	if (session?.user?.emailVerified === false && !isPendingPath(to.path)) {
-		const pendingUrl = `${localePath("/dashboard/pending")}?redirect=${encodeURIComponent(to.fullPath)}`;
-		return navigateTo(pendingUrl);
+		return navigateTo(localePath("/dashboard/pending"));
 	}
 	if (session?.user?.emailVerified === true && isPendingPath(to.path)) {
 		return navigateTo(localePath("/dashboard"));
