@@ -26,7 +26,7 @@ async function main() {
 	for (const user of DEMO_USERS) {
 		const record = await prisma.user.upsert({
 			where: { username: user.username },
-			update: {},
+			update: { emailVerified: true },
 			create: {
 				username: user.username,
 				passkey: hashPasskey(user.passkey),
@@ -35,6 +35,7 @@ async function main() {
 				email: user.email,
 				phone: user.phone,
 				role: user.role,
+				emailVerified: true,
 			},
 		});
 		idByDemoId.set(user.id, record.id);

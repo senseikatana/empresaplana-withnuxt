@@ -30,6 +30,7 @@ model User {
 	favorites      FavoriteRoute[]
 	recentSearches RecentSearch[]
 	messages       Message[]
+	assistantConversations AssistantConversation[]
 
 	@@index([role])
 }
@@ -387,4 +388,30 @@ model Message {
 	sender         User         @relation(fields: [senderId], references: [id])
 
 	@@index([conversationId, createdAt])
+}
+// ── Asistente IA (chat del dashboard) ──────────────────────────────────────
+
+model AssistantConversation {
+	id        String   @id @default(uuid()) @db.Uuid
+	userId    Int      @map("user_id")
+	title     String   @default("") @db.VarChar(120)
+	createdAt DateTime @default(now()) @map("created_at")
+	updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
+	user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+	messages  AssistantMessage[]
+
+	@@index([userId, updatedAt(sort: Desc)])
+	@@map("assistant_conversations")
+}
+
+model AssistantMessage {
+	id             String   @id @db.VarChar(64)
+	conversationId String   @map("conversation_id") @db.Uuid
+	role           String   @db.VarChar(20)
+	parts          Json     @default("[]")
+	createdAt      DateTime @default(now()) @map("created_at")
+	conversation   AssistantConversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+
+	@@index([conversationId, createdAt])
+	@@map("assistant_messages")
 }

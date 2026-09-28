@@ -1,18 +1,22 @@
-import type { NavigationMenuItem } from "@nuxt/ui";
-
-const isNotificationsSlideoverOpen = ref(false);
-const isCommandPaletteOpen = ref(false);
-
 export function useDashboard() {
+	const isNotificationsSlideoverOpen = useState(
+		"dashboard-notifications-open",
+		() => false,
+	);
+	const isCommandPaletteOpen = useState(
+		"dashboard-command-palette-open",
+		() => false,
+	);
+
 	return {
-		isNotificationsSlideoverOpen: readonly(isNotificationsSlideoverOpen),
+		isNotificationsSlideoverOpen,
 		toggleNotifications() {
 			isNotificationsSlideoverOpen.value = !isNotificationsSlideoverOpen.value;
 		},
 		closeNotifications() {
 			isNotificationsSlideoverOpen.value = false;
 		},
-		isCommandPaletteOpen: readonly(isCommandPaletteOpen),
+		isCommandPaletteOpen,
 		toggleCommandPalette() {
 			isCommandPaletteOpen.value = !isCommandPaletteOpen.value;
 		},

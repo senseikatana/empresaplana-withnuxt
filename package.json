@@ -35,6 +35,9 @@
     "typecheck": "nuxi typecheck"
   },
   "dependencies": {
+    "@ai-sdk/openai-compatible": "^3.0.57",
+    "@ai-sdk/vue": "^4.0.118",
+    "@comark/nuxt": "^0.7.0",
     "@nuxt/fonts": "^0.14.0",
     "@nuxt/ui": "^4.11.1",
     "@nuxtjs/color-mode": "^4.0.1",
@@ -42,6 +45,7 @@
     "@prisma/adapter-pg": "^7.10.0",
     "@prisma/client": "^7.10.0",
     "@tailwindcss/vite": "^4.3.3",
+    "ai": "^7.0.118",
     "dotenv": "^17.4.2",
     "googleapis": "^178.1.1",
     "jose": "^6.2.12",

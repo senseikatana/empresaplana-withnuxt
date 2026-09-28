@@ -55,15 +55,20 @@ const menuOpen = ref(false);
 					{{ l.label }}
 				</a>
 			</div>
-			<button
-				class="flex items-center hover:text-deep-navy transition-colors"
-				type="button"
-				:aria-label="isDark ? 'Activa el mode clar' : 'Activa el mode fosc'"
-				:title="isDark ? 'Light mode' : 'Dark mode'"
-				@click="isDark = !isDark"
-			>
-				<span class="material-symbols-outlined text-[18px]">{{ isDark ? "light_mode" : "dark_mode" }}</span>
-			</button>
+			<ClientOnly>
+				<button
+					class="flex items-center hover:text-deep-navy transition-colors"
+					type="button"
+					:aria-label="isDark ? 'Activa el mode clar' : 'Activa el mode fosc'"
+					:title="isDark ? 'Light mode' : 'Dark mode'"
+					@click="isDark = !isDark"
+				>
+					<span class="material-symbols-outlined text-[18px]">{{ isDark ? "light_mode" : "dark_mode" }}</span>
+				</button>
+				<template #fallback>
+					<span class="inline-block w-[18px] h-[18px]" aria-hidden="true" />
+				</template>
+			</ClientOnly>
 			<a class="flex items-center gap-1 hover:text-deep-navy transition-colors" :href="`tel:${contact.generalPhone.replace(/\s/g, '')}`">
 				<span class="material-symbols-outlined text-[18px]">call</span>
 				{{ contact.generalPhone }}
@@ -152,14 +157,19 @@ const menuOpen = ref(false);
 							{{ l.label }}
 						</a>
 					</div>
-					<button
-						class="flex items-center text-deep-navy"
-						type="button"
-						:aria-label="isDark ? 'Activa el mode clar' : 'Activa el mode fosc'"
-						@click="isDark = !isDark"
-					>
-						<span class="material-symbols-outlined text-[20px]">{{ isDark ? "light_mode" : "dark_mode" }}</span>
-					</button>
+					<ClientOnly>
+						<button
+							class="flex items-center text-deep-navy"
+							type="button"
+							:aria-label="isDark ? 'Activa el mode clar' : 'Activa el mode fosc'"
+							@click="isDark = !isDark"
+						>
+							<span class="material-symbols-outlined text-[20px]">{{ isDark ? "light_mode" : "dark_mode" }}</span>
+						</button>
+						<template #fallback>
+							<span class="inline-block w-5 h-5" aria-hidden="true" />
+						</template>
+					</ClientOnly>
 					<a class="flex items-center gap-1 font-label-md text-label-md text-deep-navy" :href="`tel:${contact.generalPhone.replace(/\s/g, '')}`">
 						<span class="material-symbols-outlined text-[18px]">call</span>
 						{{ contact.generalPhone }}

@@ -239,7 +239,8 @@
 				"drivers": "Drivers",
 				"notifications": "Notifications",
 				"reports": "Reports",
-				"integrations": "Integrations"
+				"integrations": "Integrations",
+				"users": "Users"
 			},
 			"common": {
 				"add": "Add",
@@ -493,7 +494,57 @@
 			"phone": "Phone",
 			"conversations": "Conversations",
 			"selectConversation": "Select a conversation",
-			"send": "Send"
+			"send": "Send",
+			"assistant": "Assistant",
+			"noNotifications": "No notifications",
+			"logout": "Log out",
+			"notifications": "Notifications"
+		},
+		"verify": {
+			"title": "Confirm your email",
+			"subtitle": "We've sent you a verification email.",
+			"body": "Open the link in the email to activate your account. If you can't find it, check your spam folder.",
+			"sentTo": "Sent to {email}",
+			"resend": "Resend email",
+			"resent": "Email sent. Check your inbox.",
+			"logout": "Sign out",
+			"note": "The link expires in 24 hours.",
+			"error": "Could not resend the email. Please try again."
+		},
+		"stats": {
+			"greeting": "Hi, {name}",
+			"subtitle": "Your account and network activity at a glance.",
+			"shortcuts": "Quick links",
+			"users": "Users",
+			"routes": "Routes",
+			"buses": "Buses",
+			"drivers": "Drivers",
+			"unreadNotifications": "Unread alerts",
+			"budgets": "Quotes",
+			"favorites": "Favourites",
+			"recentSearches": "Recent searches"
+		},
+		"search": {
+			"pages": "Pages"
+		},
+		"menu": {
+			"appearance": "Appearance",
+			"light": "Light",
+			"dark": "Dark"
+		},
+		"assistant": {
+			"title": "AI assistant",
+			"subtitle": "Ask about schedules, fares, quotes or incidents.",
+			"new": "New conversation",
+			"conversations": "Conversations",
+			"untitled": "Untitled conversation",
+			"placeholder": "Write a message…",
+			"thinking": "Thinking…",
+			"suggestions": {
+				"lines": "Which lines serve Cambrils?",
+				"fares": "How much is Cambrils to Tarragona?",
+				"quote": "How do I request a coach quote?"
+			}
 		}
 	},
 	"routes": {

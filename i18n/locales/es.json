@@ -239,7 +239,8 @@
 				"drivers": "Conductores",
 				"notifications": "Notificaciones",
 				"reports": "Reportes",
-				"integrations": "Integraciones"
+				"integrations": "Integraciones",
+				"users": "Usuarios"
 			},
 			"common": {
 				"add": "Añadir",
@@ -493,7 +494,57 @@
 			"phone": "Teléfono",
 			"conversations": "Conversaciones",
 			"selectConversation": "Selecciona una conversación",
-			"send": "Enviar"
+			"send": "Enviar",
+			"assistant": "Asistente",
+			"noNotifications": "Sin avisos",
+			"logout": "Cerrar sesión",
+			"notifications": "Avisos"
+		},
+		"verify": {
+			"title": "Confirma tu correo",
+			"subtitle": "Te hemos enviado un correo de verificación.",
+			"body": "Abre el enlace del correo para activar tu cuenta. Si no lo encuentras, revisa la carpeta de spam.",
+			"sentTo": "Enviado a {email}",
+			"resend": "Reenviar el correo",
+			"resent": "Correo reenviado. Revisa tu bandeja de entrada.",
+			"logout": "Cerrar sesión",
+			"note": "El enlace caduca en 24 horas.",
+			"error": "No se pudo reenviar el correo. Inténtalo de nuevo."
+		},
+		"stats": {
+			"greeting": "Hola, {name}",
+			"subtitle": "Resumen de tu cuenta y de la actividad de la red.",
+			"shortcuts": "Accesos rápidos",
+			"users": "Usuarios",
+			"routes": "Rutas",
+			"buses": "Autobuses",
+			"drivers": "Conductores",
+			"unreadNotifications": "Avisos sin leer",
+			"budgets": "Presupuestos",
+			"favorites": "Favoritas",
+			"recentSearches": "Búsquedas recientes"
+		},
+		"search": {
+			"pages": "Páginas"
+		},
+		"menu": {
+			"appearance": "Apariencia",
+			"light": "Claro",
+			"dark": "Oscuro"
+		},
+		"assistant": {
+			"title": "Asistente IA",
+			"subtitle": "Consulta horarios, tarifas, presupuestos o incidencias.",
+			"new": "Nueva conversación",
+			"conversations": "Conversaciones",
+			"untitled": "Conversación sin título",
+			"placeholder": "Escribe un mensaje…",
+			"thinking": "Pensando…",
+			"suggestions": {
+				"lines": "¿Qué líneas pasan por Cambrils?",
+				"fares": "¿Cuánto cuesta ir de Cambrils a Tarragona?",
+				"quote": "¿Cómo pido un presupuesto para un autocar?"
+			}
 		}
 	},
 	"routes": {

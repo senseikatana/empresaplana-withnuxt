@@ -3,7 +3,13 @@ import { fileURLToPath } from "node:url";
 export default defineNuxtConfig({
 	compatibilityDate: "2026-09-13",
 	devtools: { enabled: true },
-	modules: ["@nuxt/ui", "@nuxt/fonts", "@nuxtjs/i18n", "@nuxtjs/color-mode"],
+	modules: [
+		"@nuxt/ui",
+		"@nuxt/fonts",
+		"@nuxtjs/i18n",
+		"@nuxtjs/color-mode",
+		"@comark/nuxt",
+	],
 	runtimeConfig: {
 		public: {
 			staticDemo: process.env.NUXT_PUBLIC_STATIC_DEMO === "true",

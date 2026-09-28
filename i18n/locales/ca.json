@@ -239,7 +239,8 @@
 				"drivers": "Conductors",
 				"notifications": "Notificacions",
 				"reports": "Reportes",
-				"integrations": "Integracions"
+				"integrations": "Integracions",
+				"users": "Usuaris"
 			},
 			"common": {
 				"add": "Afegeix",
@@ -493,7 +494,57 @@
 			"phone": "Telèfon",
 			"conversations": "Converses",
 			"selectConversation": "Selecciona una conversa",
-			"send": "Envia"
+			"send": "Envia",
+			"assistant": "Assistent",
+			"noNotifications": "Sense avisos",
+			"logout": "Tancar la sessió",
+			"notifications": "Avisos"
+		},
+		"verify": {
+			"title": "Confirma el teu correu",
+			"subtitle": "T'hem enviat un correu de verificació.",
+			"body": "Obre l'enllaç del correu per activar el teu compte. Si no el trobes, revisa la carpeta de correu brossa.",
+			"sentTo": "Enviat a {email}",
+			"resend": "Reenviar el correu",
+			"resent": "Correu reenviat. Revisa la safata d'entrada.",
+			"logout": "Tancar la sessió",
+			"note": "L'enllaç caduca en 24 hores.",
+			"error": "No s'ha pogut reenviar el correu. Torna-ho a provar."
+		},
+		"stats": {
+			"greeting": "Hola, {name}",
+			"subtitle": "Resum del teu compte i de l'activitat de la xarxa.",
+			"shortcuts": "Accessos ràpids",
+			"users": "Usuaris",
+			"routes": "Rutes",
+			"buses": "Autobusos",
+			"drivers": "Conductors",
+			"unreadNotifications": "Avisos sense llegir",
+			"budgets": "Pressupostos",
+			"favorites": "Favorites",
+			"recentSearches": "Cerques recents"
+		},
+		"search": {
+			"pages": "Pàgines"
+		},
+		"menu": {
+			"appearance": "Aparença",
+			"light": "Clar",
+			"dark": "Fosc"
+		},
+		"assistant": {
+			"title": "Assistent IA",
+			"subtitle": "Consulta horaris, tarifes, pressupostos o incidències.",
+			"new": "Nova conversa",
+			"conversations": "Converses",
+			"untitled": "Conversa sense títol",
+			"placeholder": "Escriu un missatge…",
+			"thinking": "Pensant…",
+			"suggestions": {
+				"lines": "Quines línies passen per Cambrils?",
+				"fares": "Quant costa anar de Cambrils a Tarragona?",
+				"quote": "Com demano un pressupost per a un autocar?"
+			}
 		}
 	},
 	"routes": {

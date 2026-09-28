@@ -8,13 +8,19 @@ export function can(user: SessionUser | null, capability: Capability): boolean {
 	return hasCapability(user.role, capability);
 }
 
+export interface RequireOptions {
+	/** Exige email verificado (además de la capability). */
+	requireVerified?: boolean;
+}
+
 /**
- * Guard para endpoints: 401 sin sesión, 403 sin capability.
+ * Guard para endpoints: 401 sin sesión, 403 sin capability (o sin email verificado).
  * Devuelve la sesión para no tener que volver a pedirla.
  */
 export async function requireCapability(
 	event: H3Event,
 	capability: Capability,
+	options: RequireOptions = {},
 ): Promise<SessionUser> {
 	const session = await getSessionUser(event);
 	if (!session) {
@@ -22,6 +28,18 @@ export async function requireCapability(
 	}
 	if (!can(session, capability)) {
 		throw createError({ statusCode: 403, statusMessage: "Sense accés" });
+	}
+	if (options.requireVerified) {
+		const user = await prisma().user.findUnique({
+			where: { id: session.id },
+			select: { emailVerified: true },
+		});
+		if (!user?.emailVerified) {
+			throw createError({
+				statusCode: 403,
+				statusMessage: "Cal verificar el correu",
+			});
+		}
 	}
 	return session;
 }

@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { setSessionCookie, signSessionToken } from "../../utils/auth";
 import { hashPasskey } from "../../utils/passkey";
+import { sendVerificationEmail } from "../../utils/verification";
 
 const registerSchema = z.object({
 	username: z
@@ -57,6 +58,20 @@ export default defineEventHandler(async (event) => {
 	});
 	setSessionCookie(event, token);
 
+	// La verificación de email nunca bloquea el registro: si falla el envío,
+	// el usuario puede reenviarla desde /dashboard/pending.
+	let verificationEmailSent = false;
+	try {
+		await sendVerificationEmail({
+			id: user.id,
+			email: user.email,
+			name: user.name,
+		});
+		verificationEmailSent = true;
+	} catch {
+		verificationEmailSent = false;
+	}
+
 	return {
 		user: {
 			id: user.id,
@@ -64,6 +79,9 @@ export default defineEventHandler(async (event) => {
 			name: user.name,
 			email: user.email,
 			role: user.role,
+			emailVerified: user.emailVerified,
 		},
+		verificationRequired: !user.emailVerified,
+		verificationEmailSent,
 	};
 });

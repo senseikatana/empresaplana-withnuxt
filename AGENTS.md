@@ -64,10 +64,25 @@ npx -y @insforge/cli compute deploy . --name empresaplana --port 3000 --region f
 - Scripts: `pnpm demo:data` (exporta el dataset), `pnpm demo:build`, `pnpm deploy:demo` (data + build + `wrangler pages deploy`).
 - `wrangler.jsonc` es la config del proyecto Pages (no es un Worker).
 
+## Dashboard / intranet
+
+- Layout `app/layouts/dashboard.vue` (Nuxt UI Dashboard: sidebar + `UDashboardSearch` + `UDashboardPanel`/`Navbar` + `NotificationsSlideover` + `UserMenu`).
+- **Protección**: `server/middleware/dashboard-guard.ts` (SSR: sesión + email verificado) y guard en el layout (sesión + capability de `route.meta.capability`). El middleware de ruta global NO se ejecuta en este proyecto (bug de Nuxt 4.5.2); no confiar en `app/middleware/auth.global.ts` hasta resolverlo.
+- `/dashboard` (sin subruta) = página de estadísticas con `/api/dashboard/summary` (rol-aware). Sesión compartida con `useSession()` (`/api/me` con name/email/emailVerified).
+- Endpoints del panel en `server/api/dashboard/**`, todos con `requireCapability(...)`; los sensibles usan `{ requireVerified: true }`.
+- Registro → sesión inmediata + email de verificación (Resend si `RESEND_API_KEY`; si no, link en el log). Sin verificar solo se accede a `/dashboard/pending`.
+
+## Asistente IA (chat del dashboard)
+
+- UI: `/dashboard/asistente` con `UChatMessages`/`UChatPrompt` + `useChat` (`@ai-sdk/vue`); componente `AssistantChat.vue`.
+- API: `server/api/dashboard/assistant/**` (lista/crea conversación, carga mensajes y streaming en `[id].post.ts`). Persistencia en `assistant_conversations`/`assistant_messages` (migración `assistant-chat`).
+- Modelo: OpenRouter vía `@ai-sdk/openai-compatible` (`OPENROUTER_API_KEY`, `ASSISTANT_MODEL`; por defecto `qwen/qwen3.8-27b:free`). Sin key, el endpoint responde 503 `assistant_not_configured`.
+- MCP: seam en `server/utils/mcp.ts` (`MCP_SERVERS` JSON). Integración pendiente del usuario.
+
 ## Releases / Novedades
 
-- Página `/releases` (label localizado: Novetats/Novedades/What's new/Nouveautés) que parsea `CHANGELOG.md` y enlaza cada versión a la GitHub Release.
-- `pnpm release:bump --version=x.y.z` inserta `## [x.y.z] - fecha` al tope del CHANGELOG (sin sección `[Unreleased]`) y actualiza `package.json`.
+- Página `/releases` con los componentes del theme (`UChangelogVersions` + `UChangelogVersion`) y markdown de `@comark/nuxt` (`app/components/AppMarkdown.ts`). Fuente: `CHANGELOG.md`; cada versión enlaza a su GitHub Release.
+- `pnpm release:bump --version=x.y.z` inserta `## [x.y.z] - fecha` al tope del CHANGELOG (sin `[Unreleased]`) y actualiza `package.json`.
 - `.github/workflows/release.yml`: al push de un tag `v*` crea/actualiza la GitHub Release con las notas del CHANGELOG.
 
 ## Seguridad

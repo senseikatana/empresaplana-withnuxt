@@ -239,7 +239,8 @@
 				"drivers": "Chauffeurs",
 				"notifications": "Notifications",
 				"reports": "Rapports",
-				"integrations": "Intégrations"
+				"integrations": "Intégrations",
+				"users": "Utilisateurs"
 			},
 			"common": {
 				"add": "Ajouter",
@@ -493,7 +494,57 @@
 			"phone": "Téléphone",
 			"conversations": "Conversations",
 			"selectConversation": "Sélectionnez une conversation",
-			"send": "Envoyer"
+			"send": "Envoyer",
+			"assistant": "Assistant",
+			"noNotifications": "Aucune notification",
+			"logout": "Se déconnecter",
+			"notifications": "Notifications"
+		},
+		"verify": {
+			"title": "Confirmez votre e-mail",
+			"subtitle": "Nous vous avons envoyé un e-mail de vérification.",
+			"body": "Ouvrez le lien de l'e-mail pour activer votre compte. S'il est introuvable, vérifiez vos spams.",
+			"sentTo": "Envoyé à {email}",
+			"resend": "Renvoyer l'e-mail",
+			"resent": "E-mail renvoyé. Vérifiez votre boîte de réception.",
+			"logout": "Se déconnecter",
+			"note": "Le lien expire dans 24 heures.",
+			"error": "Impossible de renvoyer l'e-mail. Réessayez."
+		},
+		"stats": {
+			"greeting": "Bonjour, {name}",
+			"subtitle": "Votre compte et l'activité du réseau en un coup d'œil.",
+			"shortcuts": "Accès rapides",
+			"users": "Utilisateurs",
+			"routes": "Lignes",
+			"buses": "Bus",
+			"drivers": "Conducteurs",
+			"unreadNotifications": "Alertes non lues",
+			"budgets": "Devis",
+			"favorites": "Favoris",
+			"recentSearches": "Recherches récentes"
+		},
+		"search": {
+			"pages": "Pages"
+		},
+		"menu": {
+			"appearance": "Apparence",
+			"light": "Clair",
+			"dark": "Sombre"
+		},
+		"assistant": {
+			"title": "Assistant IA",
+			"subtitle": "Renseignez-vous sur les horaires, tarifs, devis ou incidents.",
+			"new": "Nouvelle conversation",
+			"conversations": "Conversations",
+			"untitled": "Conversation sans titre",
+			"placeholder": "Écrivez un message…",
+			"thinking": "Réflexion…",
+			"suggestions": {
+				"lines": "Quelles lignes desservent Cambrils ?",
+				"fares": "Combien coûte Cambrils – Tarragone ?",
+				"quote": "Comment demander un devis pour un autocar ?"
+			}
 		}
 	},
 	"routes": {
