@@ -6,15 +6,6 @@ useHead({ title: () => t("locations.title") });
 useSeoMeta({ description: () => t("locations.hero.subtitle") });
 
 const { data: offices } = await useFetch("/api/offices");
-
-const baseKeys = [
-	"tarragona",
-	"reus",
-	"garraf",
-	"calafell",
-	"barcelona",
-	"hospitalet",
-] as const;
 </script>
 
 <template>
@@ -87,27 +78,6 @@ const baseKeys = [
 					<a v-if="o.phone" class="mt-4 flex items-center gap-2 font-button text-button text-deep-navy hover:text-coastal-teal" :href="`tel:${o.phone.replace(/\s/g, '')}`">
 						<span class="material-symbols-outlined text-[18px]">call</span>{{ o.phone }}
 					</a>
-				</div>
-			</div>
-		</section>
-
-		<!-- Delegations Grid -->
-		<section class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop py-stack-lg mb-24">
-			<div class="flex items-center gap-4 mb-8">
-				<h2 class="font-headline-lg text-headline-lg-mobile md:text-headline-lg text-deep-navy">{{ t("locations.delegations.title") }}</h2>
-				<div class="h-px bg-surface-variant flex-grow"></div>
-			</div>
-			<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-gutter">
-				<div v-for="(key, i) in baseKeys" :key="key" class="bg-surface-container-lowest rounded-xl shadow-ambient p-6 border border-surface-variant">
-					<h3 class="font-headline-md text-headline-md text-deep-navy mb-1">{{ t(`locations.delegations.bases.${key}.name`) }}</h3>
-					<p class="font-label-md text-label-md text-energetic-orange mb-4 uppercase">{{ t("locations.delegations.label").replace("{n}", String(i + 1)) }}</p>
-					<div class="flex items-start gap-3 font-body-md text-body-md text-on-surface-variant">
-						<span class="material-symbols-outlined text-outline/60 mt-0.5 text-lg">map</span>
-						<div>
-							<p>{{ t(`locations.delegations.bases.${key}.address`) }}</p>
-							<p class="font-bold text-on-surface mt-1">{{ t(`locations.delegations.bases.${key}.city`) }}</p>
-						</div>
-					</div>
 				</div>
 			</div>
 		</section>

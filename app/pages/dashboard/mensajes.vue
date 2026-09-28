@@ -4,9 +4,19 @@ definePageMeta({
 	capability: "chat:access",
 });
 
+import type { FormSubmitEvent } from "@nuxt/ui";
+import { z } from "zod";
 import { contact } from "~/data/contact";
 
 const { t } = useI18n();
+
+const schema = z.object({
+	body: z.string().trim().min(1).max(2000),
+});
+type MessageSchema = z.infer<typeof schema>;
+
+const formState = reactive<Partial<MessageSchema>>({ body: "" });
+const form = useTemplateRef("form");
 
 const { data: conversations, refresh: refreshConversations } = await useFetch(
 	"/api/chat",
@@ -27,7 +37,6 @@ const messages = ref<Array<{
 	senderRole: string;
 	createdAt: string;
 }> | null>(null);
-const draft = ref("");
 const sending = ref(false);
 
 // Cliente WebSocket (real-time).
@@ -70,8 +79,7 @@ function onSocketMessage(event: MessageEvent) {
 	}
 }
 
-async function send() {
-	const body = draft.value.trim();
+async function send(body: string) {
 	if (!body || !activeId.value) return;
 	sending.value = true;
 	try {
@@ -79,10 +87,18 @@ async function send() {
 			method: "POST",
 			body: { conversationId: activeId.value, body },
 		});
-		draft.value = "";
+		formState.body = "";
 	} finally {
 		sending.value = false;
 	}
+}
+
+function onSubmit(event: FormSubmitEvent<MessageSchema>) {
+	void send(event.data.body);
+}
+
+function submitMessage() {
+	void form.value?.submit();
 }
 
 function isOwn(_senderRole: string, senderId: number): boolean {
@@ -174,10 +190,25 @@ onUnmounted(() => {
 							</span>
 						</div>
 					</div>
-					<form class="border-t border-surface-variant p-4 flex gap-3" @submit.prevent="send">
-						<UInput v-model="draft" :placeholder="t('app.panel.messages')" class="flex-1" />
+					<UForm
+						ref="form"
+						:state="formState"
+						:schema="schema"
+						class="border-t border-surface-variant p-4 flex gap-3 items-end"
+						@submit="onSubmit"
+					>
+						<UFormField name="body" class="flex-1">
+							<UTextarea
+								v-model="formState.body"
+								:placeholder="t('app.panel.messages')"
+								:rows="1"
+								autoresize
+								class="w-full"
+								@keydown.enter.exact.prevent="submitMessage"
+							/>
+						</UFormField>
 						<UButton type="submit" :loading="sending">{{ t("app.panel.send") }}</UButton>
-					</form>
+					</UForm>
 				</template>
 			</div>
 		</div>

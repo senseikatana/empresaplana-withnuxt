@@ -2,65 +2,55 @@
 
 ## Visión general
 
-El sitio corre en **Nuxt 4** (SSR, Nitro preset `node_server`). **Render quedó
-descartado como deploy primario**: el servicio manual creado allí usa un build
-command incorrecto (`npm run generate`, inexistente) y no aplica nuestro
-`render.yaml`. La decisión actual es **InsForge** para todo (DB + deploy).
-Cloudflare Pages queda como objetivo reversible cuando Prisma soporte Workers
-(issue prisma/prisma#28657).
+El sitio corre en **Nuxt 4** (SSR, Nitro preset `node_server`). Dos entornos:
 
 | Concepto | Valor |
 |---|---|
-| Framework | Nuxt 4 + Nitro 2 |
-| Preset primario | `node_server` |
-| Preset reversible | `cloudflare_pages` (bloqueado por Prisma #28657) |
-| Build command | `pnpm run render:build` |
-| Start command | `node .output/server/index.mjs` |
-| Health check | `/api/health` |
-| DB | InsForge Postgres (eu-central), **Prisma Migrate es la autoridad** |
-| Deploy | **InsForge Compute** (Fly.io, servicio `empresaplana`) |
+| App (producción) | **InsForge Compute** — contenedor Node (Docker: build con Bun, runtime Node) |
+| Framework | Nuxt 4 + Nitro 2, preset `node_server` |
+| Build | `bun run build:node` (`NITRO_PRESET=node_server`) |
+| Start | `node .output/server/index.mjs` |
+| Health check | `GET /api/health` → `{"ok":true,"db":"up"}` |
+| DB | InsForge Postgres (eu-central) — **el DDL vive en migraciones InsForge** |
+| Demo (portfolio) | **Cloudflare Workers Static Assets** — `wrangler deploy`, dominio custom |
 
-## InsForge (actual)
-
-- Proyecto: **empresaplana.cat** (`8929a7b2-3f14-461b-b228-e6f8c8b6573c`),
-  región eu-central, API base `https://k5s4v7js.eu-central.insforge.app`.
-- DB: Postgres 15 en el proyecto InsForge; `DATABASE_URL` en `.env` local
-  (gitignored), consumida por Prisma 7 + `@prisma/adapter-pg`.
-- Esquema: autoridad en **Prisma Migrate** (`prisma/migrations/`). La CLI de
-  InsForge NO se usa para migrar; solo proyecto, secretos, logs y deploy.
-- Migración inicial: `20260913151507_init` (27 modelos + m2m `_RouteToStop` +
-  `_prisma_migrations` = **29 tablas**).
-- Seed completo: 3 users demo (cliente/trabajador/admin, passkey `12345678`),
-  8 rutas, 20 paradas, 10 horarios, 10 buses, 8 conductores, 4 presupuestos.
-- Verificación: suite smoke 18/18 verde contra InsForge (build producción).
-
-### Compute (servicio desplegado)
+## InsForge Compute (app real)
 
 - Endpoint: <https://empresaplana-8929a7b2-3f14-461b-b228-e6f8c8b6573c.fly.dev>
-- Deploy: `npx -y @insforge/cli compute deploy . --name empresaplana --port 3000
-  --cpu shared-1x --memory 512 --env-file <secrets>`
-- Ver más en `docs/INSFORGE.md`.
-
-## Render (pausado / histórico)
-
-El servicio `empresaplana-website.onrender.com` se creó manual (no blueprint):
-build command `npm run generate` (no existe) → build falló. Se decidió no
-usarlo; el blueprint `render.yaml` se conserva por si se retoma.
-
-## Cloudflare Pages (futuro)
+- Deploy (source mode; requiere `flyctl` en PATH):
 
 ```bash
-pnpm run cf:build   # NITRO_PRESET=cloudflare_pages → dist/
-pnpm run cf:dev     # build + wrangler pages dev (compatibility nodejs_compat)
-wrangler pages deploy dist
+export PATH="$HOME/.fly/bin:$PATH"
+npx -y @insforge/cli compute deploy . --name empresaplana --port 3000 \
+  --region fra --memory 512 --env-file .env
 ```
 
-Config en `wrangler.jsonc` (`compatibility_flags: ["nodejs_compat"]`). **Bloqueo
-actual:** Prisma ORM 7 instancia el query compiler WASM desde buffer y workerd
-lo prohíbe (`Wasm code generation disallowed by embedder`). No hay compat flag.
+- Plan Free: 1 servicio y **máximo 512 MB por máquina**. Para producción pedir upgrade.
+- Envs del servicio: las de `.env` (`DATABASE_URL`, `AUTH_SECRET`, `OPENROUTER_API_KEY`,
+  `RESEND_API_KEY`…). Rotar una sola: `npx -y @insforge/cli compute update <service-id> --env-set KEY=value`.
+- Región `fra` a propósito: la DB está en eu-central (latencia).
+
+## Demo portfolio (Cloudflare Workers Static Assets)
+
+- `bun run deploy:demo` → `demo:data` (exporta `public/data/transit.json`) + `demo:build`
+  (`NUXT_PUBLIC_STATIC_DEMO=true nuxt generate`) + `wrangler deploy`.
+- `wrangler.jsonc`: assets `.output/public` + custom domain
+  `empresaplana.senseikatana.com` (el deploy crea DNS + certificado solo).
+- El dashboard no se incluye en el demo (`nitro.prerender.ignore`): sin servidor no hay auth.
+- Búsqueda 100 % cliente sobre el dataset (misma lógica que la API, `shared/utils/transit.ts`).
+- Nota: la zona tiene un challenge de seguridad global que también afecta a
+  `docs.senseikatana.com`; si molesta para la demo, crear una regla WAF que lo salte
+  para el hostname.
 
 ## Desarrollo local
 
 ```bash
-pnpm run dev   # http://localhost:3000 — DB InsForge (DATABASE_URL del .env)
+bun run dev   # http://localhost:3000 — DB InsForge (DATABASE_URL del .env)
 ```
+
+## Histórico
+
+- **Render**: descartado (servicio manual con build command incorrecto). `render.yaml` es legado.
+- **Cloudflare Pages como runtime**: descartado — Prisma 7 no corre en Workers
+  (prisma/prisma#28657, `Wasm code generation disallowed by embedder`). El demo
+  sí va en Workers porque es 100 % estático (sin Prisma en runtime).

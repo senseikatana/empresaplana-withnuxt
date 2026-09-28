@@ -1,26 +1,10 @@
 import { randomUUID } from "node:crypto";
-import { z } from "zod";
-
-const budgetSchema = z.object({
-	name: z.string().min(1).max(200),
-	email: z.string().email().max(200),
-	phone: z.string().min(1).max(30),
-	company: z.string().max(200).optional().default(""),
-	reasonId: z.string().max(60),
-	description: z.string().max(2000).optional().default(""),
-	departureCity: z.string().max(120).optional().default(""),
-	departureDay: z.string().max(12).optional().default(""),
-	departureTime: z.string().max(10).optional().default(""),
-	arrivalCity: z.string().max(120).optional().default(""),
-	arrivalDay: z.string().max(12).optional().default(""),
-	arrivalTime: z.string().max(10).optional().default(""),
-	people: z.string().max(10).optional().default(""),
-});
+import { budgetApiSchema } from "#shared/utils/budget";
 
 export default defineEventHandler(async (event) => {
 	rateLimit(event, { limit: 20, windowMs: 60_000 });
 
-	const parsed = budgetSchema.safeParse(
+	const parsed = budgetApiSchema.safeParse(
 		await readBody(event).catch(() => ({})),
 	);
 	if (!parsed.success) {

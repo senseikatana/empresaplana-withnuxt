@@ -15,7 +15,10 @@ type Conversation = {
 
 const { data, refresh } = await useFetch<{ conversations: Conversation[] }>(
 	"/api/dashboard/assistant",
-	{ headers: useRequestHeaders(["cookie"]), default: () => ({ conversations: [] }) },
+	{
+		headers: useRequestHeaders(["cookie"]),
+		default: () => ({ conversations: [] }),
+	},
 );
 
 const conversations = computed(() => data.value?.conversations ?? []);
@@ -32,6 +35,7 @@ async function loadConversation(id: string) {
 	try {
 		const payload = await $fetch<{ messages: UIMessage[] }>(
 			`/api/dashboard/assistant/${id}`,
+			{ headers: useRequestHeaders(["cookie"]) },
 		);
 		initialMessages.value = payload.messages;
 	} finally {
@@ -42,7 +46,10 @@ async function loadConversation(id: string) {
 async function newConversation() {
 	const { conversation } = await $fetch<{ conversation: Conversation }>(
 		"/api/dashboard/assistant",
-		{ method: "POST" },
+		{
+			method: "POST",
+			headers: useRequestHeaders(["cookie"]),
+		},
 	);
 	await refresh();
 	activeId.value = conversation.id;

@@ -33,7 +33,10 @@ export default defineNuxtRouteMiddleware(async (to) => {
 	}
 
 	const role = session?.user?.role;
-	console.log("[auth-middleware]", to.path, { role, emailVerified: session?.user?.emailVerified });
+	console.log("[auth-middleware]", to.path, {
+		role,
+		emailVerified: session?.user?.emailVerified,
+	});
 	if (!role || !isRole(role)) {
 		// Query construido manualmente: navigateTo con string + query no
 		// garantiza la serialización del redirect en SSR.

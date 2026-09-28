@@ -3,8 +3,8 @@ import type { LanguageModel } from "ai";
 
 const OPENROUTER_BASE_URL = "https://openrouter.ai/api/v1";
 
-/** Default model: free, fast and with a large context window. */
-export const DEFAULT_ASSISTANT_MODEL = "qwen/qwen3.8-27b:free";
+/** Default model: free auto-router (probes showed the popular free models rate-limiting). */
+export const DEFAULT_ASSISTANT_MODEL = "openrouter/free";
 
 export const ASSISTANT_SYSTEM_PROMPT = `Ets l'assistent intern d'Empresa Plana (transport públic de viatgers a la Costa Daurada, Catalunya).
 Ajudes el personal i els usuaris de la intranet amb:

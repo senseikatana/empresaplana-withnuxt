@@ -31,7 +31,8 @@
 		"confirmationTitle": "Demande confirmée",
 		"confirmationHeading": "Demande envoyée !",
 		"confirmationDesc": "Merci pour votre demande. Nous vous contacterons prochainement.",
-		"backHome": "Retour à l'accueil"
+		"backHome": "Retour à l'accueil",
+		"clear": "Effacer"
 	},
 	"home": {
 		"title": "Empresa Plana - Écrans",
@@ -498,7 +499,10 @@
 			"assistant": "Assistant",
 			"noNotifications": "Aucune notification",
 			"logout": "Se déconnecter",
-			"notifications": "Notifications"
+			"notifications": "Notifications",
+			"currentRequired": "Le mot de passe actuel est requis pour changer l'e-mail ou le mot de passe",
+			"passwordMin": "Au moins 8 caractères",
+			"currentHelp": "Uniquement en cas de changement d'e-mail ou de mot de passe"
 		},
 		"verify": {
 			"title": "Confirmez votre e-mail",
@@ -545,6 +549,9 @@
 				"fares": "Combien coûte Cambrils – Tarragone ?",
 				"quote": "Comment demander un devis pour un autocar ?"
 			}
+		},
+		"validation": {
+			"consentRequired": "Vous devez accepter la politique de confidentialité"
 		}
 	},
 	"routes": {

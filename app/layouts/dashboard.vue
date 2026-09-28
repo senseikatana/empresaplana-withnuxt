@@ -94,6 +94,11 @@ const workerNav: NavigationMenuItem[] = [
 		to: localePath("/dashboard/trabajador/reportes"),
 	},
 	{
+		label: t("releases.nav"),
+		icon: "i-lucide-history",
+		to: localePath("/dashboard/novedades"),
+	},
+	{
 		label: t("app.panel.messages"),
 		icon: "i-lucide-message-circle",
 		to: localePath("/dashboard/mensajes"),
@@ -155,6 +160,11 @@ const adminNav: NavigationMenuItem[] = [
 		label: t("app.gestion.nav.users"),
 		icon: "i-lucide-users",
 		to: localePath("/dashboard/gestion/usuarios"),
+	},
+	{
+		label: t("releases.nav"),
+		icon: "i-lucide-history",
+		to: localePath("/dashboard/novedades"),
 	},
 	{
 		label: t("app.panel.messages"),

@@ -64,6 +64,22 @@ export default defineEventHandler(async (event) => {
 	const model = assistantModel();
 	const tools = await loadMcpTools();
 
+	// Persist the incoming user message immediately (the stream only yields
+	// assistant messages in `onEnd`).
+	const lastMessage = messages[messages.length - 1];
+	if (lastMessage?.role === "user") {
+		await prisma().assistantMessage.upsert({
+			where: { id: lastMessage.id },
+			update: { parts: asJson(lastMessage.parts) },
+			create: {
+				id: lastMessage.id,
+				conversationId: id,
+				role: "user",
+				parts: asJson(lastMessage.parts),
+			},
+		});
+	}
+
 	const stream = createUIMessageStream({
 		execute: async ({ writer }) => {
 			const result = streamText({

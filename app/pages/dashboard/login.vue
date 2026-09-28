@@ -1,10 +1,18 @@
 <script setup lang="ts">
+import type { FormSubmitEvent } from "@nuxt/ui";
+import { z } from "zod";
+
 const { t } = useI18n();
 const localePath = useLocalePath();
 const route = useRoute();
 
-const username = ref("");
-const passkey = ref("");
+const schema = z.object({
+	username: z.string().min(3).max(60),
+	passkey: z.string().min(8).max(128),
+});
+type Schema = z.infer<typeof schema>;
+
+const state = reactive<Partial<Schema>>({ username: "", passkey: "" });
 const error = ref<string | null>(null);
 const pending = ref(false);
 
@@ -21,23 +29,24 @@ useHead({
 	meta: [{ name: "robots", content: "noindex, nofollow" }],
 });
 
-async function submit(
-	usernameValue = username.value,
-	passkeyValue = passkey.value,
-) {
+async function onSubmit(event: FormSubmitEvent<Schema>) {
+	await login(event.data.username, event.data.passkey);
+}
+
+async function login(username: string, passkey: string) {
 	error.value = null;
 	pending.value = true;
 	try {
 		await $fetch("/api/auth/login", {
 			method: "POST",
-			body: { username: usernameValue, passkey: passkeyValue },
+			body: { username, passkey },
 		});
 		const redirect =
 			typeof route.query.redirect === "string"
 				? route.query.redirect
 				: localePath("/dashboard");
 		await navigateTo(redirect);
-	} catch (e) {
+	} catch {
 		error.value = t("app.auth.invalid");
 	} finally {
 		pending.value = false;
@@ -53,12 +62,12 @@ async function submit(
 				<p class="text-sm text-on-surface-variant">{{ t("app.auth.subtitle") }}</p>
 			</template>
 
-			<form class="flex flex-col gap-4" @submit.prevent="submit">
-				<UFormField :label="t('app.auth.username')">
-					<UInput v-model="username" autocomplete="username" placeholder="admin" />
+			<UForm :state="state" :schema="schema" class="flex flex-col gap-4" @submit="onSubmit">
+				<UFormField :label="t('app.auth.username')" name="username">
+					<UInput v-model="state.username" autocomplete="username" placeholder="admin" class="w-full" />
 				</UFormField>
-				<UFormField :label="t('app.auth.passkey')">
-					<UInput v-model="passkey" type="password" autocomplete="current-password" placeholder="••••••••" />
+				<UFormField :label="t('app.auth.passkey')" name="passkey">
+					<UInput v-model="state.passkey" type="password" autocomplete="current-password" placeholder="••••••••" class="w-full" />
 				</UFormField>
 
 				<UAlert v-if="error" color="error" variant="soft" :title="error" />
@@ -66,7 +75,7 @@ async function submit(
 				<UButton type="submit" :loading="pending" block>
 					{{ t("app.auth.login") }}
 				</UButton>
-			</form>
+			</UForm>
 
 			<div class="mt-6 border-t border-surface-variant pt-4">
 				<p class="text-xs text-on-surface-variant mb-2">{{ t("app.auth.demoHint") }}</p>
@@ -78,7 +87,7 @@ async function submit(
 						variant="soft"
 						block
 						:disabled="pending"
-						@click="submit(account.username, '12345678')"
+						@click="login(account.username, '12345678')"
 					>
 						{{ t(`app.auth.${account.roleKey}`) }}
 					</UButton>

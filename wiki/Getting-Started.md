@@ -4,7 +4,7 @@
 
 | Herramienta | Versión mínima |
 |-------------|----------------|
-| **pnpm** | 12+ |
+| **bun** | 12+ |
 | **Node.js** | 22.12+ |
 | **Docker** (opcional, DB local) | — |
 
@@ -17,7 +17,7 @@ cd empresaplana-webiste
 git checkout feat/nuxt-4-migration
 
 # 2. Dependencias
-pnpm install
+bun install
 
 # 3. Variables de entorno
 cp .env.example .env   # DATABASE_URL + AUTH_SECRET
@@ -26,31 +26,31 @@ cp .env.example .env   # DATABASE_URL + AUTH_SECRET
 docker run -d --name empresaplana-pg \
   -e POSTGRES_USER=empresaplana -e POSTGRES_PASSWORD=empresaplana \
   -e POSTGRES_DB=empresaplana -p 54329:5432 postgres:17-alpine
-pnpm run db:generate
-pnpm run db:push
+bun run db:generate
+bun run db:push
 
 # 5. Primer usuario admin
-pnpm run db:create-user admin 12345678 admin
+bun run db:create-user admin 12345678 admin
 ```
 
 ## Desarrollo local
 
 ```bash
-pnpm run dev   # http://localhost:3000
+bun run dev   # http://localhost:3000
 ```
 
 ## Scripts
 
 | Comando | Descripción |
 |---------|-------------|
-| `pnpm run dev` | Dev server (3000) |
-| `pnpm run build` | Build producción Node → `.output/` |
-| `pnpm run preview` | Sirve el build |
-| `pnpm run render:build` | Build para Render |
-| `pnpm run cf:build` / `cf:dev` | Build/previz Cloudflare (bloqueado, ver Gotchas) |
-| `pnpm run db:generate` / `db:push` / `db:studio` | Prisma CLI |
-| `pnpm run db:create-user` | Crear usuario (`<user> <pass> <role>`) |
-| `pnpm run check` / `lint` / `format` | Biome |
+| `bun run dev` | Dev server (3000) |
+| `bun run build` | Build producción Node → `.output/` |
+| `bun run preview` | Sirve el build |
+| `bun run render:build` | Build para Render |
+| `bun run cf:build` / `cf:dev` | Build/previz Cloudflare (bloqueado, ver Gotchas) |
+| `bun run db:generate` / `db:push` / `db:studio` | Prisma CLI |
+| `bun run db:create-user` | Crear usuario (`<user> <pass> <role>`) |
+| `bun run check` / `lint` / `format` | Biome |
 
 ## Estructura del proyecto
 
@@ -71,10 +71,10 @@ empresaplana-webiste/
 
 ### El servidor no arranca
 ```bash
-pnpm --version
-rm -rf node_modules .nuxt pnpm-lock.yaml
-pnpm install
-pnpm run nuxt:prepare
+bun --version
+rm -rf node_modules .nuxt bun-lock.yaml
+bun install
+bun run nuxt:prepare
 ```
 
 ### La DB no conecta

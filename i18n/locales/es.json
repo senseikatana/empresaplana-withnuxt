@@ -31,7 +31,8 @@
 		"confirmationTitle": "Solicitud confirmada",
 		"confirmationHeading": "¡Solicitud enviada!",
 		"confirmationDesc": "Gracias por tu solicitud. Nos pondremos en contacto contigo a la brevedad.",
-		"backHome": "Volver al inicio"
+		"backHome": "Volver al inicio",
+		"clear": "Limpiar"
 	},
 	"home": {
 		"title": "Empresa Plana - Pantallas",
@@ -498,7 +499,10 @@
 			"assistant": "Asistente",
 			"noNotifications": "Sin avisos",
 			"logout": "Cerrar sesión",
-			"notifications": "Avisos"
+			"notifications": "Avisos",
+			"currentRequired": "Se requiere la contraseña actual para cambiar el correo o la contraseña",
+			"passwordMin": "Mínimo 8 caracteres",
+			"currentHelp": "Solo si cambias el correo o la contraseña"
 		},
 		"verify": {
 			"title": "Confirma tu correo",
@@ -545,6 +549,9 @@
 				"fares": "¿Cuánto cuesta ir de Cambrils a Tarragona?",
 				"quote": "¿Cómo pido un presupuesto para un autocar?"
 			}
+		},
+		"validation": {
+			"consentRequired": "Debes aceptar la política de privacidad"
 		}
 	},
 	"routes": {

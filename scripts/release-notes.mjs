@@ -5,7 +5,8 @@ import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 
 const ROOT = fileURLToPath(new URL("..", import.meta.url));
-const rawVersion = process.argv[2] ?? "";
+const pkg = JSON.parse(readFileSync(`${ROOT}package.json`, "utf8"));
+const rawVersion = process.argv[2] ?? pkg.version ?? "";
 const version = rawVersion.replace(/^v/, "");
 
 if (!version) {

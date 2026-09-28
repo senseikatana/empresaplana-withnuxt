@@ -392,11 +392,11 @@ model Message {
 // ── Asistente IA (chat del dashboard) ──────────────────────────────────────
 
 model AssistantConversation {
-	id        String   @id @default(uuid()) @db.Uuid
+	id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
 	userId    Int      @map("user_id")
-	title     String   @default("") @db.VarChar(120)
-	createdAt DateTime @default(now()) @map("created_at")
-	updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
+	title     String   @default("")
+	createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+	updatedAt DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
 	user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 	messages  AssistantMessage[]
 
@@ -405,13 +405,81 @@ model AssistantConversation {
 }
 
 model AssistantMessage {
-	id             String   @id @db.VarChar(64)
+	id             String   @id
 	conversationId String   @map("conversation_id") @db.Uuid
-	role           String   @db.VarChar(20)
+	role           String
 	parts          Json     @default("[]")
-	createdAt      DateTime @default(now()) @map("created_at")
+	createdAt      DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
 	conversation   AssistantConversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
 
 	@@index([conversationId, createdAt])
 	@@map("assistant_messages")
+}
+
+// ── Tablas externas (gestionadas por migraciones InsForge) ───────────────────
+// Declaradas en `tables.external` de prisma.config.ts: Prisma las consulta pero
+// NO las gestiona (nunca las dropea ni altera). Modelos mínimos, solo documentación.
+
+model TransitLine {
+	id         Int     @id
+	slug       String  @unique
+	name       String
+	signNumber String? @map("sign_number")
+	pdfUrl     String? @map("pdf_url")
+	active     Boolean @default(true)
+
+	@@map("transit_lines")
+}
+
+model TransitStop {
+	id   Int     @id
+	town String
+	name String
+	zone String?
+
+	@@map("transit_stops")
+}
+
+model TransitLineStop {
+	lineId    Int @map("line_id")
+	direction Int
+	seq       Int
+	stopId    Int @map("stop_id")
+
+	@@id([lineId, direction, seq])
+	@@map("transit_line_stops")
+}
+
+model TransitTrip {
+	id        Int      @id
+	lineId    Int      @map("line_id")
+	dayType   String   @map("day_type")
+	departure DateTime @db.Time
+	stops     Json
+
+	@@map("transit_trips")
+}
+
+model AtmZone {
+	municipality String @id
+	zone         String
+
+	@@map("atm_zones")
+}
+
+model AtmFare {
+	id         String
+	zoneCount  Int    @map("zone_count")
+	priceCents Int    @map("price_cents")
+
+	@@id([id, zoneCount])
+	@@map("atm_fares")
+}
+
+model PaymentSystem {
+	id   String  @id
+	name String
+	note String?
+
+	@@map("payment_systems")
 }

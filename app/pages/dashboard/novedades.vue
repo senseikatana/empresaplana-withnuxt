@@ -1,10 +1,14 @@
 <script setup lang="ts">
-import changelogRaw from "../../CHANGELOG.md?raw";
+import changelogRaw from "../../../CHANGELOG.md?raw";
+
+definePageMeta({
+	layout: "dashboard",
+	capability: "dashboard:access",
+});
 
 const { t } = useI18n();
 
 useHead({ title: () => t("releases.title") });
-useSeoMeta({ description: () => t("releases.subtitle") });
 
 type Version = { version: string; date: string; markdown: string };
 
@@ -42,19 +46,13 @@ const versions = computed(() => parseChangelog(changelogRaw));
 </script>
 
 <template>
-	<div>
-		<section class="w-full py-14 md:py-20 px-margin-mobile md:px-margin-desktop bg-surface-container-low border-b border-outline-variant/30">
-			<div class="max-w-3xl mx-auto text-center">
-				<span class="material-symbols-outlined text-deep-navy text-[40px] mb-3">history</span>
-				<h1 class="font-display-lg text-display-lg md:text-[56px] leading-tight font-bold text-deep-navy">{{ t("releases.title") }}</h1>
-				<p class="font-body-lg text-body-lg text-on-surface-variant mt-4">{{ t("releases.subtitle") }}</p>
-			</div>
-		</section>
+	<div class="max-w-3xl">
+		<p class="mb-8 text-body-md text-on-surface-variant">{{ t("releases.subtitle") }}</p>
 
 		<UChangelogVersions
-			as="main"
+			as="div"
 			:indicator-motion="false"
-			:ui="{ root: 'py-10 sm:py-14', indicator: 'inset-y-0' }"
+			:ui="{ root: 'py-2', indicator: 'inset-y-0' }"
 		>
 			<UChangelogVersion
 				v-for="version in versions"
@@ -67,7 +65,7 @@ const versions = computed(() => parseChangelog(changelogRaw));
 					root: 'flex items-start',
 					container: 'max-w-xl min-w-0',
 					header: 'border-b border-default pb-4',
-					title: 'text-3xl',
+					title: 'text-2xl',
 					date: 'text-xs/9 text-highlighted font-mono',
 				}"
 			>
@@ -77,8 +75,6 @@ const versions = computed(() => parseChangelog(changelogRaw));
 			</UChangelogVersion>
 		</UChangelogVersions>
 
-		<div class="pb-16 flex flex-col items-center gap-2">
-			<p class="text-xs text-outline italic text-center">{{ t("releases.source") }}</p>
-		</div>
+		<p class="pt-8 text-xs text-muted italic">{{ t("releases.source") }}</p>
 	</div>
 </template>

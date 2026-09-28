@@ -2,81 +2,97 @@
 
 Website redesign of [empresaplana.cat](https://empresaplana.cat) for Empresa Plana
 (Costa Daurada / Camp de Tarragona transport company). Public site + admin panel
-(CMS) — bus schedules, routes, fares, airport transfers and discretionary
-services. Content is Catalan-first, with `es` and `en` locales.
+(intranet/CMS, AI assistant) — bus lines, schedules, stops, ATM fares, airport
+transfers and discretionary services. Content is Catalan-first (`ca`, `es`, `en`, `fr`).
 
 ## Tech stack
 
-| Layer      | Technology                                                          |
-| ---------- | ------------------------------------------------------------------- |
-| Framework  | Nuxt 4 + Nitro 2                                                     |
-| UI         | Nuxt UI v4 (`@nuxt/ui`), Tailwind CSS v4 build-time                  |
-| i18n       | `@nuxtjs/i18n` — `ca` default (root), `es`/`en` prefixed            |
-| Data       | Prisma 7 (`prisma-client` generator → `generated/prisma/`) + `@prisma/adapter-pg` + `pg` |
-| DB         | Postgres (Prisma Postgres)                                           |
-| Auth       | `jose` HS256 JWT in `ep_session` httpOnly cookie + scrypt passkeys   |
-| Fonts      | Geist (via `@nuxt/fonts`) + Material Symbols                        |
-| Tooling    | Biome, TypeScript strict                                            |
-| Runtime    | Node `>= 22.12`, pnpm                                               |
+| Layer     | Technology                                                                    |
+| --------- | ----------------------------------------------------------------------------- |
+| Framework | Nuxt 4 + Nitro 2 (`node_server`), Nuxt UI v4, Tailwind v4                     |
+| i18n      | `@nuxtjs/i18n` — `ca` default (root), `es`/`en`/`fr` prefixed                |
+| Data      | Prisma 7 (`prisma-client` generator → `generated/prisma/`) + `@prisma/adapter-pg` |
+| DB        | InsForge Postgres (`empresaplana.cat`, eu-central) — **DDL via InsForge migrations** |
+| Auth      | `jose` HS256 JWT in `ep_session` httpOnly cookie + scrypt, ACL (roles → capabilities) |
+| Assistant | `ai` v7 + `@ai-sdk/vue` + OpenRouter (`openrouter/free` by default)          |
+| Markdown  | `@comark/nuxt` (changelog/releases)                                           |
+| Tooling   | **Bun** (package manager + build), Node `>= 22.12` runtime, Biome, TypeScript strict |
 
 ## Prerequisites
 
-- [pnpm](https://pnpm.io) + Node.js `>= 22.12`
-- Local DB (Docker): `docker run -d --name empresaplana-pg -e POSTGRES_USER=empresaplana -e POSTGRES_PASSWORD=empresaplana -e POSTGRES_DB=empresaplana -p 54329:5432 postgres:17-alpine`
+- [Bun](https://bun.sh) + Node.js `>= 22.12` (runtime).
+- Access to the InsForge project (`DATABASE_URL` in `.env`). No local DB needed.
 
 ## Installation
 
 ```bash
-pnpm install
-cp .env.example .env   # set DATABASE_URL and AUTH_SECRET
-pnpm run db:generate
-pnpm run db:push
-pnpm run db:create-user admin 12345678 admin   # create first admin user
+bun install
+cp .env.example .env        # set DATABASE_URL, AUTH_SECRET (and OPENROUTER_API_KEY)
+bun run db:generate
+bun run db:seed             # demo users: cliente / trabajador / admin (passkey 12345678)
+bun run dev                 # http://localhost:3000
+```
+
+Schema changes do **not** use Prisma push/migrate (they are forbidden stubs):
+
+```bash
+npx -y @insforge/cli db migrations new <name>
+# edit migrations/<version>_<name>.sql
+npx -y @insforge/cli db migrations up --all
+bun run db:diff             # must be empty (DB == schema)
 ```
 
 ## Scripts
 
-| Command                  | Description                                        |
-| ------------------------ | -------------------------------------------------- |
-| `pnpm run dev`           | Dev server at `http://localhost:3000`              |
-| `pnpm run build`         | Production build (Node `node_server`) → `.output/` |
-| `pnpm run preview`       | Serve the production build locally                 |
-| `pnpm run render:build`   | Explicit Node build for Render                     |
-| `pnpm run cf:build`       | Build Cloudflare Pages preset (blocked, see Gotchas) |
-| `pnpm run cf:dev`         | Build + `wrangler pages dev` preview               |
-| `pnpm run db:generate` / `db:push` / `db:studio` | Prisma CLI        |
-| `pnpm run db:create-user` | Create/update a user (`pnpm run db:create-user <user> <pass> <role>`) |
-| `pnpm run check` / `lint` / `format` | Biome checks                       |
+| Command                            | Description                                          |
+| ---------------------------------- | ---------------------------------------------------- |
+| `bun run dev`                      | Dev server at `http://localhost:3000`                |
+| `bun run build`                    | Nuxt build → `.output/`                              |
+| `bun run build:node`               | Explicit Node build (`NITRO_PRESET=node_server`)     |
+| `bun run check` / `lint` / `format`| Biome                                                |
+| `bun run typecheck`                | `nuxi typecheck`                                     |
+| `bun run db:generate` / `db:diff` / `db:seed` / `db:setup` | Prisma client/seed/drift check |
+| `bun run db:create-user`           | Create/update a user (`<user> <pass> <role>`)        |
+| `node scripts/seed-transit.mjs`    | Re-seed the canonical transit dataset               |
+| `bun run demo:data` / `demo:build` | Export dataset / static demo build                  |
+| `bun run deploy:demo`              | Data + build + `wrangler deploy` (Cloudflare Workers) |
+| `bun run release:bump --version=x.y.z` | Bump version + CHANGELOG entry                  |
 
 ## Environment variables
 
-- `DATABASE_URL` — Postgres connection string (Prisma Postgres or local Docker).
-- `AUTH_SECRET` — long random string for HS256 session JWTs.
+- `DATABASE_URL` — InsForge Postgres connection string.
+- `AUTH_SECRET` — random string for session JWTs.
+- `RESEND_API_KEY` / `MAIL_FROM` / `APP_URL` — transactional email (verification).
+- `OPENROUTER_API_KEY` / `ASSISTANT_MODEL` — AI assistant (default `openrouter/free`).
+- `MCP_SERVERS` — optional JSON list of MCP servers for the assistant.
 
-Runtime secrets on Render come from the blueprint (`render.yaml`); never commit
-`.env` or `.dev.vars`.
+Never commit `.env` or `.dev.vars`.
 
 ## Project structure
 
 ```
-app/               # Nuxt srcDir — pages, components, layouts, middleware
-  assets/css/      # main.css — Tailwind v4 @theme design tokens (source of truth)
-  data/            # real contact data (phones, social, WhatsApp)
-server/            # Nitro API — server/api/*, server/utils/* (auth, prisma, passkey)
-i18n/locales/      # real ca/es/en/fr dictionaries (exported content, do not invent)
-prisma/            # schema.prisma, seed + seed-data/
-generated/prisma/  # generated Prisma client (git-ignored, do not edit)
-render.yaml        # Render blueprint (IaC)
-wrangler.jsonc     # Cloudflare config (reversible target)
+app/               # pages, components, layouts, middleware, composables
+  assets/css/      # main.css — Tailwind v4 @theme tokens (source of truth)
+server/            # Nitro API (api/, routes/, middleware/, utils/)
+  api/dashboard/   # protected intranet endpoints (requireCapability)
+  middleware/      # dashboard-guard.ts (SSR session + email verification)
+i18n/locales/      # ca/es/en/fr dictionaries
+shared/            # code shared by app + server (ACL, transit search, day types)
+migrations/        # InsForge SQL migrations (DB source of truth)
+prisma/            # schema.prisma (client-only) + seed
+scripts/           # transit ingest, demo export, releases
+data/              # gitignored: PDFs, canonical dataset, ATM fares
 ```
 
 ## Deployment
 
-- **Render (primary):** blueprint `render.yaml` — builds `render:build`, serves
-  `node .output/server/index.mjs`, health check `/api/health`.
-- **Cloudflare Pages (blocked):** Prisma ORM 7 crashes on Workers (issue
-  prisma/prisma#28657 — WASM code generation disallowed by workerd). Flip back
-  with `NITRO_PRESET=cloudflare_pages` once Prisma ships a Workers-compatible build.
+- **App (primary): InsForge compute** — Docker (Bun build + Node runtime), region `fra`.
+  `npx -y @insforge/cli compute deploy . --name empresaplana --port 3000 --region fra --memory 512 --env-file .env`
+- **Demo (portfolio): Cloudflare Workers Static Assets** — `wrangler deploy`
+  (config in `wrangler.jsonc`; custom domain `empresaplana.senseikatana.com` is managed
+  by the deploy itself; `NUXT_PUBLIC_STATIC_DEMO=true` for the client-side dataset build).
+- Prisma does not run on Cloudflare Workers (prisma/prisma#28657); that's why the app
+  runtime is a Node container on InsForge compute.
 
 ## License
 

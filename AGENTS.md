@@ -6,46 +6,54 @@ Target: `https://empresaplana.cat`. Repo público: nunca commitear datos sensibl
 ## Stack
 
 - **Nuxt 4** (`app/`, `server/`, `i18n/`) + Nitro (`node_server`) + Nuxt UI v4 + Tailwind v4.
-- **@nuxtjs/i18n**: locale por defecto `ca` (raíz `/`), `es`/`en`/`fr` con prefijo.
-- **@nuxtjs/color-mode**: dark/light (toggle en `SiteHeader`, tokens en `app/assets/css/main.css`).
-- **Prisma 7** (`prisma-client` generator → `generated/prisma/`) + `@prisma/adapter-pg` + `pg`.
-- **DB: InsForge Postgres** (proyecto `empresaplana.cat`, región eu-central). `DATABASE_URL` en `.env`.
-- **Auth**: jose HS256 JWT en cookie `ep_session` + scrypt (`server/utils/passkey.ts`). Roles `client | worker | admin`.
+- **@nuxtjs/i18n** (default `ca` en `/`; `es`/`en`/`fr` con prefijo) + **@nuxtjs/color-mode** (tokens dark en `app/assets/css/main.css`).
+- **@comark/nuxt** para markdown (`app/components/AppMarkdown.ts`), **ai v7 + @ai-sdk/vue + @ai-sdk/openai-compatible** para el asistente.
+- **Prisma 7** (`prisma-client` generator → `generated/prisma/`) + `@prisma/adapter-pg` + `pg`. **Prisma es SOLO cliente: el DDL vive en migraciones InsForge.**
+- **DB: InsForge Postgres** (proyecto `empresaplana.cat`, eu-central). `DATABASE_URL` en `.env`.
+- **Auth**: jose HS256 JWT en cookie `ep_session` + scrypt. Roles `client | worker | admin`.
 - **ACL**: `shared/acl.ts` + `requireCapability()` (`server/utils/acl.ts`). Nada de `role === "..."` inline.
-- **Storage**: Cloudflare R2 (pendiente: credenciales). No usar InsForge storage.
-- Package manager: **pnpm**. Node >= 22.12. Formato/lint: **Biome**.
+- **Package manager + build: Bun** (`bun.lock`; `trustedDependencies` en `package.json` para los postinstall de Prisma/esbuild/workerd). Runtime de producción: **Node >= 22.12**. Formato/lint: **Biome**.
 
 ## Commands
 
 ```bash
-pnpm dev                 # dev server :3000
-pnpm build               # build Node (node_server) -> .output/
-pnpm check               # biome check
-pnpm typecheck           # nuxi typecheck
-node scripts/seed-transit.mjs   # seed dataset canónico (lee data/routes + data/fares)
+bun run dev              # dev server :3000
+bun run build:node       # build Node (node_server) -> .output/
+bun run check && bun run typecheck
+bun run db:generate      # regenera el cliente Prisma
+bun run db:diff          # DEBE salir vacío: DB == schema (verifica drift)
+bun run db:seed          # seed demo (idempotente)
+node scripts/seed-transit.mjs   # seed del dataset canónico (lee data/routes + data/fares)
+bun run deploy:demo      # data + build estático + wrangler deploy (Cloudflare Workers)
 ```
 
-## Base de datos (InsForge)
+## Base de datos (InsForge) — reglas duras
 
-- DDL SIEMPRE por migraciones InsForge: `npx -y @insforge/cli db migrations new <name>` → editar `migrations/*.sql` → `npx -y @insforge/cli db migrations up --all`. No usar `prisma migrate` ni `db push` contra InsForge.
-- Migraciones aplicadas: `canonical-transit` (transit_lines/stops/line_stops/trips, atm_zones/atm_fares, payment_systems), `fix-atm-fares-pk`.
+- DDL SIEMPRE por migraciones InsForge: `npx -y @insforge/cli db migrations new <name>` → editar `migrations/*.sql` → `npx -y @insforge/cli db migrations up --all`.
+- **`db:push`/`db:migrate` son stubs que fallan a propósito**: `prisma db push` dropeaba el dataset (no conoce las tablas creadas por InsForge).
+- **`tables.external` en `prisma.config.ts` (7 tablas: `transit_*`, `atm_*`, `payment_systems`) las blinda de Prisma Migrate. No quitar.**
+- Tras cualquier cambio de schema: `bun run db:diff` vacío. Si no, alinear DB/schema por migración InsForge (no por push).
+- **Ownership**: las tablas creadas por Prisma pertenecen a `postgres`; las migraciones corren como `project_admin`. Antes de alterar/dropear una tabla Prisma desde una migración: `ALTER TABLE ... OWNER TO project_admin;` (con `psql "$DATABASE_URL"`).
+- Migraciones aplicadas: `canonical-transit`, `fix-atm-fares-pk`, `assistant-chat`, `cms-tables`, `align-assistant-tables`, `drop-legacy-demo-tables`.
 - Consultas puntuales: `npx -y @insforge/cli db query "SELECT ..."`.
+- La tabla `assistant_conversations.title` es `text` (no varchar) y los timestamps del asistente son `timestamptz(6)` a propósito.
 
 ## Dataset canónico del buscador
 
-- Fuente: crawl del buscador viejo (`POST https://empresaplana.cat/descargas`) + PDFs oficiales.
-- `data/` está **gitignored y es confidencial** (PDFs, exports, dataset). No publicar.
-- Artefactos locales: `data/routes/lines-v2.json` (118 líneas), `trips-v2.json` (1053 viajes con paradas), `stops-v2.json`, `data/fares/atm-zones.json` + `atm-fares.json` (tarifas ATM 2026).
-- Modelo: `id` secuencial interno + `signNumber` (número del cartel del bus) + `legacyIds` del sistema viejo. Líneas con datos: L4 (Costa, legacy 58/59), L11 (Cambrils–Vila-seca–Tarragona, 141/142 + 74-77), etc.
-- Pendiente: tipos de día (hoy solo `feiners` del 2026-09-28), urbanos Cambrils L1-L3, nocturnos NT2-NT5, escolares y temporada (PDFs ya extraídos en `data/sources/extracted-lines/`).
+- Fuente: crawl del buscador viejo (`POST https://empresaplana.cat/descargas`, feiners + sábado + domingo) + PDFs oficiales.
+- `data/` está **gitignored y es confidencial** (PDFs, exports, dataset). `public/data/transit.json` también queda ignorado (lo genera `bun run demo:data`).
+- Artefactos: `data/routes/lines-v3.json` (118 líneas), `trips-v3.json` (**2250 viajes** con paradas y `dayType`), `stops-v2.json` (676 paradas), `data/fares/atm-zones.json` + `atm-fares.json`.
+- **Tipos de día**: `feiners` / `dissabtes` / `diumenges` (+ festivos 2026 en `shared/utils/dayType.ts`). Día festivo → horario de domingo.
+- Modelo: `id` secuencial interno + `signNumber` (cartel del bus) + `legacyIds` del sistema viejo. L4 (legacy 58/59), L11 (141/142 + 74-77).
+- Pendiente: urbanos Cambrils L1-L3, nocturnos NT2-NT5, escolares y temporada (PDFs ya extraídos en `data/sources/extracted-lines/`).
 
 ## Buscador (API + UI)
 
-- `GET /api/routes/search?from&to&time&date&type` → SQL JSONB (`stops @> ...`) + precios ATM por número de zonas. Sin zona ATM (Barcelona, Tortosa, etc.) → `price: null` + link a ATM.
-- `GET /api/routes/localities` → localidades desde `transit_stops`.
-- UI: widget en `/` (home) y página de resultados `/rutas-horarios` (auto-búsqueda por query params, paradas en `<details>`, PDF por línea).
+- `GET /api/routes/search?from&to&time&date&type` → SQL JSONB (`stops @> ...`), filtro por `day_type` según `date`, precios ATM por zonas. Sin zona ATM → `price: null` + link.
+- Lógica compartida server/cliente: `shared/utils/transit.ts` (el demo estático usa la misma).
+- UI: widget BusPlana-style en `/`, resultados en `/rutas-horarios` (anada/tornada, `<details>` con paradas, PDF por línea).
 
-## Deploy — InsForge compute (NO Render, NO Cloudflare runtime)
+## Deploy — app en InsForge compute (NO Render, NO Cloudflare runtime)
 
 ```bash
 export PATH="$HOME/.fly/bin:$PATH"   # flyctl requerido (source mode)
@@ -53,53 +61,59 @@ npx -y @insforge/cli compute deploy . --name empresaplana --port 3000 --region f
 ```
 
 - URL: `https://empresaplana-8929a7b2-3f14-461b-b228-e6f8c8b6573c.fly.dev`
-- Plan Free: 1 solo servicio compute y **máximo 512MB por máquina**. Para producción pedir upgrade (la empresa paga).
-- Prisma **no corre en Cloudflare Workers** (query compiler WASM, issues #28657/#29660): por eso el runtime es un contenedor Node en InsForge compute. Cloudflare solo para R2.
-- `fly.toml` es autogenerado por el CLI (no commitear su `app` id; el archivo se puede regenerar).
+- Plan Free: 1 servicio compute y **máximo 512MB**. Para producción pedir upgrade (paga la empresa).
+- Prisma **no corre en Cloudflare Workers** (issues #28657/#29660): runtime = contenedor Node. Cloudflare solo R2 + el demo estático.
+- Dockerfile: build con `oven/bun` + runtime `node:22.12-bookworm-slim`. Rotar envs: `compute update <id> --env-set KEY=value`.
 
-## Demo portfolio — Cloudflare Pages (estático)
+## Demo portfolio — Cloudflare Workers Static Assets
 
-- Proyecto Pages `empresaplana-demo` → `https://empresaplana-demo.pages.dev` (dominio `empresaplana.senseikatana.com` asociado; falta el CNAME en la zona).
-- Modo estático: `NUXT_PUBLIC_STATIC_DEMO=true` → `nuxt generate` con búsqueda 100% cliente sobre `public/data/transit.json` (misma lógica que la API, `shared/utils/transit.ts`).
-- Scripts: `pnpm demo:data` (exporta el dataset), `pnpm demo:build`, `pnpm deploy:demo` (data + build + `wrangler pages deploy`).
-- `wrangler.jsonc` es la config del proyecto Pages (no es un Worker).
+- Proyecto Worker `empresaplana-demo`: **`bun run deploy:demo`** = `demo:data` + `demo:build` (`NUXT_PUBLIC_STATIC_DEMO=true`) + `wrangler deploy`.
+- Dominio **`empresaplana.senseikatana.com`** gestionado por el propio `wrangler deploy` (crea DNS + certificado; no hay CNAME manual). Respaldo: `https://empresaplana-demo.senseikatanacom.workers.dev`.
+- La zona tiene un **challenge de seguridad global** (también afecta `docs.senseikatana.com`); curl/headless reciben 403 `cf-mitigated: challenge`. Si molesta, regla WAF de skip por hostname.
+- Dashboard excluido por `nitro.prerender.ignore`; búsqueda 100% cliente sobre `public/data/transit.json`.
+- `wrangler.jsonc` es la config del Worker (assets + routes), no de Pages.
 
 ## Dashboard / intranet
 
-- Layout `app/layouts/dashboard.vue` (Nuxt UI Dashboard: sidebar + `UDashboardSearch` + `UDashboardPanel`/`Navbar` + `NotificationsSlideover` + `UserMenu`).
-- **Protección**: `server/middleware/dashboard-guard.ts` (SSR: sesión + email verificado) y guard en el layout (sesión + capability de `route.meta.capability`). El middleware de ruta global NO se ejecuta en este proyecto (bug de Nuxt 4.5.2); no confiar en `app/middleware/auth.global.ts` hasta resolverlo.
-- `/dashboard` (sin subruta) = página de estadísticas con `/api/dashboard/summary` (rol-aware). Sesión compartida con `useSession()` (`/api/me` con name/email/emailVerified).
-- Endpoints del panel en `server/api/dashboard/**`, todos con `requireCapability(...)`; los sensibles usan `{ requireVerified: true }`.
-- Registro → sesión inmediata + email de verificación (Resend si `RESEND_API_KEY`; si no, link en el log). Sin verificar solo se accede a `/dashboard/pending`.
+- Layout `app/layouts/dashboard.vue` (sidebar + `UDashboardSearch` + `UDashboardPanel`/`Navbar` + `NotificationsSlideover` + `UserMenu`).
+- **Protección en 3 capas** (el middleware de ruta global NO se ejecuta en Nuxt 4.5.2 de este proyecto):
+  1. `server/middleware/dashboard-guard.ts` (SSR: sesión + email verificado).
+  2. Guard en el layout (capability de `route.meta.capability` → redirige a `/dashboard`).
+  3. Endpoints con `requireCapability(...)`; sensibles con `{ requireVerified: true }`.
+- `/dashboard` = página de estadísticas (`/api/dashboard/summary`, rol-aware). Sesión con `useSession()`.
+- Registro → sesión inmediata + email de verificación (Resend si `RESEND_API_KEY`; si no, link en el log). Sin verificar solo `/dashboard/pending`.
+- Usuarios demo del seed: `cliente` / `trabajador` / `admin`, passkey `12345678`, `emailVerified: true`.
 
 ## Asistente IA (chat del dashboard)
 
-- UI: `/dashboard/asistente` con `UChatMessages`/`UChatPrompt` + `useChat` (`@ai-sdk/vue`); componente `AssistantChat.vue`.
-- API: `server/api/dashboard/assistant/**` (lista/crea conversación, carga mensajes y streaming en `[id].post.ts`). Persistencia en `assistant_conversations`/`assistant_messages` (migración `assistant-chat`).
-- Modelo: OpenRouter vía `@ai-sdk/openai-compatible` (`OPENROUTER_API_KEY`, `ASSISTANT_MODEL`; por defecto `qwen/qwen3.8-27b:free`). Sin key, el endpoint responde 503 `assistant_not_configured`.
-- MCP: seam en `server/utils/mcp.ts` (`MCP_SERVERS` JSON). Integración pendiente del usuario.
+- UI `/dashboard/asistente` (`UChatMessages`/`UChatPrompt` + `useChat`); API `server/api/dashboard/assistant/**` con streaming y persistencia en `assistant_conversations`/`assistant_messages` (el mensaje del usuario se guarda al entrar; el del asistente en `onEnd`).
+- Modelo: OpenRouter (`OPENROUTER_API_KEY` + `ASSISTANT_MODEL`; default **`openrouter/free`** — el router automático; qwen/gemma suelen estar rate-limited). Sin key → 503 `assistant_not_configured`.
+- MCP: seam en `server/utils/mcp.ts` (`MCP_SERVERS` JSON); integración pendiente.
 
 ## Releases / Novedades
 
-- Página `/releases` con los componentes del theme (`UChangelogVersions` + `UChangelogVersion`) y markdown de `@comark/nuxt` (`app/components/AppMarkdown.ts`). Fuente: `CHANGELOG.md`; cada versión enlaza a su GitHub Release.
-- `pnpm release:bump --version=x.y.z` inserta `## [x.y.z] - fecha` al tope del CHANGELOG (sin `[Unreleased]`) y actualiza `package.json`.
-- `.github/workflows/release.yml`: al push de un tag `v*` crea/actualiza la GitHub Release con las notas del CHANGELOG.
+- Página **interna** `/dashboard/novedades` (staff) con `UChangelogVersions`/`UChangelogVersion` + `AppMarkdown` (comark). Fuente: `CHANGELOG.md`. No va en el navbar público.
+- `bun run release:bump --version=x.y.z` inserta `## [x.y.z] - fecha` (sin `[Unreleased]`) y actualiza `package.json`. `release:notes [version]` (default: versión de package.json).
+- `.github/workflows/release.yml`: tag `v*` → crea/actualiza la GitHub Release con las notas.
 
 ## Seguridad
 
-- `.env` (real) y `opencode.json` (contiene la API key de InsForge) están gitignored. No commitear.
-- `public/*_export.json` y `database-structure.png` fueron removidos del árbol, pero siguen en el historial de git: pendiente evaluar `git filter-repo` si se exige confidencialidad total.
-- Rotar credenciales que hayan pasado por chat/diálogos.
+- `.env` y `opencode.json` (API key InsForge) gitignored; no commitear.
+- `public/*_export.json` y `database-structure.png` siguen en el historial de git: evaluar `git filter-repo` si se exige confidencialidad total.
+- Rotar credenciales que pasen por chat/diálogos.
 
 ## Gotchas
 
-- El generador Prisma es `prisma-client` (output `../generated/prisma`), no `prisma-client-js`.
-- `pg-native` tiene stub (`server/utils/pg-native-stub.ts`) + alias en Nitro; no quitar.
-- `prisma.config.ts` vive en la raíz (Prisma 7 no lo detecta dentro de `prisma/`).
-- `.dockerignore` debe mantener `data/` excluido (350MB+ de PDFs en el contexto de build).
+- El generador Prisma es `prisma-client` (output `generated/prisma`), no `prisma-client-js`.
+- `pg-native` tiene stub + alias en Nitro (`server/utils/pg-native-stub.ts`); no quitar.
+- `prisma.config.ts` vive en la raíz (Prisma 7 no lo detecta en `prisma/`).
+- **Bun**: sin `trustedDependencies` los postinstall de Prisma/esbuild/workerd no corren. `bun install --frozen-lockfile` en el Dockerfile.
+- `.dockerignore` excluye `*.md` pero **re-incluye `CHANGELOG.md`** (`!CHANGELOG.md`); sin eso el build de Docker rompe en `/dashboard/novedades`.
+- `.dockerignore` debe mantener `data/` excluido (PDFs de 350MB+ en el contexto de build).
 - El sitio viejo separa una línea en varios `legacyId` por sentido/variante; el dataset los agrupa por nombre de PDF.
-- `scripts/seed-transit.mjs` es idempotente (upserts).
+- `public/manifest.webmanifest` y otros assets pueden tener `lang: es` hardcodeado (default real: `ca`).
+- `scripts/seed-transit.mjs` es idempotente (upserts) y borra/reinserta los viajes `source='search'`.
 
 ## InsForge
 
-El backend/plataforma es InsForge (DB, compute, payments con Stripe). Para infraestructura usar el skill `insforge-cli`; para SDK de app, el skill `insforge`. La documentación general de InsForge está en el AGENTS.md global del usuario.
+Plataforma backend (DB, compute, payments Stripe). Infraestructura → skill `insforge-cli`; SDK de app → skill `insforge`. Docs generales en el AGENTS.md global del usuario.

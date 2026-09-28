@@ -54,8 +54,9 @@ export default defineWebSocketHandler({
 		if (!session) {
 			throw new Error("No autenticat");
 		}
-		(request as unknown as { context: Record<string, unknown> }).context.session =
-			session;
+		(
+			request as unknown as { context: Record<string, unknown> }
+		).context.session = session;
 	},
 
 	open(peer) {

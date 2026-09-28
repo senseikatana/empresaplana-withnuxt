@@ -15,7 +15,7 @@ la aplicación vive en `app/` + `server/`.
 | Datos | Prisma 7 (`prisma-client` → `generated/prisma/`) + `@prisma/adapter-pg` + `pg` sobre Postgres |
 | Auth | jose HS256 JWT (`ep_session`) + scrypt passkeys, roles `client/worker/admin` |
 | Tipografía | Geist (@nuxt/fonts) + Material Symbols |
-| Tooling | Biome, pnpm |
+| Tooling | Biome, bun |
 
 ## Decisiones de diseño
 

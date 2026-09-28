@@ -31,7 +31,8 @@
 		"confirmationTitle": "Request confirmed",
 		"confirmationHeading": "Request sent!",
 		"confirmationDesc": "Thank you for your request. We will contact you shortly.",
-		"backHome": "Back to home"
+		"backHome": "Back to home",
+		"clear": "Clear"
 	},
 	"home": {
 		"title": "Empresa Plana - Screens",
@@ -498,7 +499,10 @@
 			"assistant": "Assistant",
 			"noNotifications": "No notifications",
 			"logout": "Log out",
-			"notifications": "Notifications"
+			"notifications": "Notifications",
+			"currentRequired": "Current password is required to change email or password",
+			"passwordMin": "At least 8 characters",
+			"currentHelp": "Only when changing email or password"
 		},
 		"verify": {
 			"title": "Confirm your email",
@@ -545,6 +549,9 @@
 				"fares": "How much is Cambrils to Tarragona?",
 				"quote": "How do I request a coach quote?"
 			}
+		},
+		"validation": {
+			"consentRequired": "You must accept the privacy policy"
 		}
 	},
 	"routes": {

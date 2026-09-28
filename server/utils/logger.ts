@@ -4,7 +4,8 @@ export type LogLevel = "log" | "info" | "warn" | "error" | "debug";
 
 export function createLogger(namespace: string) {
 	return {
-		log: (message: unknown, data?: unknown) => useLogger("log", `[${namespace}] ${message}`, data),
+		log: (message: unknown, data?: unknown) =>
+			useLogger("log", `[${namespace}] ${message}`, data),
 		info: (message: unknown, data?: unknown) =>
 			useLogger("info", `[${namespace}] ${message}`, data),
 		warn: (message: unknown, data?: unknown) =>

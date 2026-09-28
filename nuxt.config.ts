@@ -69,7 +69,9 @@ export default defineNuxtConfig({
 		// Default = Node (insforge compute). Static demo build uses the static preset.
 		preset:
 			process.env.NITRO_PRESET ||
-			(process.env.NUXT_PUBLIC_STATIC_DEMO === "true" ? "static" : "node_server"),
+			(process.env.NUXT_PUBLIC_STATIC_DEMO === "true"
+				? "static"
+				: "node_server"),
 		experimental: {
 			websocket: true,
 		},

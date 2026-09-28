@@ -1,8 +1,8 @@
 import { z } from "zod";
 import { isRole } from "#shared/acl";
 import { setSessionCookie, signSessionToken } from "../../utils/auth";
-import { verifyPasskey } from "../../utils/passkey";
 import { createLogger } from "../../utils/logger";
+import { verifyPasskey } from "../../utils/passkey";
 
 const log = createLogger("api:auth:login");
 const loginSchema = z.object({

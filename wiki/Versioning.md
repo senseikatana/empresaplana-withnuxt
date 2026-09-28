@@ -20,7 +20,7 @@ El proyecto usa **Semantic Versioning** (SemVer): `MAJOR.MINOR.PATCH`.
 git tag v1.2.0
 
 # 2. Ejecutar el bump
-pnpm run version:bump --version=1.2.0
+bun run version:bump --version=1.2.0
 
 # 3. Commit y push
 git add package.json CHANGELOG.md
@@ -50,10 +50,10 @@ git push origin v1.2.0
 
 ```bash
 # Con versión explícita
-pnpm run version:bump --version=1.2.0
+bun run version:bump --version=1.2.0
 
 # Desde el último tag (requiere tags en el repo)
-pnpm run version:bump
+bun run version:bump
 ```
 
 ### Qué hace
@@ -73,7 +73,7 @@ Antes:
 - Nueva funcionalidad X
 ```
 
-Después de `pnpm run version:bump --version=1.2.0`:
+Después de `bun run version:bump --version=1.2.0`:
 ```markdown
 ## [1.2.0] - 2026-09-03
 
