@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600">
+	<defs>
+		<linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+			<stop offset="0" stop-color="#013990" />
+			<stop offset="1" stop-color="#0e8f9c" />
+		</linearGradient>
+		<radialGradient id="sun" cx=".72" cy=".26" r=".3">
+			<stop offset="0" stop-color="#ffc46b" />
+			<stop offset="1" stop-color="#eb8e02" />
+		</radialGradient>
+		<pattern id="dots" width="30" height="30" patternUnits="userSpaceOnUse">
+			<circle cx="2" cy="2" r="2" fill="#ffffff" opacity=".06" />
+		</pattern>
+	</defs>
+	<rect width="800" height="600" fill="url(#bg)" />
+	<rect width="800" height="600" fill="url(#dots)" />
+	<circle cx="576" cy="156" r="66" fill="url(#sun)" opacity=".9" />
+	<g stroke="#bfeff4" stroke-width="4" fill="none" stroke-linecap="round" opacity=".55">
+		<path d="M-20 430q50-26 100 0t100 0 100 0 100 0 100 0 100 0 100 0 100 0" />
+		<path d="M-20 486q50-26 100 0t100 0 100 0 100 0 100 0 100 0 100 0 100 0" opacity=".7" />
+		<path d="M-20 542q50-26 100 0t100 0 100 0 100 0 100 0 100 0 100 0 100 0" opacity=".4" />
+	</g>
+	<g transform="translate(150 236)" fill="none" stroke="#ffffff" stroke-opacity=".6" stroke-width="6" stroke-linecap="round">
+		<path d="M0 130q6-66 10-104" />
+		<path d="M10 24q-44-26-70-8" />
+		<path d="M10 24q-6-46 22-58" />
+		<path d="M10 24q40-30 68-12" />
+		<path d="M10 24q52-6 62 22" />
+		<path d="M10 24q-52 4-58 34" />
+	</g>
+</svg>

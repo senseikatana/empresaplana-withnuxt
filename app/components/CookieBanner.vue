@@ -69,7 +69,7 @@ onUnmounted(() => {
 		<div class="max-w-container-max mx-auto glass-panel rounded-xl shadow-ambient-lg p-stack-md md:p-stack-lg flex flex-col md:flex-row items-start md:items-center gap-stack-md">
 			<p class="flex-1 font-body-md text-body-md text-on-surface">{{ t("legal.cookieBanner.intro") }}</p>
 			<div class="flex flex-col sm:flex-row gap-2 w-full md:w-auto">
-				<UButton class="bg-deep-navy text-on-primary font-button text-button px-6 py-3 rounded min-h-[48px] hover:opacity-90 transition-opacity" @click="storeConsent(true)">
+				<UButton class="bg-primary font-button text-button px-6 py-3 rounded min-h-[48px] hover:opacity-90 transition-opacity text-white" @click="storeConsent(true)">
 					{{ t("legal.cookieBanner.accept") }}
 				</UButton>
 				<UButton
@@ -93,7 +93,7 @@ onUnmounted(() => {
 	<!-- Settings modal -->
 	<div
 		v-if="showModal"
-		class="fixed inset-0 z-[60] flex items-center justify-center bg-inverse-surface/50 backdrop-blur-sm px-margin-mobile"
+		class="fixed inset-0 z-[60] flex items-center justify-center bg-black/50 backdrop-blur-sm px-margin-mobile"
 		role="dialog"
 		aria-modal="true"
 		:aria-label="t('legal.cookieBanner.privacyTitle')"
@@ -141,10 +141,10 @@ onUnmounted(() => {
 				>
 					{{ t("legal.cookieBanner.rejectAll") }}
 				</UButton>
-				<UButton class="bg-deep-navy text-on-primary font-button text-button px-5 py-3 rounded min-h-[48px] hover:opacity-90 transition-opacity" @click="storeConsent(true)">
+				<UButton class="bg-primary font-button text-button px-5 py-3 rounded min-h-[48px] hover:opacity-90 transition-opacity text-white" @click="storeConsent(true)">
 					{{ t("legal.cookieBanner.acceptAll") }}
 				</UButton>
-				<UButton class="bg-energetic-orange text-on-primary font-button text-button px-5 py-3 rounded min-h-[48px] hover:opacity-90 transition-opacity" @click="storeConsent(analyticsChecked)">
+				<UButton class="bg-energetic-orange font-button text-button px-5 py-3 rounded min-h-[48px] hover:opacity-90 transition-opacity text-white" @click="storeConsent(analyticsChecked)">
 					{{ t("legal.cookieBanner.save") }}
 				</UButton>
 			</div>

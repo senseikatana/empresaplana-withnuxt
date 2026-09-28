@@ -7,6 +7,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.2.0] - 2026-09-28
+
+### Added
+- Assets de marca: 9 placeholders SVG en `public/img/`, `thumbnail.jpg` (1200×630) para OG y favicon propio (`favicon.svg` + `favicon.ico` multi-tamaño) declarado en `nuxt.config.ts`.
+- SEO: `public/sitemap.xml` estático con hreflang (9 páginas públicas × 4 idiomas y `x-default`).
+- Enlace **Intranet** en la cabecera pública (escritorio y móvil) y en el pie, hacia `/dashboard`, traducido en ca/es/en/fr.
+- Perfil de usuario con **biografía** (280 caracteres) y **avatar** almacenado en la DB (migración InsForge `profile-avatar`: `bio`, `avatarData`, `avatarMime`), con vista previa y modal de confirmación.
+- Subida de avatar: `PUT /api/account/avatar` (sharp: auto-rotate, 500×500, JPEG; file-type: JPG/PNG/WebP ≤ 2 MB) y `GET /api/users/[id]/avatar` con ETag.
+- PWA de la intranet: `public/sw.js` reescrito con scope `/dashboard/` y registro mediante `app/plugins/pwa.client.ts`.
+
+### Changed
+- Dark mode: fondos y overlays de marca pasan de `deep-navy` a `primary` y `color-scheme` nativo para los controles del sistema.
+- Sesión (`/api/me`, `/api/account`): expone `hasAvatar` y `avatarVersion`; el `UserMenu` muestra el avatar real.
+- Imágenes placeholder alojadas en Google sustituidas por `AppPicture` y assets de marca (oficinas y servicios discrecionales); alts traducidos en ca/es/en/fr.
+- `manifest.webmanifest`: `lang` corregido a `ca` (default real del sitio).
+
+### Fixed
+- `UButton` con clases propias: el color de texto se coloca al final para que tw-merge no lo descarte (`CookieBanner`, formularios de presupuesto).
+- `AppPicture`: recuperación del 404 disparado antes de la hidratación y fallback en cascada foto → SVG → degradado.
+- Cerrar el modal de avatar con ESC o clic fuera limpia el selector y revoca el `blob:` (antes no se podía repetir con el mismo archivo).
+
+### Security
+- Subida de avatar endurecida: preflight de `Content-Length` (rechaza cuerpos grandes antes de buffear), rate-limit, `sharp` con `limitInputPixels` (25 MP) y timeout, errores 422 controlados y aplanado a blanco de PNG con transparencia.
+- Perfil: edición y avatar exigen `profile:edit` + email verificado; cambiar el correo resetea `emailVerified` y reenvía la verificación; el token de verificación se valida contra el email actual.
+- Cabeceras de seguridad (`nosniff`, `X-Frame-Options: DENY`, `Referrer-Policy`, HSTS) y purga de los cachés `plana-*` del service worker al cerrar sesión.
+- Accesos demo del login detrás de `NUXT_PUBLIC_DEMO_LOGIN`; eliminada la ruta dinámica `/sitemap.xml` duplicada.
+
 ## [1.1.0] - 2026-09-13
 
 ### Added

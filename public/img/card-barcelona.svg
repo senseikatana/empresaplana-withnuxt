@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600">
+	<defs>
+		<linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+			<stop offset="0" stop-color="#0b2a5e" />
+			<stop offset="1" stop-color="#013990" />
+		</linearGradient>
+		<radialGradient id="glow" cx=".78" cy=".2" r=".6">
+			<stop offset="0" stop-color="#13aeb8" stop-opacity=".45" />
+			<stop offset="1" stop-color="#13aeb8" stop-opacity="0" />
+		</radialGradient>
+		<pattern id="dots" width="30" height="30" patternUnits="userSpaceOnUse">
+			<circle cx="2" cy="2" r="2" fill="#ffffff" opacity=".06" />
+		</pattern>
+	</defs>
+	<rect width="800" height="600" fill="url(#bg)" />
+	<rect width="800" height="600" fill="url(#dots)" />
+	<rect width="800" height="600" fill="url(#glow)" />
+	<path d="M60 120C220 90 420 96 740 60" fill="none" stroke="#cfe6ff" stroke-opacity=".35" stroke-width="2.5" stroke-dasharray="2 12" stroke-linecap="round" />
+	<path d="M470 118l96 30-34 12 20 34-20 8-24-32-40 16-10-18 34-20z" fill="#ffffff" opacity=".55" />
+	<g fill="#0e2f6b" stroke="#cfe6ff" stroke-opacity=".5" stroke-width="3">
+		<path d="M300 470V300l-14-26 14-26-14-26 14-26V170h28v26l-14 26 14 26-14 26 14 26v26" fill="none" />
+		<path d="M360 470V330l12-22-12-22 12-22-12-22v-30h26v30l-12 22 12 22-12 22 12 22v100" fill="none" />
+		<path d="M420 470V300l-14-26 14-26-14-26 14-26V170h28v26l-14 26 14 26-14 26 14 26v26" fill="none" />
+	</g>
+	<rect x="120" y="430" width="70" height="170" opacity=".8" />
+	<rect x="200" y="390" width="52" height="210" opacity=".65" />
+	<rect x="470" y="410" width="90" height="190" opacity=".75" />
+	<rect x="572" y="370" width="60" height="230" opacity=".6" />
+	<rect x="644" y="430" width="84" height="170" opacity=".8" />
+	<g fill="#ffffff" opacity=".16">
+		<rect x="132" y="442" width="12" height="12" />
+		<rect x="156" y="442" width="12" height="12" />
+		<rect x="132" y="470" width="12" height="12" />
+		<rect x="482" y="424" width="12" height="12" />
+		<rect x="510" y="424" width="12" height="12" />
+		<rect x="482" y="452" width="12" height="12" />
+		<rect x="656" y="444" width="12" height="12" />
+		<rect x="682" y="444" width="12" height="12" />
+		<rect x="656" y="472" width="12" height="12" />
+	</g>
+</svg>

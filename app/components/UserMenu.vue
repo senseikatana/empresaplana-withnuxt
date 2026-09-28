@@ -19,7 +19,7 @@ const items = computed<DropdownMenuItem[][]>(() => [
 		{
 			type: "label",
 			label: user.value?.name ?? user.value?.username ?? "",
-			avatar: { alt: user.value?.name ?? "" },
+			avatar: { src: avatarSrc.value, alt: user.value?.name ?? "" },
 		},
 	],
 	[
@@ -79,6 +79,7 @@ const items = computed<DropdownMenuItem[][]>(() => [
 			icon: "i-lucide-log-out",
 			onSelect: async () => {
 				await $fetch("/api/auth/logout", { method: "POST" });
+				await purgePlanaCaches();
 				clear();
 				await navigateTo(localePath("/dashboard/login"));
 			},
@@ -94,6 +95,24 @@ const initials = computed(() =>
 		.join("")
 		.toUpperCase(),
 );
+
+const avatarSrc = computed(() =>
+	user.value?.hasAvatar
+		? `/api/users/${user.value.id}/avatar?v=${user.value.avatarVersion}`
+		: undefined,
+);
+
+// El SW cachea HTML del dashboard (network-first); al cerrar sesión hay que
+// purgar ese caché para no dejar datos personales en el navegador.
+async function purgePlanaCaches() {
+	if (!("caches" in window)) return;
+	const keys = await caches.keys();
+	await Promise.all(
+		keys
+			.filter((key) => key.startsWith("plana-"))
+			.map((key) => caches.delete(key)),
+	);
+}
 </script>
 
 <template>
@@ -106,7 +125,7 @@ const initials = computed(() =>
 	>
 		<UButton
 			:label="collapsed ? undefined : (user?.name ?? user?.username)"
-			:avatar="{ alt: user?.name ?? '', text: initials }"
+			:avatar="{ src: avatarSrc, alt: user?.name ?? '', text: initials }"
 			trailing-icon="i-lucide-chevrons-up-down"
 			color="neutral"
 			variant="ghost"

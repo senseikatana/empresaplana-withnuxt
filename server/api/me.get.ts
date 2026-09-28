@@ -15,6 +15,8 @@ export default defineEventHandler(async (event) => {
 			email: true,
 			role: true,
 			emailVerified: true,
+			avatarMime: true,
+			updatedAt: true,
 		},
 	});
 
@@ -23,5 +25,12 @@ export default defineEventHandler(async (event) => {
 		throw createError({ statusCode: 401, statusMessage: "Sessió invàlida" });
 	}
 
-	return { user };
+	const { avatarMime, updatedAt, ...rest } = user;
+	return {
+		user: {
+			...rest,
+			hasAvatar: Boolean(avatarMime),
+			avatarVersion: updatedAt.getTime(),
+		},
+	};
 });

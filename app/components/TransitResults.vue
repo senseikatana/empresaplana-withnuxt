@@ -29,7 +29,7 @@ function lineBadge(result: DirectResult): string {
 			<article v-for="(r, i) in props.results.direct" :key="`${r.lineId}-${r.departure}-${i}`" class="bg-surface-container-lowest rounded-xl border border-outline-variant/40 ambient-shadow overflow-hidden">
 				<div class="flex flex-col md:flex-row md:items-center gap-4 p-5">
 					<div class="flex items-center gap-3 md:w-56">
-						<span class="inline-flex items-center justify-center rounded-lg bg-deep-navy text-on-primary font-label-md text-label-md px-3 py-1.5 min-w-[52px]">{{ lineBadge(r) }}</span>
+						<span class="inline-flex items-center justify-center rounded-lg bg-primary text-on-primary font-label-md text-label-md px-3 py-1.5 min-w-[52px]">{{ lineBadge(r) }}</span>
 						<span class="font-body-md text-body-md text-on-surface-variant line-clamp-2">{{ r.lineName }}</span>
 					</div>
 					<div class="flex items-center gap-4 md:flex-1">
@@ -96,7 +96,7 @@ function lineBadge(result: DirectResult): string {
 						<span v-if="tr.zones">· {{ t("routes.results.zonesLabel") }}: {{ tr.zones }}</span>
 					</div>
 					<div v-for="(leg, li) in tr.legs" :key="li" class="flex flex-col md:flex-row md:items-center gap-3 border-l-4 border-coastal-teal pl-4">
-						<span class="inline-flex items-center justify-center rounded-lg bg-deep-navy text-on-primary font-label-md text-label-md px-3 py-1.5 min-w-[52px]">{{ lineBadge(leg) }}</span>
+						<span class="inline-flex items-center justify-center rounded-lg bg-primary text-on-primary font-label-md text-label-md px-3 py-1.5 min-w-[52px]">{{ lineBadge(leg) }}</span>
 						<span class="font-body-md text-body-md text-on-surface-variant md:w-72 line-clamp-1">{{ leg.lineName }}</span>
 						<span class="font-headline-md text-headline-md font-bold text-deep-navy">{{ leg.departure }} → {{ leg.arrival }}</span>
 						<span class="text-xs text-outline">{{ leg.originStop }} → {{ leg.destinationStop }}</span>

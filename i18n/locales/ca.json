@@ -10,7 +10,8 @@
 			"locations": "Localitzacions",
 			"downloads": "Descàrregues",
 			"contact": "Contacte",
-			"bookNow": "RESERVA ARA"
+			"bookNow": "RESERVA ARA",
+			"intranet": "Intranet"
 		},
 		"lang": {
 			"ca": "CA",
@@ -502,7 +503,19 @@
 			"notifications": "Avisos",
 			"currentRequired": "Cal la contrasenya actual per canviar el correu o la contrasenya",
 			"passwordMin": "Mínim 8 caràcters",
-			"currentHelp": "Només si canvies el correu o la contrasenya"
+			"currentHelp": "Només si canvies el correu o la contrasenya",
+			"avatar": "Foto de perfil",
+			"avatarHelp": "JPG, PNG o WebP. Màxim 2 MB.",
+			"avatarChoose": "Tria una imatge",
+			"avatarConfirmTitle": "Actualitzar la foto de perfil",
+			"avatarConfirmDesc": "Aquesta imatge substituirà la foto actual.",
+			"avatarConfirmOk": "Desa la foto",
+			"cancel": "Cancel·la",
+			"bio": "Biografia",
+			"bioHelp": "Breu descripció que es mostrarà al teu perfil.",
+			"avatarTypeError": "Format no permès. Fes servir JPG, PNG o WebP.",
+			"avatarSizeError": "La imatge supera els 2 MB.",
+			"avatarUploadError": "No s’ha pogut pujar la imatge."
 		},
 		"verify": {
 			"title": "Confirma el teu correu",
@@ -759,7 +772,8 @@
 		"experience": {
 			"title": "MÉS DE 60 ANYS",
 			"subtitle": "La nostra experiència ens avala. Contacta amb nosaltres per a qualsevol servei que necessitis."
-		}
+		},
+		"mapAlt": "Mapa de la xarxa d’oficines d’Empresa Plana"
 	},
 	"homeVariant1": {
 		"title": "Empresa Plana - Homepage",
@@ -932,7 +946,9 @@
 				"Oferim seguretat i confort. Comptem amb una flota de més de 600 autocars, formada per vehicles que compleixen amb les més exigents normatives en seguretat i també amb autocars adaptats a persones amb mobilitat reduïda.",
 				"Els nostres autocars porten integrada l'última tecnologia en control GPS i de navegació.",
 				"Els nostres conductors d'autobús compten amb una dilatada experiència en el transport de viatgers per carretera."
-			]
+			],
+			"driverAlt": "Conductor professional d’Empresa Plana",
+			"interiorAlt": "Interior d’un autocar d’Empresa Plana"
 		},
 		"services": {
 			"title": "Serveis per a cada necessitat",

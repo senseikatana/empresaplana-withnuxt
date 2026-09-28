@@ -21,8 +21,10 @@ useSeoMeta({
 	ogSiteName: "Empresa Plana",
 	ogType: "website",
 	ogLocale: () => ogLocale.value,
-	ogImage: "https://empresaplana.cat/img/thumbnail.png",
-	twitterCard: "summary",
+	ogImage: "https://empresaplana.cat/img/thumbnail.jpg",
+	ogImageWidth: 1200,
+	ogImageHeight: 630,
+	twitterCard: "summary_large_image",
 });
 </script>
 

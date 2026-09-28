@@ -39,6 +39,13 @@ const menuOpen = ref(false);
 	<!-- Utility bar -->
 	<div class="w-full bg-surface-container-lowest border-b border-surface-variant hidden md:block">
 		<div class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop py-2 flex justify-end items-center gap-gutter text-sm font-label-md text-on-surface-variant">
+			<a
+				class="flex items-center gap-1 hover:text-deep-navy transition-colors"
+				:href="localePath('/dashboard')"
+			>
+				<span class="material-symbols-outlined text-[18px]">admin_panel_settings</span>
+				{{ t("common.nav.intranet") }}
+			</a>
 			<div class="flex gap-2 items-center">
 				<a
 					v-for="l in locales"
@@ -142,6 +149,16 @@ const menuOpen = ref(false);
 						@click="menuOpen = false"
 					>
 						{{ t("common.nav.bookNow") }}
+					</a>
+				</li>
+				<li class="py-stack-sm border-t border-surface-variant">
+					<a
+						class="flex items-center gap-1 font-label-md text-label-md text-deep-navy"
+						:href="localePath('/dashboard')"
+						@click="menuOpen = false"
+					>
+						<span class="material-symbols-outlined text-[18px]">admin_panel_settings</span>
+						{{ t("common.nav.intranet") }}
 					</a>
 				</li>
 				<li class="flex items-center justify-between py-stack-sm border-t border-surface-variant">

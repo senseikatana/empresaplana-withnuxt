@@ -111,7 +111,7 @@ async function onSubmit(event: FormSubmitEvent<z.output<typeof schema>>) {
 <template>
 	<div>
 		<!-- Hero -->
-		<section class="bg-deep-navy text-on-primary relative overflow-hidden">
+		<section class="bg-primary text-on-primary relative overflow-hidden">
 			<div class="absolute -top-24 -right-24 w-96 h-96 bg-surface-tint rounded-full blur-3xl opacity-40 pointer-events-none"></div>
 			<div class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop py-stack-lg md:py-16 relative">
 				<p class="font-label-md text-label-md uppercase tracking-widest text-secondary-fixed mb-2">{{ t("discretionary.cta.areaTarragona") }}</p>
@@ -182,7 +182,7 @@ async function onSubmit(event: FormSubmitEvent<z.output<typeof schema>>) {
 					<UAlert v-if="error" color="error" variant="soft" :title="error" />
 
 					<div class="flex flex-wrap gap-3">
-						<UButton type="submit" :loading="pending" class="bg-energetic-orange text-on-primary font-semibold min-h-[48px]">
+						<UButton type="submit" :loading="pending" class="bg-energetic-orange font-semibold min-h-[48px] text-white">
 							{{ pick(presupuesto.contactSubmit, loc) }}
 						</UButton>
 						<UButton color="neutral" variant="outline" @click="form?.clear()">

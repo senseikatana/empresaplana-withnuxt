@@ -5,6 +5,8 @@ export type SessionUser = {
 	email: string;
 	role: string;
 	emailVerified: boolean;
+	hasAvatar: boolean;
+	avatarVersion: number;
 };
 
 /**

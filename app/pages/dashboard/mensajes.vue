@@ -180,7 +180,7 @@ onUnmounted(() => {
 							:class="[
 								'max-w-[75%] rounded-xl px-4 py-2',
 								isOwn(m.senderRole, m.senderId)
-									? 'self-end bg-deep-navy text-on-primary'
+									? 'self-end bg-primary text-on-primary'
 									: 'self-start bg-surface-container text-on-surface',
 							]"
 						>

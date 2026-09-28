@@ -182,7 +182,7 @@ const routes = computed(() => [
 			loading="eager"
 			fetchpriority="high"
 		/>
-		<div class="absolute inset-0 bg-gradient-to-b from-deep-navy/80 via-deep-navy/40 to-deep-navy/85" aria-hidden="true" />
+		<div class="absolute inset-0 bg-gradient-to-b from-primary/80 via-primary/40 to-primary/85" aria-hidden="true" />
 
 		<div class="relative z-10 w-full max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop pt-20 pb-6 text-center">
 			<span class="material-symbols-outlined text-secondary-fixed text-[40px] mb-2">directions_bus</span>
@@ -267,7 +267,7 @@ const routes = computed(() => [
 					<button
 						type="submit"
 						:disabled="!origin || !destination"
-						class="bg-deep-navy text-on-primary font-button text-button uppercase tracking-wide px-8 py-4 md:py-0 min-h-[56px] hover:bg-primary-container transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+						class="bg-primary text-on-primary font-button text-button uppercase tracking-wide px-8 py-4 md:py-0 min-h-[56px] hover:bg-primary-container transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
 					>
 						{{ b.search }}
 					</button>
@@ -321,7 +321,7 @@ const routes = computed(() => [
 	</section>
 
 	<!-- Airport Transfer Promo -->
-	<section class="w-full bg-deep-navy text-on-primary relative overflow-hidden">
+	<section class="w-full bg-primary text-on-primary relative overflow-hidden">
 		<div class="absolute top-0 right-0 w-64 h-64 bg-surface-tint rounded-full blur-3xl opacity-40 -translate-y-1/2 translate-x-1/2 pointer-events-none"></div>
 		<div class="max-w-container-max mx-auto md:px-margin-desktop px-margin-mobile py-stack-lg md:py-16 relative flex flex-col md:flex-row items-start md:items-center justify-between gap-stack-lg">
 			<div class="flex items-start gap-5">

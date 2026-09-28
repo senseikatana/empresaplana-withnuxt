@@ -1,7 +1,7 @@
 {
 	"name": "empresaplana-website",
 	"type": "module",
-	"version": "1.1.0",
+	"version": "1.2.0",
 	"engines": {
 		"node": ">=22.12.0"
 	},
@@ -56,12 +56,14 @@
 		"@tailwindcss/vite": "^4.3.3",
 		"ai": "^7.0.118",
 		"dotenv": "^17.4.2",
+		"file-type": "^22.1.1",
 		"googleapis": "^178.1.1",
 		"jose": "^6.2.12",
 		"katanakit-js": "^3.2.2",
 		"leaflet": "^1.9.4",
 		"nuxt": "^4.5.2",
 		"pg": "^8.23.0",
+		"sharp": "^0.35.5",
 		"tailwindcss": "^4.3.3",
 		"zod": "^4.6.2"
 	},

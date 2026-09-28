@@ -11,9 +11,9 @@ const { data: offices } = await useFetch("/api/offices");
 <template>
 	<div>
 		<!-- Hero -->
-		<section class="relative w-full h-[400px] md:h-[500px] bg-deep-navy flex items-center justify-center overflow-hidden">
+		<section class="relative w-full h-[400px] md:h-[500px] bg-primary flex items-center justify-center overflow-hidden">
 			<div class="absolute inset-0 z-0">
-				<img class="w-full h-full object-cover opacity-60 mix-blend-overlay" :alt="t('locations.hero.title')" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAQ66k6zbgB5Vgn8Hx9fGVwFHtK3EOPeLBG2Ss3MLMIOqZaSkkFadbrCUmoWzFVF5o83CuRNEHXrqS3NUJQjcHy3QdWOVbj1fSikfRprsEb4qwNLyxBW1qKzr7mrtPF989QMCAfxB-xb3d762CNT62ilPy99M9Fq7zzJkJuIyQ4_cYQITtVDDtZBJsynafq9jZVorRKhyCv3MCl0xWd_qDcvJ7vFUUGH-FOgu1EBImHD87C5AVE_KVX" />
+				<AppPicture name="hero-oficinas" :alt="t('locations.hero.title')" class="absolute inset-0 block" img-class="w-full h-full object-cover opacity-60 mix-blend-overlay" />
 			</div>
 			<div class="relative z-10 text-center px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto">
 				<h1 class="font-display-lg text-display-lg text-on-primary mb-stack-md">{{ t("locations.hero.title") }}</h1>
@@ -25,7 +25,7 @@ const { data: offices } = await useFetch("/api/offices");
 		<section class="relative max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop -mt-20 z-20 mb-stack-lg">
 			<div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter">
 				<div class="lg:col-span-8 bg-surface-container-lowest rounded-xl shadow-ambient overflow-hidden relative h-[400px] lg:h-auto min-h-[400px] border border-surface-variant">
-					<img loading="lazy" decoding="async" class="w-full h-full object-cover" alt="Red de oficinas Empresa Plana" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCZHw_XR0BwP0YOlStJLT07Jp0AG0k95rXPHKX6xj5y2k6DpQQm7lZnNdJQNNCyfdPbE884aNXiIDDN-R0vAa3soUdwrcnQ8A3Fg7yo-mZQXceLw95zwH_EbIrM-41WkGrMHKuyR-mZKRIxHmEHzwmAaVeD5DXGMkFKcowjofQSMKi8Ohj5Y5jukSTt2rB3r4iGIBuiEPQJgMO5mouwQQAu5PBjcust9EW3xg5Ivk4vhHK2VyWO4eXD" />
+					<AppPicture name="mapa-red" :alt="t('locations.mapAlt')" img-class="w-full h-full object-cover" />
 					<div class="absolute top-4 left-4 bg-surface-container-lowest/90 backdrop-blur-md px-4 py-2 rounded-full shadow-sm flex items-center gap-2">
 						<span class="material-symbols-outlined text-energetic-orange text-sm">my_location</span>
 						<span class="font-label-md text-label-md text-deep-navy">{{ t("locations.mapBadge") }}</span>

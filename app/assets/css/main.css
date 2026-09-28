@@ -17,6 +17,7 @@
 
 /* ── Brand custom properties (source of truth) ─────────────────────────── */
 :root {
+	color-scheme: light;
 	--brand-primary: #013990; /* deep-navy */
 	--brand-secondary: #13aeb8; /* coastal-teal */
 	--brand-tertiary: #eb8e02; /* energetic-orange (CTAs only) */
@@ -224,6 +225,7 @@
 
 /* ── Dark theme overrides ──────────────────────────────────────────────── */
 .dark {
+	color-scheme: dark;
 	--color-background: #0f1115;
 	--color-on-background: #e6e7e9;
 	--color-surface: #121418;

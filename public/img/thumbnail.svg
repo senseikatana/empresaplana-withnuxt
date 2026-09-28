@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630">
+	<defs>
+		<linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+			<stop offset="0" stop-color="#00173a" />
+			<stop offset=".6" stop-color="#013990" />
+			<stop offset="1" stop-color="#0b7f8c" />
+		</linearGradient>
+		<radialGradient id="glow" cx=".8" cy=".25" r=".6">
+			<stop offset="0" stop-color="#13aeb8" stop-opacity=".5" />
+			<stop offset="1" stop-color="#13aeb8" stop-opacity="0" />
+		</radialGradient>
+		<pattern id="dots" width="34" height="34" patternUnits="userSpaceOnUse">
+			<circle cx="2" cy="2" r="2" fill="#ffffff" opacity=".07" />
+		</pattern>
+	</defs>
+	<rect width="1200" height="630" fill="url(#bg)" />
+	<rect width="1200" height="630" fill="url(#dots)" />
+	<rect width="1200" height="630" fill="url(#glow)" />
+	<path d="M-40 520C260 470 420 360 640 372S1000 430 1240 240" fill="none" stroke="#8fe3ea" stroke-opacity=".45" stroke-width="4" stroke-dasharray="2 18" stroke-linecap="round" />
+	<g fill="#ffffff" fill-opacity=".8">
+		<circle cx="260" cy="470" r="8" />
+		<circle cx="640" cy="372" r="8" />
+		<circle cx="1010" cy="320" r="8" />
+	</g>
+	<g transform="translate(96 118)">
+		<rect width="184" height="184" rx="44" fill="#013990" stroke="#ffffff" stroke-opacity=".18" stroke-width="4" />
+		<g transform="translate(6.6 22.4) scale(.316)">
+			<path d="M120 100C120 66.86 146.86 40 180 40H300C366.27 40 420 93.73 420 160C420 226.27 366.27 280 300 280H220V360C220 382.09 202.09 400 180 400H140C128.95 400 120 391.05 120 380V100Z" fill="#ffffff" />
+			<circle cx="280" cy="160" r="45" fill="#EB8E02" />
+		</g>
+	</g>
+	<text x="330" y="230" font-family="DejaVu Sans, Verdana, sans-serif" font-size="72" font-weight="bold" fill="#ffffff">Empresa Plana</text>
+	<text x="332" y="292" font-family="DejaVu Sans, Verdana, sans-serif" font-size="30" fill="#bfeff4">Rutes, horaris i serveis discrecionals</text>
+	<text x="332" y="342" font-family="DejaVu Sans, Verdana, sans-serif" font-size="26" fill="#ffffff" opacity=".75">Costa Daurada · Tarragona · Barcelona</text>
+	<text x="96" y="560" font-family="DejaVu Sans, Verdana, sans-serif" font-size="30" font-weight="bold" fill="#ffffff" opacity=".9">empresaplana.cat</text>
+</svg>

@@ -200,7 +200,7 @@ const popularCards = popularLines.lines.map((line) => ({
 						<button
 							type="submit"
 							:disabled="!origin || !destination || searching"
-							class="bg-deep-navy text-on-primary font-button text-button uppercase tracking-wide px-8 py-4 md:py-0 min-h-[56px] hover:bg-primary-container transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+							class="bg-primary text-on-primary font-button text-button uppercase tracking-wide px-8 py-4 md:py-0 min-h-[56px] hover:bg-primary-container transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
 						>
 							{{ t("routes.search.submit") }}
 						</button>
@@ -272,7 +272,7 @@ const popularCards = popularLines.lines.map((line) => ({
 				</div>
 				<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-gutter">
 					<div v-for="line in popularCards" :key="line.name" class="bg-surface-container-lowest rounded-xl ambient-shadow border border-outline-variant/20 overflow-hidden flex flex-col group hover:-translate-y-1 hover:shadow-ambient-lg transition-all duration-300">
-						<div class="bg-deep-navy text-on-primary p-4 border-b border-outline-variant/10 flex items-center gap-3">
+						<div class="bg-primary text-on-primary p-4 border-b border-outline-variant/10 flex items-center gap-3">
 							<span class="material-symbols-outlined text-secondary-fixed">{{ line.icon }}</span>
 							<h3 class="font-headline-md text-headline-md text-[20px] leading-tight">{{ line.name }}</h3>
 						</div>

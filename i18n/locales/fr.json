@@ -10,7 +10,8 @@
 			"locations": "Localisations",
 			"downloads": "Téléchargements",
 			"contact": "Contact",
-			"bookNow": "RÉSERVER"
+			"bookNow": "RÉSERVER",
+			"intranet": "Intranet"
 		},
 		"lang": {
 			"ca": "CA",
@@ -502,7 +503,19 @@
 			"notifications": "Notifications",
 			"currentRequired": "Le mot de passe actuel est requis pour changer l'e-mail ou le mot de passe",
 			"passwordMin": "Au moins 8 caractères",
-			"currentHelp": "Uniquement en cas de changement d'e-mail ou de mot de passe"
+			"currentHelp": "Uniquement en cas de changement d'e-mail ou de mot de passe",
+			"avatar": "Photo de profil",
+			"avatarHelp": "JPG, PNG ou WebP. Max. 2 Mo.",
+			"avatarChoose": "Choisir une image",
+			"avatarConfirmTitle": "Mettre à jour la photo de profil",
+			"avatarConfirmDesc": "Cette image remplacera votre photo actuelle.",
+			"avatarConfirmOk": "Enregistrer la photo",
+			"cancel": "Annuler",
+			"bio": "Biographie",
+			"bioHelp": "Brève description affichée sur votre profil.",
+			"avatarTypeError": "Format non autorisé. Utilisez JPG, PNG ou WebP.",
+			"avatarSizeError": "L’image dépasse 2 Mo.",
+			"avatarUploadError": "Impossible de téléverser l’image."
 		},
 		"verify": {
 			"title": "Confirmez votre e-mail",
@@ -759,7 +772,8 @@
 		"experience": {
 			"title": "PLUS DE 60 ANS",
 			"subtitle": "Notre expérience est notre assurance. Contactez-nous pour tout service dont vous avez besoin."
-		}
+		},
+		"mapAlt": "Carte du réseau d’agences d’Empresa Plana"
 	},
 	"homeVariant1": {
 		"title": "Empresa Plana - Page d'accueil",
@@ -932,7 +946,9 @@
 				"Nous offrons sécurité et confort. Nous disposons d'une flotte de plus de 600 cars, composée de véhicules répondant aux normes les plus strictes en matière de sécurité, ainsi que de cars adaptés aux personnes à mobilité réduite.",
 				"Nos cars sont équipés de la dernière technologie de contrôle GPS et de navigation.",
 				"Nos chauffeurs de bus disposent d'une vaste expérience dans le transport de voyageurs par route."
-			]
+			],
+			"driverAlt": "Conducteur professionnel d’Empresa Plana",
+			"interiorAlt": "Intérieur d’un autocar Empresa Plana"
 		},
 		"services": {
 			"title": "Des services pour chaque besoin",

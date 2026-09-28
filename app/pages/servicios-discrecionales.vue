@@ -60,14 +60,15 @@ function hrefFor(key: string): string {
 <template>
 	<div>
 		<!-- Hero -->
-		<section class="relative w-full h-[500px] md:h-[600px] bg-deep-navy flex items-center">
+		<section class="relative w-full h-[500px] md:h-[600px] bg-primary flex items-center">
 			<div class="absolute inset-0 z-0">
-				<img
-					class="w-full h-full object-cover opacity-60"
+				<AppPicture
+					name="hero-discrecionales"
 					:alt="t('discretionary.hero.title')"
-					src="https://lh3.googleusercontent.com/aida-public/AB6AXuBRSV_uQ_hMRij0gBiydYU7JI8qQLaF9JFQCA2lezGnY4FVHWJFGcnV7LOvsXj0YyDlKD1WMoJsmns7rRXgcRF5oqGeKAHXTAF3czPcfFo3122cJr8FtxwE6mWJCbRwGptf9LRCwIdg3yrsAWTZysfMBdtfU6b19_yjSuxc7dCsMO0BOSf658kl4TTXWR1FgB9PqO0aJRN8X88dyv_oekWLAHXxiLKLI-2BTJIsuQWzVANvg5tAM3uI"
+					class="absolute inset-0 block"
+					img-class="w-full h-full object-cover opacity-70"
 				/>
-				<div class="absolute inset-0 bg-gradient-to-r from-deep-navy/90 to-transparent"></div>
+				<div class="absolute inset-0 bg-gradient-to-r from-primary/90 to-transparent"></div>
 			</div>
 			<div class="relative z-10 w-full px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto">
 				<div class="max-w-2xl text-on-primary">
@@ -92,8 +93,8 @@ function hrefFor(key: string): string {
 					</ul>
 				</div>
 				<div class="md:w-1/2 grid grid-cols-2 gap-4">
-					<img loading="lazy" decoding="async" class="rounded-xl w-full h-48 object-cover shadow-sm" alt="Conductor profesional Empresa Plana" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB4QJAB9ThJJ-3VbdbjWh1XWcNkLHxQl0XGi05aNrkcQv5Ez16YVgDw9wYLg8PIiFwPbLgfXdYGDbR8qLiJKhcA90wuRXijW9xBcAx7ji68SEA689ISdGrB3CQTC7eUtyK8i8pXwCIlSz94s9PCSHLtHDRsSEe2XHYjxnEDDeM1RD5OG5QuAe0YJpnYRNYcEmmnIqSOBxf9_CD3DDqfoPywYVpPlA_FpHF17VpSq3EFrITMdEcQGYsc" />
-					<img loading="lazy" decoding="async" class="rounded-xl w-full h-48 object-cover shadow-sm mt-8" alt="Interior de autocar Empresa Plana" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC9BGFDiq-ALhzllY4TcOk-GaWMOovbPUyLl1-pFpxeWbv1Cqj2fFFZOY8QnAJNNw6djscnTCL1I_i1S8D13Gyr0wSzeaKK7PH9Qn37XFTgUoxjoTD2Nxp2Kw8BuNl4AEcS2dynlBXxY68PUtDPATnZRYRa0XKvMNhPDpJVwEeg1rwQRV44zzBPvhA5u2j8po-XNimNQTrBZzEFFOSvgghERs1WdmPha6kZCT_IhWxd74v2E0U_02NZ" />
+					<AppPicture name="card-flota" :alt="t('discretionary.professionals.driverAlt')" img-class="rounded-xl w-full h-48 object-cover shadow-sm" />
+					<AppPicture name="card-interior" :alt="t('discretionary.professionals.interiorAlt')" img-class="rounded-xl w-full h-48 object-cover shadow-sm mt-8" />
 				</div>
 			</div>
 		</section>
@@ -126,7 +127,7 @@ function hrefFor(key: string): string {
 		</section>
 
 		<!-- CTA -->
-		<section id="contacto" class="relative py-20 bg-deep-navy text-on-primary overflow-hidden">
+		<section id="contacto" class="relative py-20 bg-primary text-on-primary overflow-hidden">
 			<div class="relative z-10 w-full px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto text-center">
 				<h2 class="font-display-lg text-display-lg md:text-[40px] md:leading-[48px] mb-4">{{ t("discretionary.cta.title") }}</h2>
 				<p class="font-body-lg text-body-lg text-primary-fixed-dim max-w-2xl mx-auto mb-10">{{ t("discretionary.cta.subtitle") }}</p>

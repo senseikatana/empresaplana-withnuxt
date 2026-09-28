@@ -49,7 +49,7 @@ const socialLinks = [
 </script>
 
 <template>
-	<footer id="contacto" class="bg-deep-navy text-on-primary w-full">
+	<footer id="contacto" class="bg-primary text-on-primary w-full">
 		<div class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop py-stack-lg grid grid-cols-1 md:grid-cols-12 gap-gutter border-b border-on-primary/20">
 			<div class="md:col-span-4 flex flex-col gap-4">
 				<a class="font-headline-md text-headline-md font-bold flex items-center gap-2" :href="localePath('/')">
@@ -114,6 +114,9 @@ const socialLinks = [
 			<div class="flex gap-6">
 				<a v-for="link in legalLinks" :key="link.href" class="hover:text-on-primary transition-colors" :href="localePath(link.href)">
 					{{ link.label }}
+				</a>
+				<a class="hover:text-on-primary transition-colors" :href="localePath('/dashboard')">
+					{{ t("common.nav.intranet") }}
 				</a>
 			</div>
 		</div>

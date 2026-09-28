@@ -33,8 +33,8 @@ bun run deploy:demo      # data + build estático + wrangler deploy (Cloudflare 
 - **`db:push`/`db:migrate` son stubs que fallan a propósito**: `prisma db push` dropeaba el dataset (no conoce las tablas creadas por InsForge).
 - **`tables.external` en `prisma.config.ts` (7 tablas: `transit_*`, `atm_*`, `payment_systems`) las blinda de Prisma Migrate. No quitar.**
 - Tras cualquier cambio de schema: `bun run db:diff` vacío. Si no, alinear DB/schema por migración InsForge (no por push).
-- **Ownership**: las tablas creadas por Prisma pertenecen a `postgres`; las migraciones corren como `project_admin`. Antes de alterar/dropear una tabla Prisma desde una migración: `ALTER TABLE ... OWNER TO project_admin;` (con `psql "$DATABASE_URL"`).
-- Migraciones aplicadas: `canonical-transit`, `fix-atm-fares-pk`, `assistant-chat`, `cms-tables`, `align-assistant-tables`, `drop-legacy-demo-tables`.
+- **Ownership**: las tablas creadas por Prisma pertenecen a `postgres`; las migraciones corren como `project_admin`. Antes de alterar/dropear una tabla Prisma desde una migración: `ALTER TABLE ... OWNER TO project_admin;` (con `psql "$DATABASE_URL"`). El runner de migraciones **no** puede cambiar ownership (falla con `must be owner of table`): el `ALTER ... OWNER` va aparte con `psql`, la migración solo contiene el DDL.
+- Migraciones aplicadas: `canonical-transit`, `fix-atm-fares-pk`, `assistant-chat`, `cms-tables`, `align-assistant-tables`, `drop-legacy-demo-tables`, `profile-avatar`.
 - Consultas puntuales: `npx -y @insforge/cli db query "SELECT ..."`.
 - La tabla `assistant_conversations.title` es `text` (no varchar) y los timestamps del asistente son `timestamptz(6)` a propósito.
 
@@ -73,6 +73,14 @@ npx -y @insforge/cli compute deploy . --name empresaplana --port 3000 --region f
 - Dashboard excluido por `nitro.prerender.ignore`; búsqueda 100% cliente sobre `public/data/transit.json`.
 - `wrangler.jsonc` es la config del Worker (assets + routes), no de Pages.
 
+## Assets de marca, favicon y PWA
+
+- **No hay fotos del cliente todavía**: `public/img/*.svg` son placeholders de marca (hero, cards, mapa). `AppPicture` intenta `.avif`/`.webp`/`.jpg` y cae al `.svg`; al llegar fotos reales usar los mismos nombres base y ganan solas.
+- `AppPicture` recupera el 404 disparado antes de la hidratación con un check en `onMounted` (`complete && naturalWidth === 0`); no quitar.
+- Favicons de marca (`public/favicon.svg` simplificado + `favicon.ico` multi-tamaño) declarados en `app/head.link` de `nuxt.config.ts`. `og:image` = `/img/thumbnail.jpg` (1200×630, se regenera desde `thumbnail.svg` con ImageMagick).
+- `public/sitemap.xml` estático (9 páginas públicas × 4 locales con hreflang). Si se agregan páginas, regenerarlo. La ruta dinámica `/sitemap.xml` se eliminó: el archivo público gana y también sirve al demo estático.
+- PWA "nativa": `public/sw.js` con scope `/dashboard/` (network-first shell, assets/fuentes SWR, nunca intercepta `/api` ni la web pública), registrado por `app/plugins/pwa.client.ts` (se salta en dev). El manifest apunta a `/dashboard/`.
+
 ## Dashboard / intranet
 
 - Layout `app/layouts/dashboard.vue` (sidebar + `UDashboardSearch` + `UDashboardPanel`/`Navbar` + `NotificationsSlideover` + `UserMenu`).
@@ -81,6 +89,11 @@ npx -y @insforge/cli compute deploy . --name empresaplana --port 3000 --region f
   2. Guard en el layout (capability de `route.meta.capability` → redirige a `/dashboard`).
   3. Endpoints con `requireCapability(...)`; sensibles con `{ requireVerified: true }`.
 - `/dashboard` = página de estadísticas (`/api/dashboard/summary`, rol-aware). Sesión con `useSession()`.
+- **Perfil con avatar** (`/dashboard/cliente/cuenta`): `bio` (280) + `avatarData`/`avatarMime` (bytes en la DB, sin filesystem efímero). `PUT /api/account/avatar` procesa con **sharp** (auto-rotate, flatten a blanco, 500×500 cover, JPEG; `limitInputPixels` 25 MP + timeout 10s) y valida con **file-type** (≤2 MB, JPG/PNG/WebP); preflight de `Content-Length` y rate-limit. `GET /api/users/[id]/avatar` sirve el binario con ETag/304. La sesión (`/api/me`) expone `hasAvatar`/`avatarVersion` para el `UserMenu` sin fetch extra. Editar perfil/subir avatar exige `profile:edit` + email verificado.
+
+
+
+
 - Registro → sesión inmediata + email de verificación (Resend si `RESEND_API_KEY`; si no, link en el log). Sin verificar solo `/dashboard/pending`.
 - Usuarios demo del seed: `cliente` / `trabajador` / `admin`, passkey `12345678`, `emailVerified: true`.
 
@@ -101,6 +114,11 @@ npx -y @insforge/cli compute deploy . --name empresaplana --port 3000 --region f
 - `.env` y `opencode.json` (API key InsForge) gitignored; no commitear.
 - `public/*_export.json` y `database-structure.png` siguen en el historial de git: evaluar `git filter-repo` si se exige confidencialidad total.
 - Rotar credenciales que pasen por chat/diálogos.
+- Uploads (avatar): magic bytes con `file-type`, preflight de `content-length` antes de buffear, `sharp` con `limitInputPixels` + timeout, rate-limit en memoria.
+- `server/middleware/security-headers.ts`: `nosniff`, `X-Frame-Options: DENY`, `Referrer-Policy`, HSTS.
+- Cambio de email → `emailVerified = false` + reenvío; el token de verificación se compara contra el email actual del usuario.
+- **Login demo**: `NUXT_PUBLIC_DEMO_LOGIN=false` oculta los accesos demo (portfolio: visibles). Las credenciales demo (`cliente`/`trabajador`/`admin` + `12345678`) están en el repo público y en la DB: rotarlas antes de un uso en producción real.
+- El SW de la intranet se registra por locale (`/dashboard`, `/es/dashboard`, …) y `UserMenu` purga los cachés `plana-*` al cerrar sesión.
 
 ## Gotchas
 
@@ -111,7 +129,10 @@ npx -y @insforge/cli compute deploy . --name empresaplana --port 3000 --region f
 - `.dockerignore` excluye `*.md` pero **re-incluye `CHANGELOG.md`** (`!CHANGELOG.md`); sin eso el build de Docker rompe en `/dashboard/novedades`.
 - `.dockerignore` debe mantener `data/` excluido (PDFs de 350MB+ en el contexto de build).
 - El sitio viejo separa una línea en varios `legacyId` por sentido/variante; el dataset los agrupa por nombre de PDF.
-- `public/manifest.webmanifest` y otros assets pueden tener `lang: es` hardcodeado (default real: `ca`).
+- `public/manifest.webmanifest`: `lang` es `ca` (default real del sitio).
+- Nuxt UI toma los colores de `app.config.ts` (`primary: navy`, `secondary: teal`): las escalas `--color-navy-*`/`--color-teal-*` viven en el `@theme` de `main.css`; no renombrar una sin la otra.
+- En `UButton` con clases propias, tw-merge descarta el color `text-*` si va antes de `text-button` (font-size custom): poner `text-white`/color al final de la clase.
+- `deep-navy` como **texto** se aclara en dark (`main.css`), pero como **fondo/overlay** siempre `primary` (estable en ambos modos).
 - `scripts/seed-transit.mjs` es idempotente (upserts) y borra/reinserta los viajes `source='search'`.
 
 ## InsForge

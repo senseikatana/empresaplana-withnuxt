@@ -5,6 +5,9 @@ import { z } from "zod";
 const { t } = useI18n();
 const localePath = useLocalePath();
 const route = useRoute();
+const {
+	public: { demoLogin },
+} = useRuntimeConfig();
 
 const schema = z.object({
 	username: z.string().min(3).max(60),
@@ -77,7 +80,7 @@ async function login(username: string, passkey: string) {
 				</UButton>
 			</UForm>
 
-			<div class="mt-6 border-t border-surface-variant pt-4">
+			<div v-if="demoLogin" class="mt-6 border-t border-surface-variant pt-4">
 				<p class="text-xs text-on-surface-variant mb-2">{{ t("app.auth.demoHint") }}</p>
 				<div class="flex flex-col gap-2">
 					<UButton

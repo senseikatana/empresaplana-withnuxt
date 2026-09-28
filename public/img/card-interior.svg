@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600">
+	<defs>
+		<linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+			<stop offset="0" stop-color="#013990" />
+			<stop offset="1" stop-color="#0b2a5e" />
+		</linearGradient>
+		<pattern id="dots" width="30" height="30" patternUnits="userSpaceOnUse">
+			<circle cx="2" cy="2" r="2" fill="#ffffff" opacity=".06" />
+		</pattern>
+	</defs>
+	<rect width="800" height="600" fill="url(#bg)" />
+	<rect width="800" height="600" fill="url(#dots)" />
+	<rect x="70" y="70" width="660" height="90" rx="18" fill="#bfeff4" opacity=".25" />
+	<g stroke="#bfeff4" stroke-opacity=".5" stroke-width="3">
+		<path d="M130 70v90M190 70v90M250 70v90M310 70v90M370 70v90M430 70v90M490 70v90M550 70v90M610 70v90M670 70v90" />
+	</g>
+	<g fill="#cfe6ff" opacity=".8">
+		<g transform="translate(180 320)"><rect width="70" height="76" rx="16" /><rect x="82" width="70" height="76" rx="16" /></g>
+		<g transform="translate(360 348) scale(.92)"><rect width="70" height="76" rx="16" /><rect x="82" width="70" height="76" rx="16" /></g>
+		<g transform="translate(530 372) scale(.84)"><rect width="70" height="76" rx="16" /><rect x="82" width="70" height="76" rx="16" /></g>
+	</g>
+	<g fill="#013990" opacity=".85">
+		<g transform="translate(180 396)"><rect x="-14" y="0" width="98" height="18" rx="9" /><rect x="68" y="0" width="98" height="18" rx="9" /></g>
+	</g>
+	<path d="M280 600V520Q400 480 520 520T800 500V600Z" fill="#ffffff" opacity=".06" />
+	<path d="M0 600V540Q160 500 320 540T640 520 800 530V600Z" fill="#ffffff" opacity=".04" />
+</svg>

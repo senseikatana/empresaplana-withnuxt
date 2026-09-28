@@ -10,7 +10,8 @@
 			"locations": "Locations",
 			"downloads": "Downloads",
 			"contact": "Contact",
-			"bookNow": "BOOK NOW"
+			"bookNow": "BOOK NOW",
+			"intranet": "Intranet"
 		},
 		"lang": {
 			"ca": "CA",
@@ -502,7 +503,19 @@
 			"notifications": "Notifications",
 			"currentRequired": "Current password is required to change email or password",
 			"passwordMin": "At least 8 characters",
-			"currentHelp": "Only when changing email or password"
+			"currentHelp": "Only when changing email or password",
+			"avatar": "Profile photo",
+			"avatarHelp": "JPG, PNG or WebP. Max 2 MB.",
+			"avatarChoose": "Choose image",
+			"avatarConfirmTitle": "Update profile photo",
+			"avatarConfirmDesc": "This image will replace your current photo.",
+			"avatarConfirmOk": "Save photo",
+			"cancel": "Cancel",
+			"bio": "Bio",
+			"bioHelp": "Short description shown on your profile.",
+			"avatarTypeError": "Unsupported format. Use JPG, PNG or WebP.",
+			"avatarSizeError": "The image exceeds 2 MB.",
+			"avatarUploadError": "Could not upload the image."
 		},
 		"verify": {
 			"title": "Confirm your email",
@@ -759,7 +772,8 @@
 		"experience": {
 			"title": "OVER 60 YEARS",
 			"subtitle": "Our experience speaks for itself. Contact us for any service you need."
-		}
+		},
+		"mapAlt": "Map of the Empresa Plana office network"
 	},
 	"homeVariant1": {
 		"title": "Empresa Plana - Homepage",
@@ -932,7 +946,9 @@
 				"We offer safety and comfort. We have a fleet of more than 600 coaches, made up of vehicles that comply with the most demanding safety regulations, as well as coaches adapted for people with reduced mobility.",
 				"Our coaches integrate the latest GPS control and navigation technology.",
 				"Our bus drivers have extensive experience in passenger road transport."
-			]
+			],
+			"driverAlt": "Empresa Plana professional driver",
+			"interiorAlt": "Interior of an Empresa Plana coach"
 		},
 		"services": {
 			"title": "Services for every need",

@@ -10,7 +10,8 @@
 			"locations": "Localizaciones",
 			"downloads": "Descargas",
 			"contact": "Contacto",
-			"bookNow": "RESERVAR AHORA"
+			"bookNow": "RESERVAR AHORA",
+			"intranet": "Intranet"
 		},
 		"lang": {
 			"ca": "CA",
@@ -502,7 +503,19 @@
 			"notifications": "Avisos",
 			"currentRequired": "Se requiere la contraseña actual para cambiar el correo o la contraseña",
 			"passwordMin": "Mínimo 8 caracteres",
-			"currentHelp": "Solo si cambias el correo o la contraseña"
+			"currentHelp": "Solo si cambias el correo o la contraseña",
+			"avatar": "Foto de perfil",
+			"avatarHelp": "JPG, PNG o WebP. Máximo 2 MB.",
+			"avatarChoose": "Elegir imagen",
+			"avatarConfirmTitle": "Actualizar la foto de perfil",
+			"avatarConfirmDesc": "Esta imagen sustituirá tu foto actual.",
+			"avatarConfirmOk": "Guardar foto",
+			"cancel": "Cancelar",
+			"bio": "Biografía",
+			"bioHelp": "Breve descripción que se mostrará en tu perfil.",
+			"avatarTypeError": "Formato no permitido. Usa JPG, PNG o WebP.",
+			"avatarSizeError": "La imagen supera los 2 MB.",
+			"avatarUploadError": "No se ha podido subir la imagen."
 		},
 		"verify": {
 			"title": "Confirma tu correo",
@@ -759,7 +772,8 @@
 		"experience": {
 			"title": "MÁS DE 60 AÑOS",
 			"subtitle": "Nuestra experiencia nos avala. Contacta con nosotros para cualquier servicio que necesites."
-		}
+		},
+		"mapAlt": "Mapa de la red de oficinas de Empresa Plana"
 	},
 	"homeVariant1": {
 		"title": "Empresa Plana - Homepage",
@@ -932,7 +946,9 @@
 				"Ofrecemos seguridad y confort. Contamos con una flota de más de 600 autocares, formada por vehículos que cumplen con las más exigentes normativas en seguridad y también con autocares adaptados a personas con movilidad reducida.",
 				"Nuestros autocares llevan integrada la última tecnología en control GPS y de navegación.",
 				"Nuestros conductores de autobús cuentan con una dilatada experiencia en el transporte de viajeros por carretera."
-			]
+			],
+			"driverAlt": "Conductor profesional de Empresa Plana",
+			"interiorAlt": "Interior de un autocar de Empresa Plana"
 		},
 		"services": {
 			"title": "Servicios para cada necesidad",

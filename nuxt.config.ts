@@ -13,6 +13,10 @@ export default defineNuxtConfig({
 	runtimeConfig: {
 		public: {
 			staticDemo: process.env.NUXT_PUBLIC_STATIC_DEMO === "true",
+			// Accesos demo del login de la intranet. Por defecto visibles
+			// (portfolio/demo); poner NUXT_PUBLIC_DEMO_LOGIN=false en producción
+			// real para ocultarlos.
+			demoLogin: process.env.NUXT_PUBLIC_DEMO_LOGIN !== "false",
 		},
 	},
 	colorMode: {
@@ -49,6 +53,20 @@ export default defineNuxtConfig({
 					href: "https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap",
 				},
 				{ rel: "manifest", href: "/manifest.webmanifest" },
+				{ rel: "icon", type: "image/svg+xml", href: "/favicon.svg" },
+				{
+					rel: "icon",
+					type: "image/x-icon",
+					href: "/favicon.ico",
+					sizes: "any",
+				},
+				{
+					rel: "icon",
+					type: "image/png",
+					href: "/app-icons/icon-192.png",
+					sizes: "192x192",
+				},
+				{ rel: "apple-touch-icon", href: "/app-icons/apple-touch-icon.png" },
 			],
 		},
 	},
