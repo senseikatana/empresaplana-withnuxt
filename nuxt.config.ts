@@ -9,8 +9,16 @@ export default defineNuxtConfig({
 		"@nuxtjs/i18n",
 		"@nuxtjs/color-mode",
 		"@comark/nuxt",
+		"nuxt-auth-utils",
 	],
 	runtimeConfig: {
+		// Cookie de sesión sellada (h3 useSession) de `nuxt-auth-utils`.
+		// Reutiliza AUTH_SECRET para no rotar dos secretos en el despliegue.
+		// h3 exige 32 caracteres mínimo.
+		session: {
+			password: process.env.AUTH_SECRET ?? "",
+			maxAge: 60 * 60 * 24 * 7,
+		},
 		public: {
 			staticDemo: process.env.NUXT_PUBLIC_STATIC_DEMO === "true",
 			// Origen de la app con servidor (insforge compute). El demo estático

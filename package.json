@@ -62,6 +62,7 @@
 		"katanakit-js": "^3.2.2",
 		"leaflet": "^1.9.4",
 		"nuxt": "^4.5.2",
+		"nuxt-auth-utils": "^0.5.30",
 		"pg": "^8.23.0",
 		"sharp": "^0.35.5",
 		"tailwindcss": "^4.3.3",

@@ -1,6 +1,6 @@
-import { clearSessionCookie } from "../../utils/auth";
+import { clearSessionUser } from "../../utils/auth";
 
-export default defineEventHandler((event) => {
-	clearSessionCookie(event);
+export default defineEventHandler(async (event) => {
+	await clearSessionUser(event);
 	return { ok: true };
 });

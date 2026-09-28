@@ -1,5 +1,3 @@
-import { jwtVerify } from "jose";
-import { isRole } from "#shared/acl";
 import type { ChatSession } from "../utils/chat";
 import {
 	canAccessConversation,
@@ -7,53 +5,16 @@ import {
 	ensureParticipant,
 } from "../utils/chat";
 
-const ISSUER = "empresaplana";
-
-async function sessionFromUpgrade(
-	headers: Headers,
-): Promise<ChatSession | null> {
-	const cookie = headers.get("cookie") ?? "";
-	const token = getCookieValue(cookie, "ep_session");
-	if (!token) return null;
-
-	const secret = process.env.AUTH_SECRET;
-	if (!secret) return null;
-
-	try {
-		const { payload } = await jwtVerify(
-			token,
-			new TextEncoder().encode(secret),
-			{
-				issuer: ISSUER,
-			},
-		);
-		const id = Number(payload.sub);
-		if (!Number.isInteger(id) || typeof payload.username !== "string")
-			return null;
-		if (!isRole(payload.role)) return null;
-		return { id, username: payload.username, role: payload.role };
-	} catch {
-		return null;
-	}
-}
-
-function getCookieValue(
-	cookieHeader: string,
-	name: string,
-): string | undefined {
-	for (const part of cookieHeader.split(";")) {
-		const [key, ...rest] = part.trim().split("=");
-		if (key === name) return rest.join("=");
-	}
-	return undefined;
-}
-
 export default defineWebSocketHandler({
+	// `requireUserSession` acepta el Request del upgrade y tira 401 sin sesión,
+	// así que ya no hace falta parsear la cookie ni verificar el JWT a mano.
 	async upgrade(request) {
-		const session = await sessionFromUpgrade(request.headers);
-		if (!session) {
-			throw new Error("No autenticat");
-		}
+		const { user } = await requireUserSession(request);
+		const session: ChatSession = {
+			id: user.id,
+			username: user.username,
+			role: user.role,
+		};
 		(
 			request as unknown as { context: Record<string, unknown> }
 		).context.session = session;

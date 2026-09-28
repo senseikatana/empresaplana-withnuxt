@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { setSessionCookie, signSessionToken } from "../../utils/auth";
+import { setSessionUser } from "../../utils/auth";
 import { hashPasskey } from "../../utils/passkey";
 import { sendVerificationEmail } from "../../utils/verification";
 
@@ -51,12 +51,13 @@ export default defineEventHandler(async (event) => {
 		},
 	});
 
-	const token = await signSessionToken({
+	// El registro nunca acepta un rol del cliente: siempre `client`. Los roles
+	// privilegiados se asignan aparte, tras verificar el email.
+	await setSessionUser(event, {
 		id: user.id,
 		username: user.username,
 		role: "client",
 	});
-	setSessionCookie(event, token);
 
 	// La verificación de email nunca bloquea el registro: si falla el envío,
 	// el usuario puede reenviarla desde /dashboard/pending.

@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { isRole } from "#shared/acl";
-import { setSessionCookie, signSessionToken } from "../../utils/auth";
+import { setSessionUser } from "../../utils/auth";
 import { createLogger } from "../../utils/logger";
 import { verifyPasskey } from "../../utils/passkey";
 
@@ -30,12 +30,11 @@ export default defineEventHandler(async (event) => {
 		});
 	}
 
-	const token = await signSessionToken({
+	await setSessionUser(event, {
 		id: user.id,
 		username: user.username,
 		role: user.role,
 	});
-	setSessionCookie(event, token);
 	log.info("Login successful", { userId: user.id, role: user.role });
 
 	return {

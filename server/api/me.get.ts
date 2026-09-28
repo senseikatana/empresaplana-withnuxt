@@ -1,4 +1,4 @@
-import { clearSessionCookie, getSessionUser } from "../utils/auth";
+import { clearSessionUser, getSessionUser } from "../utils/auth";
 
 export default defineEventHandler(async (event) => {
 	const session = await getSessionUser(event);
@@ -21,7 +21,7 @@ export default defineEventHandler(async (event) => {
 	});
 
 	if (!user) {
-		clearSessionCookie(event);
+		await clearSessionUser(event);
 		throw createError({ statusCode: 401, statusMessage: "Sessió invàlida" });
 	}
 
