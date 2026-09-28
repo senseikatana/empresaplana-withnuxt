@@ -16,6 +16,7 @@ const serviceLinks = computed(() => [
 		label: t("homeVariant2.nav.privateServices"),
 	},
 	{ href: "/donde-estamos", label: t("homeVariant2.nav.aboutUs") },
+	{ href: "/releases", label: t("releases.nav") },
 ]);
 
 const legalLinks = computed(() => [

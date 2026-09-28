@@ -4,6 +4,11 @@ export default defineNuxtConfig({
 	compatibilityDate: "2026-09-13",
 	devtools: { enabled: true },
 	modules: ["@nuxt/ui", "@nuxt/fonts", "@nuxtjs/i18n", "@nuxtjs/color-mode"],
+	runtimeConfig: {
+		public: {
+			staticDemo: process.env.NUXT_PUBLIC_STATIC_DEMO === "true",
+		},
+	},
 	colorMode: {
 		preference: "system",
 		fallback: "light",
@@ -55,12 +60,29 @@ export default defineNuxtConfig({
 		],
 	},
 	nitro: {
-		// Default = Node (Render). Override with NITRO_PRESET=cloudflare_pages
-		// once Prisma ships a Workers-compatible build (issue #28657).
-		preset: process.env.NITRO_PRESET || "node_server",
+		// Default = Node (insforge compute). Static demo build uses the static preset.
+		preset:
+			process.env.NITRO_PRESET ||
+			(process.env.NUXT_PUBLIC_STATIC_DEMO === "true" ? "static" : "node_server"),
 		experimental: {
 			websocket: true,
 		},
+		...(process.env.NUXT_PUBLIC_STATIC_DEMO === "true"
+			? {
+					prerender: {
+						ignore: [
+							"/dashboard",
+							"/dashboard/**",
+							"/es/dashboard",
+							"/es/dashboard/**",
+							"/en/dashboard",
+							"/en/dashboard/**",
+							"/fr/dashboard",
+							"/fr/dashboard/**",
+						],
+					},
+				}
+			: {}),
 		alias: {
 			"pg-native": fileURLToPath(
 				new URL("./server/utils/pg-native-stub.ts", import.meta.url),

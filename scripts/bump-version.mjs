@@ -44,23 +44,27 @@ if (pkgNext !== pkgText) {
 	changed.push("package.json");
 }
 
-// CHANGELOG.md — promote the [Unreleased] section to the new version.
+// CHANGELOG.md — insert a new version section right after the header.
+// No `[Unreleased]` section by design: write the notes directly under the new version.
 const changelogPath = `${ROOT}CHANGELOG.md`;
-const changelogText = readFileSync(changelogPath, "utf8");
+let changelogText = readFileSync(changelogPath, "utf8");
 const today = new Date().toISOString().slice(0, 10);
-const changelogNext = changelogText.replace(
-	"## [Unreleased]",
-	`## [${version}] - ${today}`,
-);
-if (changelogNext !== changelogText) {
-	writeFileSync(changelogPath, changelogNext);
-	changed.push("CHANGELOG.md");
+
+if (new RegExp(`^##\\s+\\[${version.replace(/\./g, "\\.")}\\]`, "m").test(changelogText)) {
+	console.warn(`CHANGELOG.md already has an entry for ${version}; skipped.`);
 } else {
-	console.warn("No `## [Unreleased]` heading found in CHANGELOG.md; skipped.");
+	const marker = "---\n\n";
+	const markerIndex = changelogText.indexOf(marker);
+	const insertAt = markerIndex === -1 ? 0 : markerIndex + marker.length;
+	const section = `## [${version}] - ${today}\n\n### Added\n\n### Changed\n\n### Fixed\n\n`;
+	changelogText =
+		changelogText.slice(0, insertAt) + section + changelogText.slice(insertAt);
+	writeFileSync(changelogPath, changelogText);
+	changed.push("CHANGELOG.md");
 }
 
 console.log(
 	changed.length
-		? `Version bumped to ${version} in ${changed.join(", ")}.`
+		? `Version bumped to ${version} in ${changed.join(", ")}.\nNext: write the notes under "## [${version}]", commit and push the tag (git tag v${version} && git push origin v${version}).`
 		: `Nothing to change for version ${version}.`,
 );

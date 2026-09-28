@@ -57,6 +57,19 @@ npx -y @insforge/cli compute deploy . --name empresaplana --port 3000 --region f
 - Prisma **no corre en Cloudflare Workers** (query compiler WASM, issues #28657/#29660): por eso el runtime es un contenedor Node en InsForge compute. Cloudflare solo para R2.
 - `fly.toml` es autogenerado por el CLI (no commitear su `app` id; el archivo se puede regenerar).
 
+## Demo portfolio — Cloudflare Pages (estático)
+
+- Proyecto Pages `empresaplana-demo` → `https://empresaplana-demo.pages.dev` (dominio `empresaplana.senseikatana.com` asociado; falta el CNAME en la zona).
+- Modo estático: `NUXT_PUBLIC_STATIC_DEMO=true` → `nuxt generate` con búsqueda 100% cliente sobre `public/data/transit.json` (misma lógica que la API, `shared/utils/transit.ts`).
+- Scripts: `pnpm demo:data` (exporta el dataset), `pnpm demo:build`, `pnpm deploy:demo` (data + build + `wrangler pages deploy`).
+- `wrangler.jsonc` es la config del proyecto Pages (no es un Worker).
+
+## Releases / Novedades
+
+- Página `/releases` (label localizado: Novetats/Novedades/What's new/Nouveautés) que parsea `CHANGELOG.md` y enlaza cada versión a la GitHub Release.
+- `pnpm release:bump --version=x.y.z` inserta `## [x.y.z] - fecha` al tope del CHANGELOG (sin sección `[Unreleased]`) y actualiza `package.json`.
+- `.github/workflows/release.yml`: al push de un tag `v*` crea/actualiza la GitHub Release con las notas del CHANGELOG.
+
 ## Seguridad
 
 - `.env` (real) y `opencode.json` (contiene la API key de InsForge) están gitignored. No commitear.

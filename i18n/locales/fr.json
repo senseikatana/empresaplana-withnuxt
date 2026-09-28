@@ -1135,5 +1135,29 @@
 			"submit": "Envoyer l'évaluation",
 			"thanks": "Merci pour votre évaluation !"
 		}
+	},
+	"homeSearch": {
+		"title": "Trouvez votre ligne",
+		"subtitle": "Horaires, arrêts et tarifs sur tout le réseau de la Costa Daurada.",
+		"tabRegular": "Lignes régulières",
+		"tabTransfers": "Transferts",
+		"oneWay": "Aller",
+		"roundTrip": "Aller-retour",
+		"returnLabel": "Retour",
+		"swapLabel": "Inverser origine et destination",
+		"tripLabel": "Trajet"
+	},
+	"releases": {
+		"nav": "Nouveautés",
+		"title": "Nouveautés",
+		"subtitle": "Changements et améliorations du projet, version par version.",
+		"added": "Ajouté",
+		"changed": "Modifié",
+		"fixed": "Corrigé",
+		"removed": "Supprimé",
+		"viewOnGithub": "Voir sur GitHub",
+		"tag": "Version",
+		"empty": "Aucune version publiée pour le moment.",
+		"source": "Généré automatiquement à partir de CHANGELOG.md et des releases GitHub."
 	}
 }

@@ -8,13 +8,17 @@ import pg from "pg";
 const ROOT = path.resolve(import.meta.dirname, "..");
 const data = (rel) => JSON.parse(readFileSync(path.join(ROOT, rel), "utf8"));
 
-const lines = data("data/routes/lines-v2.json");
-const trips = data("data/routes/trips-v2.json");
+const lines = data("data/routes/lines-v3.json");
+const trips = data("data/routes/trips-v3.json");
 const stops = data("data/routes/stops-v2.json");
 const zonesRaw = data("data/fares/atm-zones.json");
 const faresRaw = data("data/fares/atm-fares.json");
 
-const REFERENCE_DATE = "2026-09-28";
+const REFERENCE_DATES = {
+	feiners: "2026-09-28",
+	dissabtes: "2026-10-03",
+	diumenges: "2026-10-04",
+};
 
 const norm = (s) =>
   s
@@ -153,6 +157,9 @@ async function main() {
       `ON CONFLICT (line_id, direction, seq) DO UPDATE SET stop_id=EXCLUDED.stop_id`,
     );
 
+    // Replace the search-sourced schedule so removed departures do not linger.
+    await client.query("DELETE FROM public.transit_trips WHERE source = 'search'");
+
     await insertBatch(
       client,
       "public.transit_trips",
@@ -160,12 +167,12 @@ async function main() {
       trips.map((t) => [
         t.lineId,
         t.direction,
-        "feiners",
+        t.dayType ?? "feiners",
         t.departure,
         t.arrival,
         JSON.stringify(t.stops),
         "search",
-        REFERENCE_DATE,
+        REFERENCE_DATES[t.dayType ?? "feiners"] ?? REFERENCE_DATES.feiners,
       ]),
       `ON CONFLICT (line_id, direction, day_type, departure, arrival) DO UPDATE
        SET stops=EXCLUDED.stops, source=EXCLUDED.source, reference_date=EXCLUDED.reference_date`,

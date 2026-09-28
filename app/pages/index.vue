@@ -24,6 +24,54 @@ const b = computed(() => ({
 	search: t("homeVariant2.booking.search"),
 }));
 
+const hs = computed(() => ({
+	title: t("homeSearch.title"),
+	subtitle: t("homeSearch.subtitle"),
+	tabRegular: t("homeSearch.tabRegular"),
+	tabTransfers: t("homeSearch.tabTransfers"),
+	tripLabel: t("homeSearch.tripLabel"),
+	oneWay: t("homeSearch.oneWay"),
+	roundTrip: t("homeSearch.roundTrip"),
+	returnLabel: t("homeSearch.returnLabel"),
+	swapLabel: t("homeSearch.swapLabel"),
+}));
+
+const { localities, loadLocalities } = useTransitData();
+const origin = ref("");
+const destination = ref("");
+const travelDate = ref(new Date().toISOString().slice(0, 10));
+const returnDate = ref("");
+const isRoundTrip = ref(false);
+const passengers = ref(1);
+const timeRange = ref("");
+const timeRanges = useTimeRanges();
+
+onMounted(() => {
+	void loadLocalities();
+});
+
+function swapPlaces() {
+	const tmp = origin.value;
+	origin.value = destination.value;
+	destination.value = tmp;
+}
+
+async function submitSearch() {
+	if (!origin.value || !destination.value) return;
+	await navigateTo({
+		path: localePath("/rutas-horarios"),
+		query: {
+			from: origin.value,
+			to: destination.value,
+			...(travelDate.value ? { date: travelDate.value } : {}),
+			...(isRoundTrip.value && returnDate.value
+				? { return: returnDate.value }
+				: {}),
+			...(timeRange.value ? { time: timeRange.value } : {}),
+		},
+	});
+}
+
 const r = computed(() => ({
 	title: t("homeVariant2.routes.title"),
 	startingFrom: t("homeVariant2.routes.startingFrom"),
@@ -108,84 +156,122 @@ const routes = computed(() => [
 	{
 		name: r.value.cards.barcelona.name,
 		desc: r.value.cards.barcelona.desc,
-		image:
-			"https://lh3.googleusercontent.com/aida-public/AB6AXuDc0qKrqJ33N7LG5LORztZfMfQwjUjfqP2_tOcwbTF8KTqO5nBvQCnpRnNc5JMt5DYnqOXS0hd1GVYpEE_WJH-4a7nvfDcQErAIi4f9FOKmnwn8nENXanEMg-QRpUoFLt4E--dnlAnQ70o59DA9Y55PDD6Y2RCWGG_1WWeRv9-GhaDpPi8XW72l4SXj6gNeYx5nbU46NCa1LRGiigltuCIN5NYIUO4x1p6KFRy52hoT8iS6q69qPOhE",
+		image: "card-barcelona",
 	},
 	{
 		name: r.value.cards.salou.name,
 		desc: r.value.cards.salou.desc,
-		image:
-			"https://lh3.googleusercontent.com/aida-public/AB6AXuCS_Y9gPdjXrImUXZ65N5l76nPP7REWGf_VX9OfqxkeKHgxetcQcDGLUDD6Iv9niiV9-dXPcKnQHZiTPpQhExB1wXFH-bWHEY3OMeMmLo14k9d8hJ4lHs3eKUyCvAuFH2Ij0nsCgDXQhmrd3TTLkR_KzXlKD1mk3cY9al0ZH2P38b640MFuQPzVHPSGSFBd4svdCX-nM1TXb0t-JQdkq8BuyuOHxeoVSscAtXtPvDkCsZmcwpfKurFM",
+		image: "card-salou",
 	},
 	{
 		name: r.value.cards.tarragona.name,
 		desc: r.value.cards.tarragona.desc,
-		image:
-			"https://lh3.googleusercontent.com/aida-public/AB6AXuALCTStN1KjKoERi_amy7j_4oDqH_zKta9y-6njpzTeQLcnGGa9bHoIIBTHSl83I8IvImB6EklI4mcgtLkc9PomRpMBzjilrxBjOd2dM67-vTc44k49lIWtM7l0GLP8o_8h0YsnBsskph1Pm5tUw28j2Z9BLwwonwsKcJiTroFWeQ-PqNy6bbchWNmnCMsKOlphHAljt3BmAoelIhxN3DvyuYMyAZCc5Y8xfMUSSqatmt9eOzSAnhhI",
+		image: "card-tarragona",
 	},
 ]);
-
-const inputClass =
-	"w-full pl-10 pr-4 py-3 rounded border border-surface-variant focus:border-coastal-teal focus:ring-1 focus:ring-coastal-teal outline-none font-body-md text-on-surface transition-colors bg-surface-container-lowest";
 </script>
 
 <template>
-	<!-- Split Hero Section -->
-	<section class="max-w-container-max mx-auto md:px-margin-desktop px-margin-mobile py-stack-lg">
-		<div class="flex flex-col md:flex-row gap-gutter bg-surface-container-lowest rounded-xl overflow-hidden shadow-ambient">
-			<!-- Booking Widget (Left) -->
-			<div class="w-full md:w-5/12 p-8 flex flex-col justify-center">
-				<div class="flex gap-4 mb-8 border-b border-surface-variant">
-					<button class="pb-2 border-b-2 border-deep-navy text-deep-navy font-label-md text-label-md font-bold">{{ b.tabs.booking }}</button>
-					<button class="pb-2 border-b-2 border-transparent text-on-surface-variant hover:text-deep-navy font-label-md text-label-md">{{ b.tabs.destination }}</button>
-					<button class="pb-2 border-b-2 border-transparent text-on-surface-variant hover:text-deep-navy font-label-md text-label-md">{{ b.tabs.passengers }}</button>
+	<!-- Hero + Search -->
+	<section class="relative w-full min-h-[600px] md:min-h-[660px] flex flex-col justify-end overflow-hidden">
+		<AppPicture
+			name="hero-home"
+			alt=""
+			class="absolute inset-0 block"
+			img-class="absolute inset-0 w-full h-full object-cover"
+			loading="eager"
+			fetchpriority="high"
+		/>
+		<div class="absolute inset-0 bg-gradient-to-b from-deep-navy/80 via-deep-navy/40 to-deep-navy/85" aria-hidden="true" />
+
+		<div class="relative z-10 w-full max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop pt-20 pb-6 text-center">
+			<span class="material-symbols-outlined text-secondary-fixed text-[40px] mb-2">directions_bus</span>
+			<h1 class="font-display-lg text-display-lg md:text-[56px] leading-tight font-bold text-on-primary drop-shadow-md">{{ hs.title }}</h1>
+			<p class="font-body-lg text-body-lg text-on-primary/90 mt-3 max-w-2xl mx-auto">{{ hs.subtitle }}</p>
+		</div>
+
+		<div class="relative z-10 w-full max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop pb-12">
+			<div class="bg-surface-container-lowest rounded-lg shadow-ambient-lg border border-outline-variant/30">
+				<div class="flex items-center gap-1 px-2 border-b border-outline-variant/40">
+					<button type="button" class="flex items-center gap-2 px-4 py-3 font-label-md text-label-md text-deep-navy border-b-2 border-coastal-teal">
+						<span class="material-symbols-outlined text-[18px]">directions_bus</span>
+						{{ hs.tabRegular }}
+					</button>
+					<a class="flex items-center gap-2 px-4 py-3 font-label-md text-label-md text-on-surface-variant hover:text-deep-navy transition-colors" href="https://www.busplana.com/" target="_blank" rel="noopener noreferrer">
+						<span class="material-symbols-outlined text-[18px]">flight_takeoff</span>
+						{{ hs.tabTransfers }}
+					</a>
 				</div>
-				<form class="flex flex-col gap-stack-md" :action="`${localePath('/rutas-horarios')}#results`" method="get">
-					<div class="flex flex-col gap-2">
-						<label class="font-label-md text-label-md text-on-surface-variant" for="home-origin">{{ b.origin }}</label>
-						<div class="relative">
-							<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline">location_on</span>
-							<input id="home-origin" :class="inputClass" :placeholder="b.originPlaceholder" type="text" name="from" />
+
+				<form class="flex flex-col md:flex-row md:items-stretch" @submit.prevent="submitSearch">
+					<div class="relative flex-1 border-b md:border-b-0 md:border-r border-outline-variant/40 px-4 py-3">
+						<label class="block text-[11px] uppercase tracking-wider text-outline mb-1" for="home-origin">{{ b.origin }}</label>
+						<select id="home-origin" v-model="origin" class="w-full appearance-none bg-transparent font-body-md text-body-md text-on-surface outline-none pr-6 cursor-pointer">
+							<option value="" disabled>{{ b.originPlaceholder }}</option>
+							<option v-for="town in localities" :key="town" :value="town">{{ town }}</option>
+						</select>
+						<span class="material-symbols-outlined absolute right-3 bottom-3 text-outline pointer-events-none text-[20px]">expand_more</span>
+						<button
+							type="button"
+							class="hidden md:flex absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/2 z-10 w-9 h-9 rounded-full bg-surface-container-lowest border border-outline-variant shadow-sm items-center justify-center hover:bg-surface-container-low transition-colors"
+							:aria-label="hs.swapLabel"
+							:title="hs.swapLabel"
+							@click="swapPlaces"
+						>
+							<span class="material-symbols-outlined text-[18px] text-deep-navy">swap_horiz</span>
+						</button>
+					</div>
+					<div class="relative flex-1 border-b md:border-b-0 md:border-r border-outline-variant/40 px-4 py-3">
+						<label class="block text-[11px] uppercase tracking-wider text-outline mb-1" for="home-destination">{{ b.destination }}</label>
+						<select id="home-destination" v-model="destination" class="w-full appearance-none bg-transparent font-body-md text-body-md text-on-surface outline-none pr-6 cursor-pointer">
+							<option value="" disabled>{{ b.destinationPlaceholder }}</option>
+							<option v-for="town in localities" :key="town" :value="town">{{ town }}</option>
+						</select>
+						<span class="material-symbols-outlined absolute right-3 bottom-3 text-outline pointer-events-none text-[20px]">expand_more</span>
+					</div>
+					<div class="px-4 py-3 border-b md:border-b-0 md:border-r border-outline-variant/40 md:w-48">
+						<span class="block text-[11px] uppercase tracking-wider text-outline mb-1">{{ hs.tripLabel }}</span>
+						<div class="flex items-center gap-3 pt-1.5">
+							<label class="flex items-center gap-1.5 cursor-pointer text-sm text-on-surface">
+								<input v-model="isRoundTrip" type="radio" :value="false" class="accent-teal-600" />
+								{{ hs.oneWay }}
+							</label>
+							<label class="flex items-center gap-1.5 cursor-pointer text-sm text-on-surface">
+								<input v-model="isRoundTrip" type="radio" :value="true" class="accent-teal-600" />
+								{{ hs.roundTrip }}
+							</label>
 						</div>
 					</div>
-					<div class="flex flex-col gap-2">
-						<label class="font-label-md text-label-md text-on-surface-variant" for="home-destination">{{ b.destination }}</label>
-						<div class="relative">
-							<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline">location_on</span>
-							<input id="home-destination" :class="inputClass" :placeholder="b.destinationPlaceholder" type="text" name="to" />
-						</div>
+					<div class="px-4 py-3 border-b md:border-b-0 md:border-r border-outline-variant/40 md:w-40">
+						<label class="block text-[11px] uppercase tracking-wider text-outline mb-1" for="home-date">{{ b.date }}</label>
+						<input id="home-date" v-model="travelDate" type="date" class="w-full bg-transparent font-body-md text-body-md text-on-surface outline-none" />
 					</div>
-					<div class="flex gap-4">
-						<div class="flex flex-col gap-2 w-1/2">
-							<label class="font-label-md text-label-md text-on-surface-variant" for="home-date">{{ b.date }}</label>
-							<div class="relative">
-								<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline">calendar_month</span>
-								<input id="home-date" :class="inputClass" :placeholder="b.datePlaceholder" type="text" name="date" />
-							</div>
-						</div>
-						<div class="flex flex-col gap-2 w-1/2">
-							<label class="font-label-md text-label-md text-on-surface-variant" for="home-passengers">{{ b.passengers }}</label>
-							<div class="relative">
-								<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline">person</span>
-								<select id="home-passengers" :class="`${inputClass} appearance-none`">
-									<option>{{ b.oneAdult }}</option>
-									<option>{{ b.twoAdults }}</option>
-								</select>
-							</div>
-						</div>
+					<div v-if="isRoundTrip" class="px-4 py-3 border-b md:border-b-0 md:border-r border-outline-variant/40 md:w-40">
+						<label class="block text-[11px] uppercase tracking-wider text-outline mb-1" for="home-return">{{ hs.returnLabel }}</label>
+						<input id="home-return" v-model="returnDate" type="date" class="w-full bg-transparent font-body-md text-body-md text-on-surface outline-none" />
+					</div>
+					<div class="relative px-4 py-3 border-b md:border-b-0 md:border-r border-outline-variant/40 md:w-40">
+						<label class="block text-[11px] uppercase tracking-wider text-outline mb-1" for="home-time">{{ t("routes.search.timeLabel") }}</label>
+						<select id="home-time" v-model="timeRange" class="w-full appearance-none bg-transparent font-body-md text-body-md text-on-surface outline-none pr-6 cursor-pointer">
+							<option v-for="r in timeRanges" :key="r.value" :value="r.value">{{ r.label }}</option>
+						</select>
+						<span class="material-symbols-outlined absolute right-3 bottom-3 text-outline pointer-events-none text-[20px]">expand_more</span>
+					</div>
+					<div class="relative px-4 py-3 border-b md:border-b-0 md:border-r border-outline-variant/40 md:w-32">
+						<label class="block text-[11px] uppercase tracking-wider text-outline mb-1" for="home-passengers">{{ b.passengers }}</label>
+						<select id="home-passengers" v-model.number="passengers" class="w-full appearance-none bg-transparent font-body-md text-body-md text-on-surface outline-none pr-6 cursor-pointer">
+							<option v-for="n in 8" :key="n" :value="n">{{ n }}</option>
+						</select>
+						<span class="material-symbols-outlined absolute right-3 bottom-3 text-outline pointer-events-none text-[20px]">expand_more</span>
 					</div>
 					<button
 						type="submit"
-						class="w-full bg-energetic-orange text-on-primary font-button text-button py-4 rounded hover:opacity-90 transition-opacity mt-4 shadow-sm flex items-center justify-center min-h-[48px]"
+						:disabled="!origin || !destination"
+						class="bg-deep-navy text-on-primary font-button text-button uppercase tracking-wide px-8 py-4 md:py-0 min-h-[56px] hover:bg-primary-container transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
 					>
 						{{ b.search }}
 					</button>
 				</form>
-			</div>
-			<!-- Hero Image (Right) -->
-			<div class="w-full md:w-7/12 h-64 md:h-auto min-h-[400px] relative">
-				<img alt="Empresa Plana Bus" class="absolute inset-0 w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida/AP1WRLuR0px2Ux0FRFwHGZhcyWf4jP8-thYfkTg-Qa9-C0NDlDE89WqHVKUW_V7Hg0Bhyu5wtCeB06RMgrQyVKqq9ea9G47HaWea0cqUfbVlTGjpDLvAL5TSZmlkqRBc6_XcGL6oIVa__QtUFgQWl9QRlaiHrS-THbWgvgczz8HBIZp_u9020eaPbdx9cOZskITDjTlhM7nTQo4K8yGXI5sMX2v9rNQ_xIdJpHM1N4OLNBcL3rg0QdCJt2GmyIk" />
-				<div class="absolute inset-0 bg-gradient-to-tr from-primary/20 to-transparent pointer-events-none"></div>
 			</div>
 		</div>
 	</section>
@@ -200,7 +286,7 @@ const inputClass =
 				class="bg-surface-container-lowest rounded-xl overflow-hidden shadow-ambient hover:shadow-ambient-lg border border-surface-variant flex flex-col group hover:-translate-y-1 transition-all duration-300"
 			>
 				<div class="h-48 relative overflow-hidden">
-					<img :alt="route.name" loading="lazy" decoding="async" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" :src="route.image" />
+					<AppPicture :name="route.image" :alt="route.name" img-class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
 				</div>
 				<div class="p-6 flex flex-col flex-grow">
 					<h3 class="font-headline-md text-headline-md font-bold text-on-surface mb-2">{{ route.name }}</h3>

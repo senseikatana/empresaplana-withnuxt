@@ -1135,5 +1135,29 @@
 			"submit": "Enviar valoración",
 			"thanks": "¡Gracias por tu valoración!"
 		}
+	},
+	"homeSearch": {
+		"title": "Busca tu línea",
+		"subtitle": "Horarios, paradas y precios de toda la red de la Costa Daurada.",
+		"tabRegular": "Líneas regulares",
+		"tabTransfers": "Transfers",
+		"oneWay": "Ida",
+		"roundTrip": "Ida y vuelta",
+		"returnLabel": "Vuelta",
+		"swapLabel": "Intercambiar origen y destino",
+		"tripLabel": "Trayecto"
+	},
+	"releases": {
+		"nav": "Novedades",
+		"title": "Novedades",
+		"subtitle": "Cambios y mejoras del proyecto, versión a versión.",
+		"added": "Añadido",
+		"changed": "Cambiado",
+		"fixed": "Corregido",
+		"removed": "Eliminado",
+		"viewOnGithub": "Ver en GitHub",
+		"tag": "Versión",
+		"empty": "Todavía no hay versiones publicadas.",
+		"source": "Generado automáticamente desde CHANGELOG.md y las releases de GitHub."
 	}
 }

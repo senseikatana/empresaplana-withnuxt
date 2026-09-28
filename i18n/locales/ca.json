@@ -1135,5 +1135,29 @@
 			"submit": "Enviar valoració",
 			"thanks": "Gràcies per la teva valoració!"
 		}
+	},
+	"homeSearch": {
+		"title": "Busca la teva línia",
+		"subtitle": "Horaris, parades i preus de tota la xarxa de la Costa Daurada.",
+		"tabRegular": "Línies regulars",
+		"tabTransfers": "Transfers",
+		"oneWay": "Anada",
+		"roundTrip": "Anada i tornada",
+		"returnLabel": "Tornada",
+		"swapLabel": "Intercanviar origen i destí",
+		"tripLabel": "Trajecte"
+	},
+	"releases": {
+		"nav": "Novetats",
+		"title": "Novetats",
+		"subtitle": "Canvis i millores del projecte, versió a versió.",
+		"added": "Afegit",
+		"changed": "Canviat",
+		"fixed": "Corregit",
+		"removed": "Eliminat",
+		"viewOnGithub": "Veure a GitHub",
+		"tag": "Versió",
+		"empty": "Encara no hi ha versions publicades.",
+		"source": "Generat automàticament des de CHANGELOG.md i les releases de GitHub."
 	}
 }

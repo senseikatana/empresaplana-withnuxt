@@ -1135,5 +1135,29 @@
 			"submit": "Send review",
 			"thanks": "Thanks for your review!"
 		}
+	},
+	"homeSearch": {
+		"title": "Find your line",
+		"subtitle": "Schedules, stops and fares across the whole Costa Daurada network.",
+		"tabRegular": "Regular lines",
+		"tabTransfers": "Transfers",
+		"oneWay": "One way",
+		"roundTrip": "Round trip",
+		"returnLabel": "Return",
+		"swapLabel": "Swap origin and destination",
+		"tripLabel": "Trip"
+	},
+	"releases": {
+		"nav": "What's new",
+		"title": "What's new",
+		"subtitle": "Project changes and improvements, release by release.",
+		"added": "Added",
+		"changed": "Changed",
+		"fixed": "Fixed",
+		"removed": "Removed",
+		"viewOnGithub": "View on GitHub",
+		"tag": "Version",
+		"empty": "No releases published yet.",
+		"source": "Automatically generated from CHANGELOG.md and GitHub releases."
 	}
 }

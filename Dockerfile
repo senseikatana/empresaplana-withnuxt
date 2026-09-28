@@ -12,7 +12,7 @@ COPY . .
 ENV DATABASE_URL=postgresql://postgres:placeholder@localhost:5432/placeholder
 ENV NITRO_PRESET=node_server
 RUN pnpm install --frozen-lockfile
-RUN pnpm run render:build
+RUN pnpm run build:node
 
 FROM node:22.12.0-bookworm-slim AS runner
 WORKDIR /app
