@@ -30,7 +30,7 @@ bun install
 cp .env.example .env        # set DATABASE_URL, AUTH_SECRET (and OPENROUTER_API_KEY)
 bun run db:generate
 bun run db:seed             # demo users: cliente / trabajador / admin (passkey 12345678)
-bun run dev                 # http://localhost:{PORT} - 3000 is the PORT by default
+bun run dev                 # http://localhost:3000
 ```
 
 Schema changes do **not** use Prisma push/migrate (they are forbidden stubs):
