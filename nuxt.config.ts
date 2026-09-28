@@ -3,7 +3,13 @@ import { fileURLToPath } from "node:url";
 export default defineNuxtConfig({
 	compatibilityDate: "2026-09-13",
 	devtools: { enabled: true },
-	modules: ["@nuxt/ui", "@nuxt/fonts", "@nuxtjs/i18n"],
+	modules: ["@nuxt/ui", "@nuxt/fonts", "@nuxtjs/i18n", "@nuxtjs/color-mode"],
+	colorMode: {
+		preference: "system",
+		fallback: "light",
+		classSuffix: "",
+		disableTransition: true,
+	},
 	css: ["~/assets/css/main.css"],
 	vite: {
 		server: {

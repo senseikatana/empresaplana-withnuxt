@@ -3,6 +3,7 @@ node_modules
 .output
 generated
 .data
+data
 .zcode
 .env
 .env.local

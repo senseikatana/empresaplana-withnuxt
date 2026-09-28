@@ -6,6 +6,14 @@ const { locale, t } = useI18n();
 const localePath = useLocalePath();
 const switchLocalePath = useSwitchLocalePath();
 
+const colorMode = useColorMode();
+const isDark = computed({
+	get: () => colorMode.value === "dark",
+	set: (value) => {
+		colorMode.preference = value ? "dark" : "light";
+	},
+});
+
 const locales = computed(() =>
 	(["ca", "es", "en", "fr"] as const).map((code) => ({
 		code,
@@ -46,6 +54,15 @@ const menuOpen = ref(false);
 					{{ l.label }}
 				</a>
 			</div>
+			<button
+				class="flex items-center hover:text-deep-navy transition-colors"
+				type="button"
+				:aria-label="isDark ? 'Activa el mode clar' : 'Activa el mode fosc'"
+				:title="isDark ? 'Light mode' : 'Dark mode'"
+				@click="isDark = !isDark"
+			>
+				<span class="material-symbols-outlined text-[18px]">{{ isDark ? "light_mode" : "dark_mode" }}</span>
+			</button>
 			<a class="flex items-center gap-1 hover:text-deep-navy transition-colors" :href="`tel:${contact.generalPhone.replace(/\s/g, '')}`">
 				<span class="material-symbols-outlined text-[18px]">call</span>
 				{{ contact.generalPhone }}
@@ -88,7 +105,7 @@ const menuOpen = ref(false);
 
 			<button
 				class="md:hidden text-deep-navy p-2"
-				aria-expanded="false"
+				:aria-expanded="menuOpen"
 				aria-controls="site-mobile-menu"
 				aria-label="Menu"
 				@click="menuOpen = !menuOpen"
@@ -134,6 +151,14 @@ const menuOpen = ref(false);
 							{{ l.label }}
 						</a>
 					</div>
+					<button
+						class="flex items-center text-deep-navy"
+						type="button"
+						:aria-label="isDark ? 'Activa el mode clar' : 'Activa el mode fosc'"
+						@click="isDark = !isDark"
+					>
+						<span class="material-symbols-outlined text-[20px]">{{ isDark ? "light_mode" : "dark_mode" }}</span>
+					</button>
 					<a class="flex items-center gap-1 font-label-md text-label-md text-deep-navy" :href="`tel:${contact.generalPhone.replace(/\s/g, '')}`">
 						<span class="material-symbols-outlined text-[18px]">call</span>
 						{{ contact.generalPhone }}

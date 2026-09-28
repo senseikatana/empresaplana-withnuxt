@@ -145,14 +145,14 @@ const inputClass =
 						<label class="font-label-md text-label-md text-on-surface-variant" for="home-origin">{{ b.origin }}</label>
 						<div class="relative">
 							<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline">location_on</span>
-							<input id="home-origin" :class="inputClass" :placeholder="b.originPlaceholder" type="text" name="origin" />
+							<input id="home-origin" :class="inputClass" :placeholder="b.originPlaceholder" type="text" name="from" />
 						</div>
 					</div>
 					<div class="flex flex-col gap-2">
 						<label class="font-label-md text-label-md text-on-surface-variant" for="home-destination">{{ b.destination }}</label>
 						<div class="relative">
 							<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline">location_on</span>
-							<input id="home-destination" :class="inputClass" :placeholder="b.destinationPlaceholder" type="text" name="destination" />
+							<input id="home-destination" :class="inputClass" :placeholder="b.destinationPlaceholder" type="text" name="to" />
 						</div>
 					</div>
 					<div class="flex gap-4">
@@ -174,12 +174,12 @@ const inputClass =
 							</div>
 						</div>
 					</div>
-					<a
+					<button
+						type="submit"
 						class="w-full bg-energetic-orange text-on-primary font-button text-button py-4 rounded hover:opacity-90 transition-opacity mt-4 shadow-sm flex items-center justify-center min-h-[48px]"
-						:href="localePath('/rutas-horarios')"
 					>
 						{{ b.search }}
-					</a>
+					</button>
 				</form>
 			</div>
 			<!-- Hero Image (Right) -->

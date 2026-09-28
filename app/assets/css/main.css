@@ -221,3 +221,34 @@
 		"GRAD" 0,
 		"opsz" 24;
 }
+
+/* ── Dark theme overrides ──────────────────────────────────────────────── */
+.dark {
+	--color-background: #0f1115;
+	--color-on-background: #e6e7e9;
+	--color-surface: #121418;
+	--color-surface-dim: #0d0f12;
+	--color-surface-bright: #1c1f24;
+	--color-surface-container-lowest: #14161a;
+	--color-surface-container-low: #1a1d22;
+	--color-surface-container: #1e2126;
+	--color-surface-container-high: #24272d;
+	--color-surface-container-highest: #2a2d33;
+	--color-on-surface: #e6e7e9;
+	--color-on-surface-variant: #c0c3ca;
+	--color-inverse-surface: #e6e7e9;
+	--color-inverse-on-surface: #1a1d22;
+	--color-surface-variant: #2a2d33;
+	--color-outline: #8a8d94;
+	--color-outline-variant: #3a3d44;
+	--color-deep-navy: #cdd9ff;
+	--color-surface-gray: #17191e;
+	--color-text-main: #e6e7e9;
+	--shadow-ambient: 0px 4px 20px rgba(0, 0, 0, 0.4);
+	--shadow-ambient-lg: 0px 8px 30px rgba(0, 0, 0, 0.55);
+}
+
+.dark .glass-panel {
+	background-color: rgba(20, 22, 26, 0.9);
+	border-color: rgba(58, 61, 68, 0.4);
+}

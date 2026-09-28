@@ -545,7 +545,16 @@
 			"emptyHint": "Try different towns or enable the transfer search.",
 			"missingSelection": "Select origin and destination to search.",
 			"databaseError": "Could not connect to the timetable database.",
-			"searchingInfo": "Showing sample departures. The selected date is indicative."
+			"searchingInfo": "Showing sample departures. The selected date is indicative.",
+			"zonesLabel": "ATM zone",
+			"priceLabel": "ATM fare",
+			"waitLabel": "Transfer",
+			"totalLabel": "Total duration",
+			"noPrice": "Check ATM fares",
+			"atmNote": "Indicative prices based on ATM Camp de Tarragona zones. Contactless card: €4.20.",
+			"atmLink": "View ATM fares",
+			"resultsCount": "{count} departures",
+			"stopsCount": "{count} stops"
 		},
 		"origins": {
 			"barcelonaAirport": "Barcelona Airport",

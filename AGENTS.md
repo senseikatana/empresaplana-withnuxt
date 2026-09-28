@@ -1,137 +1,77 @@
----
-description: Instructions building apps with MCP
-globs: *
-alwaysApply: true
----
+# AGENTS.md — Empresa Plana
 
-# InsForge SDK Documentation - Overview
+Rediseño del sitio de Empresa Plana (transporte público, Costa Daurada) + intranet.
+Target: `https://empresaplana.cat`. Repo público: nunca commitear datos sensibles.
 
-## What is InsForge?
+## Stack
 
-Backend-as-a-service (BaaS) platform providing:
+- **Nuxt 4** (`app/`, `server/`, `i18n/`) + Nitro (`node_server`) + Nuxt UI v4 + Tailwind v4.
+- **@nuxtjs/i18n**: locale por defecto `ca` (raíz `/`), `es`/`en`/`fr` con prefijo.
+- **@nuxtjs/color-mode**: dark/light (toggle en `SiteHeader`, tokens en `app/assets/css/main.css`).
+- **Prisma 7** (`prisma-client` generator → `generated/prisma/`) + `@prisma/adapter-pg` + `pg`.
+- **DB: InsForge Postgres** (proyecto `empresaplana.cat`, región eu-central). `DATABASE_URL` en `.env`.
+- **Auth**: jose HS256 JWT en cookie `ep_session` + scrypt (`server/utils/passkey.ts`). Roles `client | worker | admin`.
+- **ACL**: `shared/acl.ts` + `requireCapability()` (`server/utils/acl.ts`). Nada de `role === "..."` inline.
+- **Storage**: Cloudflare R2 (pendiente: credenciales). No usar InsForge storage.
+- Package manager: **pnpm**. Node >= 22.12. Formato/lint: **Biome**.
 
-- **Database**: PostgreSQL with PostgREST API
-- **Authentication**: Email/password + OAuth (Google, GitHub)
-- **Storage**: File upload/download
-- **AI**: OpenRouter key provisioning and model catalog for direct OpenAI-compatible integrations
-- **Functions**: Serverless function deployment
-- **Realtime**: WebSocket pub/sub (database + client events)
-
-## Installation
-
-The following is a step-by-step guide to installing and using the InsForge TypeScript SDK for Web applications. If you are building other types of applications, please refer to:
-- [Swift SDK documentation](/sdks/swift/overview) for iOS, macOS, tvOS, and watchOS applications.
-- [Kotlin SDK documentation](/sdks/kotlin/overview) for Android applications.
-- [REST API documentation](/sdks/rest/overview) for direct HTTP API access.
-
-### 🚨 CRITICAL: Follow these steps in order
-
-### Step 1: Download Template
-
-Use the `download-template` MCP tool to create a new project with your backend URL and anon key pre-configured.
-
-### Step 2: Install SDK
+## Commands
 
 ```bash
-npm install @insforge/sdk@latest
+pnpm dev                 # dev server :3000
+pnpm build               # build Node (node_server) -> .output/
+pnpm check               # biome check
+pnpm typecheck           # nuxi typecheck
+node scripts/seed-transit.mjs   # seed dataset canónico (lee data/routes + data/fares)
 ```
 
-### Step 3: Create SDK Client
+## Base de datos (InsForge)
 
-You must create a client instance using `createClient()` with your base URL and anon key:
+- DDL SIEMPRE por migraciones InsForge: `npx -y @insforge/cli db migrations new <name>` → editar `migrations/*.sql` → `npx -y @insforge/cli db migrations up --all`. No usar `prisma migrate` ni `db push` contra InsForge.
+- Migraciones aplicadas: `canonical-transit` (transit_lines/stops/line_stops/trips, atm_zones/atm_fares, payment_systems), `fix-atm-fares-pk`.
+- Consultas puntuales: `npx -y @insforge/cli db query "SELECT ..."`.
 
-```javascript
-import { createClient } from '@insforge/sdk';
+## Dataset canónico del buscador
 
-const client = createClient({
-  baseUrl: 'https://your-app.region.insforge.app',  // Your InsForge backend URL
-  anonKey: 'your-anon-key-here'       // Get this from backend metadata
-});
+- Fuente: crawl del buscador viejo (`POST https://empresaplana.cat/descargas`) + PDFs oficiales.
+- `data/` está **gitignored y es confidencial** (PDFs, exports, dataset). No publicar.
+- Artefactos locales: `data/routes/lines-v2.json` (118 líneas), `trips-v2.json` (1053 viajes con paradas), `stops-v2.json`, `data/fares/atm-zones.json` + `atm-fares.json` (tarifas ATM 2026).
+- Modelo: `id` secuencial interno + `signNumber` (número del cartel del bus) + `legacyIds` del sistema viejo. Líneas con datos: L4 (Costa, legacy 58/59), L11 (Cambrils–Vila-seca–Tarragona, 141/142 + 74-77), etc.
+- Pendiente: tipos de día (hoy solo `feiners` del 2026-09-28), urbanos Cambrils L1-L3, nocturnos NT2-NT5, escolares y temporada (PDFs ya extraídos en `data/sources/extracted-lines/`).
 
+## Buscador (API + UI)
+
+- `GET /api/routes/search?from&to&time&date&type` → SQL JSONB (`stops @> ...`) + precios ATM por número de zonas. Sin zona ATM (Barcelona, Tortosa, etc.) → `price: null` + link a ATM.
+- `GET /api/routes/localities` → localidades desde `transit_stops`.
+- UI: widget en `/` (home) y página de resultados `/rutas-horarios` (auto-búsqueda por query params, paradas en `<details>`, PDF por línea).
+
+## Deploy — InsForge compute (NO Render, NO Cloudflare runtime)
+
+```bash
+export PATH="$HOME/.fly/bin:$PATH"   # flyctl requerido (source mode)
+npx -y @insforge/cli compute deploy . --name empresaplana --port 3000 --region fra --memory 512 --env-file .env
 ```
 
-**API BASE URL**: Your API base URL is `https://your-app.region.insforge.app`.
+- URL: `https://empresaplana-8929a7b2-3f14-461b-b228-e6f8c8b6573c.fly.dev`
+- Plan Free: 1 solo servicio compute y **máximo 512MB por máquina**. Para producción pedir upgrade (la empresa paga).
+- Prisma **no corre en Cloudflare Workers** (query compiler WASM, issues #28657/#29660): por eso el runtime es un contenedor Node en InsForge compute. Cloudflare solo para R2.
+- `fly.toml` es autogenerado por el CLI (no commitear su `app` id; el archivo se puede regenerar).
 
-## Getting Detailed Documentation
+## Seguridad
 
-### 🚨 CRITICAL: Always Fetch Documentation Before Writing Code
+- `.env` (real) y `opencode.json` (contiene la API key de InsForge) están gitignored. No commitear.
+- `public/*_export.json` y `database-structure.png` fueron removidos del árbol, pero siguen en el historial de git: pendiente evaluar `git filter-repo` si se exige confidencialidad total.
+- Rotar credenciales que hayan pasado por chat/diálogos.
 
-InsForge provides official SDKs and REST APIs, use them to interact with InsForge services from your application code.
+## Gotchas
 
-- [TypeScript SDK](/sdks/typescript/overview) - JavaScript/TypeScript
-- [Swift SDK](/sdks/swift/overview) - iOS, macOS, tvOS, and watchOS
-- [Kotlin SDK](/sdks/kotlin/overview) - Android and Kotlin Multiplatform
-- [REST API](/sdks/rest/overview) - Direct HTTP API access
+- El generador Prisma es `prisma-client` (output `../generated/prisma`), no `prisma-client-js`.
+- `pg-native` tiene stub (`server/utils/pg-native-stub.ts`) + alias en Nitro; no quitar.
+- `prisma.config.ts` vive en la raíz (Prisma 7 no lo detecta dentro de `prisma/`).
+- `.dockerignore` debe mantener `data/` excluido (350MB+ de PDFs en el contexto de build).
+- El sitio viejo separa una línea en varios `legacyId` por sentido/variante; el dataset los agrupa por nombre de PDF.
+- `scripts/seed-transit.mjs` es idempotente (upserts).
 
-Before writing or editing any InsForge integration code, you **MUST** call the `fetch-docs` or `fetch-sdk-docs` MCP tool to get the latest SDK documentation. This ensures you have accurate, up-to-date implementation patterns.
+## InsForge
 
-### Use the InsForge `fetch-docs` MCP tool to get specific SDK documentation:
-
-Available documentation types:
-
-- `"instructions"` - Essential backend setup (START HERE)
-- `"real-time"` - Real-time pub/sub (database + client events) via WebSockets
-- `"db-sdk-typescript"` - Database operations with TypeScript SDK
-- **Authentication** - Choose based on implementation:
-  - `"auth-sdk-typescript"` - TypeScript SDK methods for custom auth flows
-  - `"auth-components-react"` - Pre-built auth UI for React+Vite (single-page app)
-  - `"auth-components-react-router"` - Pre-built auth UI for React(Vite+React Router) (multi-page app)
-  - `"auth-components-nextjs"` - Pre-built auth UI for Next.js (SSR app)
-- `"storage-sdk"` - File storage operations
-- `"functions-sdk"` - Serverless functions invocation
-- `"ai-integration-sdk"` - AI integration with the provisioned OpenRouter key and OpenAI SDK
-- `"deployment"` - Deploy frontend applications via MCP tool
-- `"payments"` - Stripe Checkout, Billing Portal, webhook projections, and fulfillment patterns
-
-These docs are mostly for the TypeScript SDK. For other languages, you can also use the `fetch-sdk-docs` MCP tool to get specific documentation.
-
-### Use the InsForge `fetch-sdk-docs` MCP tool to get specific SDK documentation
-
-You can fetch SDK documentation using the `fetch-sdk-docs` MCP tool with a specific feature type and language.
-
-Available feature types:
-- `db` - Database operations
-- `storage` - File storage operations
-- `functions` - Serverless functions invocation
-- `auth` - User authentication
-- `ai` - AI integration with the provisioned OpenRouter key and OpenAI SDK
-- `realtime` - Real-time pub/sub (database + client events) via WebSockets
-- `payments` - Stripe Checkout and Billing Portal with webhook-based fulfillment
-
-Available languages:
-- `typescript` - JavaScript/TypeScript SDK
-- `swift` - Swift SDK (for iOS, macOS, tvOS, and watchOS)
-- `kotlin` - Kotlin SDK (for Android and JVM applications)
-- `rest-api` - REST API
-
-Payments currently has TypeScript SDK docs only. Use the Payments API reference for non-TypeScript clients.
-
-## When to Use SDK vs MCP Tools
-
-### Always SDK for Application Logic:
-
-- Authentication (register, login, logout, profiles)
-- Database CRUD (select, insert, update, delete)
-- Storage operations (upload, download files)
-- AI integration via the provisioned OpenRouter key with the OpenAI SDK or OpenRouter HTTP API
-- Serverless function invocation
-- Payments checkout and customer portal session creation
-
-### Use MCP Tools for Infrastructure:
-
-- Project scaffolding (`download-template`) - Download starter templates with InsForge integration
-- Backend setup and metadata (`get-backend-metadata`)
-- Database schema management (`run-raw-sql`, `get-table-schema`)
-- Storage bucket creation (`create-bucket`, `list-buckets`, `delete-bucket`)
-- Serverless function deployment (`create-function`, `update-function`, `delete-function`)
-- Frontend deployment (`create-deployment`) - Deploy frontend apps to InsForge hosting
-
-## Important Notes
-
-- For auth: use `auth-sdk` for custom UI, or framework-specific components for pre-built UI
-- SDK returns `{data, error}` structure for all operations
-- Database inserts require array format: `[{...}]`
-- Serverless functions have one endpoint and do not support nested route paths
-- Storage: Upload files to buckets, store URLs in database
-- AI integrations should call OpenRouter directly with `baseURL: "https://openrouter.ai/api/v1"` and a server-side `OPENROUTER_API_KEY`
-- **EXTRA IMPORTANT**: Use Tailwind CSS 3.4 (do not upgrade to v4). Lock these dependencies in `package.json`
+El backend/plataforma es InsForge (DB, compute, payments con Stripe). Para infraestructura usar el skill `insforge-cli`; para SDK de app, el skill `insforge`. La documentación general de InsForge está en el AGENTS.md global del usuario.

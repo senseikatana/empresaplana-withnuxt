@@ -545,7 +545,16 @@
 			"emptyHint": "Prueba con otras localidades o activa la búsqueda con transbordos.",
 			"missingSelection": "Selecciona origen y destino para buscar.",
 			"databaseError": "No se pudo conectar con la base de datos de horarios.",
-			"searchingInfo": "Mostrando salidas de ejemplo. La fecha indicada es orientativa."
+			"searchingInfo": "Mostrando salidas de ejemplo. La fecha indicada es orientativa.",
+			"zonesLabel": "Zona ATM",
+			"priceLabel": "Precio ATM",
+			"waitLabel": "Enlace",
+			"totalLabel": "Duración total",
+			"noPrice": "Consulta las tarifas ATM",
+			"atmNote": "Precios orientativos según las zonas ATM Camp de Tarragona. Tarjeta sin contacto: 4,20 €.",
+			"atmLink": "Ver tarifas ATM",
+			"resultsCount": "{count} expediciones",
+			"stopsCount": "{count} paradas"
 		},
 		"origins": {
 			"barcelonaAirport": "Aeroport de Barcelona",
