@@ -29,8 +29,8 @@ pnpm-debug.log*
 
 # environment variables
 .env
-!.env.production
-!.nv.template
+.env.*
+!.env.example
 .dev.vars
 
 # Google OAuth client secret (never commit)
@@ -49,9 +49,14 @@ src/Releases/
 # local runtime data (bus tracking store) and agent tooling
 .data/
 .zcode/
+.codegraph/
+
+# fuentes de ingesta, exports y datos locales (no versionar: confidencialidad)
+data/
 
 # InsForge & AI agent skills
 .insforge
+opencode.json
 .agent
 .agents
 .augment
