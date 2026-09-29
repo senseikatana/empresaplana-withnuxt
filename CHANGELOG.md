@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.3.2] - 2026-09-29
+
+### Changed
+- **bun.lock**: update dependencies or build settings in bun.lock
+
 ## [1.3.1] - 2026-09-28
 
 ### Changed
