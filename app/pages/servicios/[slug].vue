@@ -17,7 +17,7 @@ if (!service) {
 const loc = computed(() => {
 	const locales = service.locales as Record<string, unknown>;
 	const l = locale.value;
-	if (locales[l]) return l as "ca" | "es" | "en" | "fr";
+	if (locales[l]) return l as "ca" | "es" | "en";
 	if (locales.es) return "es";
 	if (locales.ca) return "ca";
 	return "es";

@@ -1,12 +1,12 @@
 import { type Capability, hasCapability, isRole } from "#shared/acl";
 
 // Ruta del panel con o sin prefijo de locale (ca vive en la raíz).
-const dashboardPathPattern = /^\/(?:es|en|fr)?\/dashboard(?:\/|$)/;
+const dashboardPathPattern = /^\/(?:es|en)?\/dashboard(?:\/|$)/;
 const publicAuthPaths = ["/dashboard/login", "/dashboard/register"];
-const pendingPathPattern = /^\/(?:es|en|fr)?\/dashboard\/pending(?:\/|$)/;
+const pendingPathPattern = /^\/(?:es|en)?\/dashboard\/pending(?:\/|$)/;
 
 function withoutLocale(path: string): string {
-	return path.replace(/^\/(?:es|en|fr)(?=\/dashboard)/, "");
+	return path.replace(/^\/(?:es|en)(?=\/dashboard)/, "");
 }
 
 function isPublicAuthPath(path: string): boolean {

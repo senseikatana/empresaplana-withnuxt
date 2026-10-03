@@ -16,7 +16,7 @@ const isDark = computed({
 });
 
 const locales = computed(() =>
-	(["ca", "es", "en", "fr"] as const).map((code) => ({
+	(["ca", "es", "en"] as const).map((code) => ({
 		code,
 		label: t(`common.lang.${code}`),
 		href: switchLocalePath(code),

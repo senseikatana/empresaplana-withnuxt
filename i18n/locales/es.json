@@ -16,8 +16,7 @@
 		"lang": {
 			"ca": "CA",
 			"es": "ES",
-			"en": "EN",
-			"fr": "FR"
+			"en": "EN"
 		},
 		"phone": "+34 977 553 680",
 		"footer": {
@@ -231,6 +230,11 @@
 			"language": "Idioma"
 		},
 		"gestion": {
+			"groups": {
+				"main": "Principal",
+				"management": "Gestión",
+				"communication": "Comunicación"
+			},
 			"nav": {
 				"panel": "Panel",
 				"map": "Mapa en vivo",
@@ -253,6 +257,7 @@
 				"search": "Buscar",
 				"actions": "Acciones",
 				"empty": "Sin registros",
+				"sectionSoon": "Sección en desarrollo",
 				"confirmDelete": "¿Seguro que quieres eliminar este registro?",
 				"all": "Todos",
 				"newEntity": "Añadir {entity}",
@@ -261,7 +266,10 @@
 				"back": "Volver",
 				"updated": "Registro actualizado",
 				"created": "Registro creado",
-				"deleted": "Registro eliminado"
+				"deleted": "Registro eliminado",
+				"error": "Error al guardar",
+				"archived": "Archivada (tiene horarios o autobuses)",
+				"required": "obligatorio"
 			},
 			"states": {
 				"active": "Activa",
@@ -321,7 +329,9 @@
 						"plate": "Matrícula",
 						"company": "Empresa",
 						"capacity": "Capacidad",
-						"route": "Ruta"
+						"route": "Ruta",
+						"routeId": "Ruta",
+						"status": "Estado"
 					}
 				},
 				"stop": {
@@ -341,7 +351,9 @@
 						"departure": "Salida",
 						"arrival": "Llegada",
 						"frequency": "Frecuencia",
-						"days": "Días"
+						"days": "Días",
+						"routeId": "Ruta",
+						"status": "Estado"
 					}
 				},
 				"driver": {
@@ -350,7 +362,43 @@
 						"name": "Nombre",
 						"phone": "Teléfono",
 						"license": "Licencia",
-						"bus": "Autobús"
+						"bus": "Autobús",
+						"routeId": "Ruta",
+						"status": "Estado",
+						"busNumber": "Autobús",
+						"shiftDays": "Días de turno",
+						"shiftHours": "Horas de turno"
+					}
+				},
+				"notification": {
+					"label": "Notificación",
+					"fields": {
+						"type": "Tipo",
+						"title": "Título",
+						"desc": "Descripción",
+						"routeId": "Ruta"
+					}
+				},
+				"user": {
+					"label": "Usuario",
+					"fields": {
+						"username": "Nombre de usuario",
+						"name": "Nombre",
+						"email": "Correo",
+						"phone": "Teléfono",
+						"role": "Rol",
+						"password": "Contraseña",
+						"emailVerified": "Correo verificado"
+					}
+				},
+				"report": {
+					"label": "Reporte",
+					"fields": {
+						"lineId": "Línea",
+						"stop": "Parada",
+						"action": "Estado reportado",
+						"minutesLate": "Minutos de retraso",
+						"comment": "Comentario"
 					}
 				}
 			},
@@ -539,7 +587,12 @@
 			"unreadNotifications": "Avisos sin leer",
 			"budgets": "Presupuestos",
 			"favorites": "Favoritas",
-			"recentSearches": "Búsquedas recientes"
+			"recentSearches": "Búsquedas recientes",
+			"activeOf": "activos de {total}",
+			"verified": "verificados",
+			"recentActivity": "Actividad reciente",
+			"synced": "Sincronizado",
+			"lastActivity": "Última actividad"
 		},
 		"search": {
 			"pages": "Páginas"
@@ -548,6 +601,12 @@
 			"appearance": "Apariencia",
 			"light": "Claro",
 			"dark": "Oscuro"
+		},
+		"ai": {
+			"generate": "Generar con IA",
+			"generating": "Generando…",
+			"error": "No se ha podido generar el texto. Inténtalo de nuevo.",
+			"hint": "Revisa el texto generado antes de guardarlo."
 		},
 		"assistant": {
 			"title": "Asistente IA",
@@ -564,7 +623,13 @@
 			}
 		},
 		"validation": {
-			"consentRequired": "Debes aceptar la política de privacidad"
+			"consentRequired": "Debes aceptar la política de privacidad",
+			"conflict": "Ya existe",
+			"usernameExists": "Ese nombre de usuario ya existe",
+			"emailExists": "Ese correo ya existe",
+			"cannotDeleteSelf": "No puedes eliminarte a ti mismo",
+			"lastAdmin": "No se puede eliminar el último administrador",
+			"cannotDemoteSelf": "No puedes quitarte el rol de administrador"
 		}
 	},
 	"routes": {
@@ -1170,6 +1235,7 @@
 			"confirm": "Confirmar reporte",
 			"cancel": "Cancelar",
 			"alreadyReported": "Ya has reportado esta parada",
+			"error": "No se ha podido enviar el reporte. Inténtalo de nuevo.",
 			"selectIssue": "Selecciona el estado del autobús",
 			"minutesLate": "Minutos de retraso",
 			"comment": "Comentario (opcional)",

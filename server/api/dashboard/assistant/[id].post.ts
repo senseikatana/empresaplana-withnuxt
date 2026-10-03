@@ -33,7 +33,10 @@ export default defineEventHandler(async (event) => {
 		event,
 		z.object({ id: z.string().uuid() }).parse,
 	);
-	const { messages } = await readValidatedBody(event, bodySchema.parse);
+	const { messages } = parseOr400(
+		bodySchema,
+		await readBody(event).catch(() => ({})),
+	);
 
 	const conversation = await prisma().assistantConversation.findUnique({
 		where: { id },

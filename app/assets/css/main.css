@@ -246,8 +246,28 @@
 	--color-deep-navy: #cdd9ff;
 	--color-surface-gray: #17191e;
 	--color-text-main: #e6e7e9;
+
+	/* Convención del proyecto (AGENTS): `deep-navy` es el azul de TEXTO (se
+	   aclara aquí) y `primary` es el azul de FONDO (estable en ambos modos).
+	   Los botones sólidos de Nuxt UI son `bg-primary text-inverted`, y en dark
+	   `text-inverted` resuelve a neutral-900 (oscuro) → texto oscuro sobre
+	   navy oscuro. Se fuerza blanco: `bg-inverted` (única superficie clara
+	   donde haría falta texto oscuro) no lo usa ningún componente nuestro ni
+	   de Nuxt UI. */
+	--ui-text-inverted: #fff;
+
 	--shadow-ambient: 0px 4px 20px rgba(0, 0, 0, 0.4);
-	--shadow-ambient-lg: 0px 8px 30px rgba(0, 0, 0, 0.55);
+	--shadow-ambient-lg: 0px 4px 30px rgba(0, 0, 0, 0.55);
+}
+
+/* Ítem activo de la sidebar de Nuxt UI: viene con `text-primary` (navy oscuro)
+   sobre `bg-elevated` oscuro → 1.5:1 en dark. Se usa el azul de texto del
+   proyecto (se aclara en dark), igual que en el resto de la UI. */
+.dark [data-slot="link"][data-active] {
+	color: var(--color-deep-navy);
+}
+.dark [data-slot="link"][data-active] .iconify {
+	color: var(--color-deep-navy);
 }
 
 .dark .glass-panel {

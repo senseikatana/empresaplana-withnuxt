@@ -1,3 +1,4 @@
+import { getSessionFromHeaders } from "../utils/auth";
 import type { ChatSession } from "../utils/chat";
 import {
 	canAccessConversation,
@@ -6,18 +7,18 @@ import {
 } from "../utils/chat";
 
 export default defineWebSocketHandler({
-	// `requireUserSession` acepta el Request del upgrade y tira 401 sin sesión,
-	// así que ya no hace falta parsear la cookie ni verificar el JWT a mano.
+	// Better Auth valida la cookie de sesión contra la tabla `Session` (revocable).
+	// El upgrade trae un `Request` de fetch, así que se pasan sus headers.
 	async upgrade(request) {
-		const { user } = await requireUserSession(request);
-		const session: ChatSession = {
-			id: user.id,
-			username: user.username,
-			role: user.role,
-		};
+		const session = await getSessionFromHeaders(request.headers);
+		if (!session) {
+			// Rechaza el handshake: sin sesión no hay canal de chat.
+			// (Volver aquí sin lanzar dejaría la conexión abierta y sin sesión.)
+			throw createError({ statusCode: 401, statusMessage: "No autenticat" });
+		}
 		(
 			request as unknown as { context: Record<string, unknown> }
-		).context.session = session;
+		).context.session = session satisfies ChatSession;
 	},
 
 	open(peer) {

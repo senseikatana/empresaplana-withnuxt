@@ -16,8 +16,7 @@
 		"lang": {
 			"ca": "CA",
 			"es": "ES",
-			"en": "EN",
-			"fr": "FR"
+			"en": "EN"
 		},
 		"phone": "+34 977 553 680",
 		"footer": {
@@ -231,6 +230,11 @@
 			"language": "Idioma"
 		},
 		"gestion": {
+			"groups": {
+				"main": "Principal",
+				"management": "Gestió",
+				"communication": "Comunicació"
+			},
 			"nav": {
 				"panel": "Panell",
 				"map": "Mapa en viu",
@@ -253,6 +257,7 @@
 				"search": "Cerca",
 				"actions": "Accions",
 				"empty": "Sense registres",
+				"sectionSoon": "Secció en desenvolupament",
 				"confirmDelete": "Segur que vols eliminar aquest registre?",
 				"all": "Tots",
 				"newEntity": "Afegeix {entity}",
@@ -261,7 +266,10 @@
 				"back": "Torna",
 				"updated": "Registre actualitzat",
 				"created": "Registre creat",
-				"deleted": "Registre eliminat"
+				"deleted": "Registre eliminat",
+				"error": "Error en desar",
+				"archived": "Arxivada (té horaris o autobusos)",
+				"required": "obligatori"
 			},
 			"states": {
 				"active": "Activa",
@@ -321,7 +329,9 @@
 						"plate": "Matrícula",
 						"company": "Empresa",
 						"capacity": "Capacitat",
-						"route": "Ruta"
+						"route": "Ruta",
+						"routeId": "Ruta",
+						"status": "Estat"
 					}
 				},
 				"stop": {
@@ -341,7 +351,9 @@
 						"departure": "Sortida",
 						"arrival": "Arribada",
 						"frequency": "Freqüència",
-						"days": "Dies"
+						"days": "Dies",
+						"routeId": "Ruta",
+						"status": "Estat"
 					}
 				},
 				"driver": {
@@ -350,7 +362,43 @@
 						"name": "Nom",
 						"phone": "Telèfon",
 						"license": "Llicència",
-						"bus": "Autobús"
+						"bus": "Autobús",
+						"routeId": "Ruta",
+						"status": "Estat",
+						"busNumber": "Autobús",
+						"shiftDays": "Dies de torn",
+						"shiftHours": "Hores de torn"
+					}
+				},
+				"notification": {
+					"label": "Notificació",
+					"fields": {
+						"type": "Tipus",
+						"title": "Títol",
+						"desc": "Descripció",
+						"routeId": "Ruta"
+					}
+				},
+				"user": {
+					"label": "Usuari",
+					"fields": {
+						"username": "Nom d'usuari",
+						"name": "Nom",
+						"email": "Correu",
+						"phone": "Telèfon",
+						"role": "Rol",
+						"password": "Contrasenya",
+						"emailVerified": "Correu verificat"
+					}
+				},
+				"report": {
+					"label": "Reporte",
+					"fields": {
+						"lineId": "Línia",
+						"stop": "Parada",
+						"action": "Estat reportat",
+						"minutesLate": "Minuts de retard",
+						"comment": "Comentari"
 					}
 				}
 			},
@@ -539,7 +587,12 @@
 			"unreadNotifications": "Avisos sense llegir",
 			"budgets": "Pressupostos",
 			"favorites": "Favorites",
-			"recentSearches": "Cerques recents"
+			"recentSearches": "Cerques recents",
+			"activeOf": "actives de {total}",
+			"verified": "verificats",
+			"recentActivity": "Activitat recent",
+			"synced": "Sincronitzat",
+			"lastActivity": "Última activitat"
 		},
 		"search": {
 			"pages": "Pàgines"
@@ -548,6 +601,12 @@
 			"appearance": "Aparença",
 			"light": "Clar",
 			"dark": "Fosc"
+		},
+		"ai": {
+			"generate": "Generar amb IA",
+			"generating": "Generant…",
+			"error": "No s'ha pogut generar el text. Torna-ho a provar.",
+			"hint": "Revisa el text generat abans de desar-lo."
 		},
 		"assistant": {
 			"title": "Assistent IA",
@@ -564,7 +623,13 @@
 			}
 		},
 		"validation": {
-			"consentRequired": "Cal acceptar la política de privacitat"
+			"consentRequired": "Cal acceptar la política de privacitat",
+			"conflict": "Ja existeix",
+			"usernameExists": "Aquest nom d'usuari ja existeix",
+			"emailExists": "Aquest correu ja existeix",
+			"cannotDeleteSelf": "No et pots eliminar a tu mateix",
+			"lastAdmin": "No es pot eliminar l'últim administrador",
+			"cannotDemoteSelf": "No et pots treure el rol d'administrador"
 		}
 	},
 	"routes": {
@@ -1170,6 +1235,7 @@
 			"confirm": "Confirmar report",
 			"cancel": "Cancel·lar",
 			"alreadyReported": "Ja has reportat aquesta parada",
+			"error": "No s'ha pogut enviar el report. Torna-ho a provar.",
 			"selectIssue": "Selecciona l'estat de l'autobús",
 			"minutesLate": "Minuts de retard",
 			"comment": "Comentari (opcional)",

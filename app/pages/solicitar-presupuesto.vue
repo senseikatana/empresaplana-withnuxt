@@ -6,7 +6,7 @@ import presupuesto from "~/data/presupuesto.json";
 const { locale, t } = useI18n();
 const localePath = useLocalePath();
 
-const loc = computed(() => locale.value as "ca" | "es" | "en" | "fr");
+const loc = computed(() => locale.value as "ca" | "es" | "en");
 
 function pick<T extends Record<string, string>>(map: T, key: string): string {
 	const direct = map[key as keyof T];

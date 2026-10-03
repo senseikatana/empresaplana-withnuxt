@@ -3,9 +3,7 @@ const { locale, t } = useI18n();
 const localeHead = useLocaleHead({ dir: true, seo: true });
 
 const ogLocale = computed(
-	() =>
-		({ ca: "ca_ES", es: "es_ES", en: "en_GB", fr: "fr_FR" })[locale.value] ??
-		"ca_ES",
+	() => ({ ca: "ca_ES", es: "es_ES", en: "en_GB" })[locale.value] ?? "ca_ES",
 );
 
 useHead(() => ({

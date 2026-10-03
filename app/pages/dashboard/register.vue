@@ -2,6 +2,8 @@
 import type { FormSubmitEvent } from "@nuxt/ui";
 import { z } from "zod";
 
+definePageMeta({ layout: "auth" });
+
 const { t } = useI18n();
 const localePath = useLocalePath();
 
@@ -56,8 +58,9 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
 </script>
 
 <template>
-	<div class="flex min-h-screen items-center justify-center bg-surface-container px-4">
-		<UCard class="w-full max-w-sm">
+	<!-- el centrado y el fondo los aporta layouts/auth.vue -->
+	<div class="w-full max-w-sm">
+		<UCard>
 			<template #header>
 				<h1 class="text-xl font-bold text-deep-navy">{{ t("app.register.title") }}</h1>
 				<p class="text-sm text-on-surface-variant">{{ t("app.register.subtitle") }}</p>

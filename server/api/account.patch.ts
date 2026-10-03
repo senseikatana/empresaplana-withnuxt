@@ -36,6 +36,8 @@ export default defineEventHandler(async (event) => {
 		parsed.data.email !== undefined || parsed.data.newPassword !== undefined;
 
 	// Cambiar email o contraseña exige confirmar la contraseña actual.
+	// La contraseña vive en `Account.password` (Better Auth), no en
+	// `User.passkey`: ese campo ya no lo lee ningún login.
 	if (sensitive) {
 		if (!parsed.data.currentPasskey) {
 			throw createError({
@@ -43,11 +45,14 @@ export default defineEventHandler(async (event) => {
 				statusMessage: "Cal indicar la contrasenya actual",
 			});
 		}
-		const user = await prisma().user.findUnique({
-			where: { id: session.id },
-			select: { passkey: true },
+		const account = await prisma().account.findFirst({
+			where: { userId: session.id, providerId: "credential" },
+			select: { password: true },
 		});
-		if (!user || !verifyPasskey(parsed.data.currentPasskey, user.passkey)) {
+		if (
+			!account?.password ||
+			!verifyPasskey(parsed.data.currentPasskey, account.password)
+		) {
 			throw createError({
 				statusCode: 403,
 				statusMessage: "Contrasenya actual incorrecta",
@@ -74,20 +79,43 @@ export default defineEventHandler(async (event) => {
 		data.emailVerified = false;
 		emailChanged = true;
 	}
-	if (parsed.data.newPassword) {
-		data.passkey = hashPasskey(parsed.data.newPassword);
-	}
+	// La contraseña nueva se aplica a `Account`, no al usuario.
+	const passwordHash = parsed.data.newPassword
+		? hashPasskey(parsed.data.newPassword)
+		: null;
 
-	if (Object.keys(data).length === 0) {
+	if (Object.keys(data).length === 0 && !passwordHash) {
 		throw createError({ statusCode: 400, statusMessage: "Res a actualitzar" });
 	}
 
 	// Sin `avatarData`: no hace falta traer el blob para devolver el perfil.
-	const user = await prisma().user.update({
-		where: { id: session.id },
-		data,
-		omit: { avatarData: true },
-	});
+	const user =
+		Object.keys(data).length > 0
+			? await prisma().user.update({
+					where: { id: session.id },
+					data,
+					omit: { avatarData: true },
+				})
+			: await prisma().user.findUniqueOrThrow({
+					where: { id: session.id },
+					omit: { avatarData: true },
+				});
+
+	if (passwordHash) {
+		// `upsert` por si la cuenta de credenciales aún no existe.
+		await prisma().account.upsert({
+			where: {
+				userId_providerId: { userId: session.id, providerId: "credential" },
+			},
+			create: {
+				userId: session.id,
+				providerId: "credential",
+				accountId: String(session.id),
+				password: passwordHash,
+			},
+			update: { password: passwordHash, updatedAt: new Date() },
+		});
+	}
 
 	if (emailChanged) {
 		await sendVerificationEmail({

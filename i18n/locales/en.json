@@ -1,7 +1,7 @@
 {
 	"meta": {
-		"title": "Empresa Plana | Transport públic de viatgers",
-		"description": "Empresa Plana ofereix serveis de transport públic de viatgers a la Costa Daurada. Consulta horaris, línies i rutes d'autobús."
+		"title": "Empresa Plana - Buses and mobility for the Costa Dorada",
+		"description": "Empresa Plana: bus timetables, routes, airport transfers and private hire services in the Costa Dorada, Camp de Tarragona and Barcelona."
 	},
 	"common": {
 		"brand": "Empresa Plana",
@@ -16,8 +16,7 @@
 		"lang": {
 			"ca": "CA",
 			"es": "ES",
-			"en": "EN",
-			"fr": "FR"
+			"en": "EN"
 		},
 		"phone": "+34 977 553 680",
 		"footer": {
@@ -231,6 +230,11 @@
 			"language": "Language"
 		},
 		"gestion": {
+			"groups": {
+				"main": "Main",
+				"management": "Management",
+				"communication": "Communication"
+			},
 			"nav": {
 				"panel": "Dashboard",
 				"map": "Live map",
@@ -253,6 +257,7 @@
 				"search": "Search",
 				"actions": "Actions",
 				"empty": "No records",
+				"sectionSoon": "Section under development",
 				"confirmDelete": "Are you sure you want to delete this record?",
 				"all": "All",
 				"newEntity": "Add {entity}",
@@ -261,7 +266,10 @@
 				"back": "Back",
 				"updated": "Record updated",
 				"created": "Record created",
-				"deleted": "Record deleted"
+				"deleted": "Record deleted",
+				"error": "Error saving",
+				"archived": "Archived (has schedules or buses)",
+				"required": "required"
 			},
 			"states": {
 				"active": "Active",
@@ -321,7 +329,9 @@
 						"plate": "Plate",
 						"company": "Company",
 						"capacity": "Capacity",
-						"route": "Route"
+						"route": "Route",
+						"routeId": "Route",
+						"status": "Status"
 					}
 				},
 				"stop": {
@@ -341,7 +351,9 @@
 						"departure": "Departure",
 						"arrival": "Arrival",
 						"frequency": "Frequency",
-						"days": "Days"
+						"days": "Days",
+						"routeId": "Route",
+						"status": "Status"
 					}
 				},
 				"driver": {
@@ -350,7 +362,43 @@
 						"name": "Name",
 						"phone": "Phone",
 						"license": "License",
-						"bus": "Bus"
+						"bus": "Bus",
+						"routeId": "Route",
+						"status": "Status",
+						"busNumber": "Bus",
+						"shiftDays": "Shift days",
+						"shiftHours": "Shift hours"
+					}
+				},
+				"notification": {
+					"label": "Notification",
+					"fields": {
+						"type": "Type",
+						"title": "Title",
+						"desc": "Description",
+						"routeId": "Route"
+					}
+				},
+				"user": {
+					"label": "User",
+					"fields": {
+						"username": "Username",
+						"name": "Name",
+						"email": "Email",
+						"phone": "Phone",
+						"role": "Role",
+						"password": "Password",
+						"emailVerified": "Email verified"
+					}
+				},
+				"report": {
+					"label": "Report",
+					"fields": {
+						"lineId": "Line",
+						"stop": "Stop",
+						"action": "Reported status",
+						"minutesLate": "Minutes late",
+						"comment": "Comment"
 					}
 				}
 			},
@@ -539,7 +587,12 @@
 			"unreadNotifications": "Unread alerts",
 			"budgets": "Quotes",
 			"favorites": "Favourites",
-			"recentSearches": "Recent searches"
+			"recentSearches": "Recent searches",
+			"activeOf": "active of {total}",
+			"verified": "verified",
+			"recentActivity": "Recent activity",
+			"synced": "Synced",
+			"lastActivity": "Last activity"
 		},
 		"search": {
 			"pages": "Pages"
@@ -548,6 +601,12 @@
 			"appearance": "Appearance",
 			"light": "Light",
 			"dark": "Dark"
+		},
+		"ai": {
+			"generate": "Generate with AI",
+			"generating": "Generating…",
+			"error": "Couldn't generate the text. Please try again.",
+			"hint": "Review the generated text before saving."
 		},
 		"assistant": {
 			"title": "AI assistant",
@@ -564,7 +623,13 @@
 			}
 		},
 		"validation": {
-			"consentRequired": "You must accept the privacy policy"
+			"consentRequired": "You must accept the privacy policy",
+			"conflict": "Already exists",
+			"usernameExists": "That username already exists",
+			"emailExists": "That email already exists",
+			"cannotDeleteSelf": "You can't delete yourself",
+			"lastAdmin": "Can't delete the last administrator",
+			"cannotDemoteSelf": "You can't remove your own administrator role"
 		}
 	},
 	"routes": {
@@ -1170,6 +1235,7 @@
 			"confirm": "Confirm report",
 			"cancel": "Cancel",
 			"alreadyReported": "You have already reported this stop",
+			"error": "Couldn't send the report. Please try again.",
 			"selectIssue": "Select the bus status",
 			"minutesLate": "Minutes late",
 			"comment": "Comment (optional)",

@@ -13,7 +13,7 @@ transfers and discretionary services. Content is Catalan-first (`ca`, `es`, `en`
 | i18n      | `@nuxtjs/i18n` — `ca` default (root), `es`/`en`/`fr` prefixed                |
 | Data      | Prisma 7 (`prisma-client` generator → `generated/prisma/`) + `@prisma/adapter-pg` |
 | DB        | InsForge Postgres (`empresaplana.cat`, eu-central) — **DDL via InsForge migrations** |
-| Auth      | `jose` HS256 JWT in `ep_session` httpOnly cookie + scrypt, ACL (roles → capabilities) |
+| Auth      | **Better Auth** — sessions in DB (`Session` table, revocable), credentials in `Account.password` (scrypt), ACL (roles → capabilities) |
 | Assistant | `ai` v7 + `@ai-sdk/vue` + OpenRouter (`openrouter/free` by default)          |
 | Markdown  | `@comark/nuxt` (changelog/releases)                                           |
 | Tooling   | **Bun** (package manager + build), Node `>= 22.12` runtime, Biome, TypeScript strict |
@@ -61,7 +61,7 @@ bun run db:diff             # must be empty (DB == schema)
 ## Environment variables
 
 - `DATABASE_URL` — InsForge Postgres connection string.
-- `AUTH_SECRET` — random string for session JWTs.
+- `AUTH_SECRET` — random string Better Auth uses to sign session cookies (min. 32 chars).
 - `RESEND_API_KEY` / `MAIL_FROM` / `APP_URL` — transactional email (verification).
 - `OPENROUTER_API_KEY` / `ASSISTANT_MODEL` — AI assistant (default `openrouter/free`).
 - `MCP_SERVERS` — optional JSON list of MCP servers for the assistant.
@@ -74,6 +74,7 @@ Never commit `.env` or `.dev.vars`.
 app/               # pages, components, layouts, middleware, composables
   assets/css/      # main.css — Tailwind v4 @theme tokens (source of truth)
 server/            # Nitro API (api/, routes/, middleware/, utils/)
+  auth.ts          # Better Auth instance (DB sessions, credentials, rate limit)
   api/dashboard/   # protected intranet endpoints (requireCapability)
   middleware/      # dashboard-guard.ts (SSR session + email verification)
 i18n/locales/      # ca/es/en/fr dictionaries

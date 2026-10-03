@@ -16,14 +16,21 @@ datasource db {
 model User {
 	id             Int             @id @default(autoincrement())
 	username       String          @unique @db.VarChar(60)
-	passkey        String          @db.VarChar(128)
+	// Better Auth no escribe estas columnas al registrar; los defaults evitan
+	// que el INSERT falle por NOT NULL. La contraseña vive en `Account.password`.
+	passkey        String          @default("") @db.VarChar(128)
 	name           String          @db.VarChar(60)
-	fullName       String          @db.VarChar(120)
-	email          String          @db.VarChar(200)
-	phone          String          @db.VarChar(30)
+	fullName       String          @default("") @db.VarChar(120)
+	email          String          @unique @db.VarChar(200)
+	phone          String          @default("") @db.VarChar(30)
 	bio            String?         @db.VarChar(280)
 	avatarData     Bytes?
 	avatarMime     String?         @db.VarChar(50)
+	// Better Auth: foto nativa (aquí NULL, el avatar va en avatarData) y
+	// el nombre visible del plugin `username`. No son opcionales para el
+	// validador de esquema de Better Auth.
+	image              String?
+	displayUsername    String?
 	role           String          @default("client") @db.VarChar(20)
 	totpSecret     String?         @db.VarChar(100)
 	emailVerified  Boolean         @default(false)
@@ -34,8 +41,63 @@ model User {
 	recentSearches RecentSearch[]
 	messages       Message[]
 	assistantConversations AssistantConversation[]
+	sessions       Session[]
+	accounts       Account[]
 
 	@@index([role])
+}
+
+// ── Better Auth ─────────────────────────────────────────────────────────────
+// Sesiones en BD (revocables), credenciales y tokens de verificación.
+// Antes la sesión era un JWT stateless en `nuxt-auth-utils`: cerrar sesión no
+// invalidaba nada y un token robado seguía vivo 7 días.
+
+model Session {
+	id         Int      @id @default(autoincrement())
+	userId     Int
+	token      String   @unique
+	expiresAt  DateTime
+	ipAddress  String?
+	userAgent  String?
+	createdAt  DateTime @default(now())
+	updatedAt  DateTime @default(now()) @updatedAt
+	user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+	@@index([userId])
+	@@index([expiresAt])
+}
+
+// `accountId` es textual: Better Auth guarda ahí el id del usuario en el
+// proveedor. Para `providerId = "credential"` es el id numérico en string.
+model Account {
+	id                    Int       @id @default(autoincrement())
+	userId                Int
+	providerId            String
+	accountId             String
+	accessToken           String?
+	refreshToken          String?
+	idToken               String?
+	accessTokenExpiresAt  DateTime?
+	refreshTokenExpiresAt DateTime?
+	scope                 String?
+	password              String?
+	createdAt             DateTime  @default(now())
+	updatedAt             DateTime  @default(now()) @updatedAt
+	user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+	@@unique([userId, providerId])
+	@@index([providerId, accountId])
+}
+
+model Verification {
+	id         Int      @id @default(autoincrement())
+	identifier String
+	value      String
+	expiresAt  DateTime
+	createdAt  DateTime @default(now())
+	updatedAt  DateTime @default(now()) @updatedAt
+
+	@@index([identifier])
 }
 
 model FavoriteRoute {

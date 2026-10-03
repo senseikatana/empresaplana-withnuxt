@@ -1,6 +1,6 @@
 /* Empresa Plana — service worker de la intranet (PWA, "app nativa").
  *
- * Ámbito: /dashboard/ (y su versión con prefijo de idioma /es|en|fr/dashboard).
+ * Ámbito: /dashboard/ (y su versión con prefijo de idioma /es|en/dashboard).
  * La web pública y /api nunca se interceptan.
  *
  * Estrategias:
@@ -17,7 +17,7 @@ const CACHES = [SHELL_CACHE, ASSET_CACHE, FONT_CACHE];
 
 const PRECACHE = ["/manifest.webmanifest", "/app-icons/icon-192.png", "/app-icons/icon-512.png"];
 
-const DASHBOARD_RE = /^\/(?:(?:es|en|fr)\/)?dashboard(?:\/|$)/;
+const DASHBOARD_RE = /^\/(?:(?:es|en)\/)?dashboard(?:\/|$)/;
 
 self.addEventListener("install", (event) => {
 	event.waitUntil(

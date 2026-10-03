@@ -13,7 +13,7 @@ la aplicación vive en `app/` + `server/`.
 | UI | Nuxt UI v4 + Tailwind CSS v4 (build-time) |
 | i18n | `@nuxtjs/i18n` — ca default, es/en con prefijo |
 | Datos | Prisma 7 (`prisma-client` → `generated/prisma/`) + `@prisma/adapter-pg` + `pg` sobre Postgres |
-| Auth | jose HS256 JWT (`ep_session`) + scrypt passkeys, roles `client/worker/admin` |
+| Auth | **Better Auth** — sessions in DB (`Session`, revocable), credentials in `Account.password` (scrypt), roles `client/worker/admin` |
 | Tipografía | Geist (@nuxt/fonts) + Material Symbols |
 | Tooling | Biome, bun |
 

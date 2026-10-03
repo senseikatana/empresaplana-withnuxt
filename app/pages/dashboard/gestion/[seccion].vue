@@ -18,6 +18,8 @@ const sectionKeys: Record<string, string> = {
 	notificaciones: "app.gestion.nav.notifications",
 	reportes: "app.gestion.nav.reports",
 	integraciones: "app.gestion.nav.integrations",
+	// Sin esto el título salía como el literal de la URL ("usuarios" en minúsculas).
+	usuarios: "app.gestion.nav.users",
 };
 
 const section = route.params.seccion as string;
@@ -33,7 +35,7 @@ const title = sectionKeys[section] ? t(sectionKeys[section]) : section;
 			class="mt-6"
 			variant="soft"
 			color="neutral"
-			:title="t('app.worker.noLineData')"
+			:title="t('app.gestion.common.sectionSoon')"
 		/>
 	</div>
 </template>

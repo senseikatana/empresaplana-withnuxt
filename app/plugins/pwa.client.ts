@@ -3,7 +3,7 @@ export default defineNuxtPlugin(() => {
 
 	// El dashboard existe en todos los locales (prefix_except_default):
 	// /dashboard, /es/dashboard, /en/dashboard, /fr/dashboard.
-	const match = window.location.pathname.match(/^\/(es|en|fr)(?=\/|$)/);
+	const match = window.location.pathname.match(/^\/(es|en)(?=\/|$)/);
 	const prefix = match ? `/${match[1]}` : "";
 
 	navigator.serviceWorker

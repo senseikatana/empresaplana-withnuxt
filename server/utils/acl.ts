@@ -30,11 +30,9 @@ export async function requireCapability(
 		throw createError({ statusCode: 403, statusMessage: "Sense accés" });
 	}
 	if (options.requireVerified) {
-		const user = await prisma().user.findUnique({
-			where: { id: session.id },
-			select: { emailVerified: true },
-		});
-		if (!user?.emailVerified) {
+		// `emailVerified` ya viene de la sesión (Better Auth lo lee de `User`
+		// en cada getSession): antes hacía una consulta extra por petición.
+		if (!session.emailVerified) {
 			throw createError({
 				statusCode: 403,
 				statusMessage: "Cal verificar el correu",

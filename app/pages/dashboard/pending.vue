@@ -1,4 +1,6 @@
 <script setup lang="ts">
+definePageMeta({ layout: "auth" });
+
 const { t } = useI18n();
 const localePath = useLocalePath();
 
@@ -39,8 +41,9 @@ async function logout() {
 </script>
 
 <template>
-	<div class="flex min-h-screen items-center justify-center bg-surface-container px-4">
-		<UCard class="w-full max-w-md">
+	<!-- el centrado y el fondo los aporta layouts/auth.vue -->
+	<div class="w-full max-w-md">
+		<UCard>
 			<template #header>
 				<div class="flex items-center gap-3">
 					<span class="material-symbols-outlined text-deep-navy text-[28px]">mark_email_unread</span>

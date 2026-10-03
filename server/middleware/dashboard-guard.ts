@@ -1,6 +1,6 @@
 import { getSessionUser } from "../utils/auth";
 
-const DASHBOARD_PATH = /^\/(?:es|en|fr)?\/dashboard(?:\/|$)/;
+const DASHBOARD_PATH = /^\/(?:es|en)?\/dashboard(?:\/|$)/;
 const SESSION_FREE_PATHS = ["/dashboard/login", "/dashboard/register"];
 const VERIFICATION_FREE_PATHS = ["/dashboard/pending"];
 
@@ -14,8 +14,8 @@ export default defineEventHandler(async (event) => {
 	const path = (event.path ?? "").split("?")[0] ?? "";
 	if (!DASHBOARD_PATH.test(path)) return;
 
-	const prefix = path.match(/^\/(es|en|fr)(?=\/dashboard)/)?.[0] ?? "";
-	const normalized = path.replace(/^\/(?:es|en|fr)(?=\/dashboard)/, "");
+	const prefix = path.match(/^\/(es|en)(?=\/dashboard)/)?.[0] ?? "";
+	const normalized = path.replace(/^\/(?:es|en)(?=\/dashboard)/, "");
 	const loginPath = `${prefix}/dashboard/login`;
 
 	if (SESSION_FREE_PATHS.includes(normalized)) return;
@@ -28,15 +28,11 @@ export default defineEventHandler(async (event) => {
 
 	if (VERIFICATION_FREE_PATHS.includes(normalized)) return;
 
-	const user = await prisma().user.findUnique({
-		where: { id: session.id },
-		select: { emailVerified: true },
-	});
-
-	if (!user) {
-		return sendRedirect(event, loginPath, 302);
-	}
-	if (!user.emailVerified) {
+	// `emailVerified` viene de la sesión (Better Auth lee `User` en cada
+	// getSession, sin cookie cache en setups con BD): antes era una consulta
+	// extra en CADA petición al panel. Si el usuario ya no existe, la sesión
+	// no valida y `getSessionUser` ha devuelto null más arriba.
+	if (!session.emailVerified) {
 		return sendRedirect(event, `${prefix}/dashboard/pending`, 302);
 	}
 });

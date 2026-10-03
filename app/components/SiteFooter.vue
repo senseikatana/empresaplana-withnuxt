@@ -17,6 +17,7 @@ const serviceLinks = computed(() => [
 		label: t("homeVariant2.nav.privateServices"),
 	},
 	{ href: "/donde-estamos", label: t("homeVariant2.nav.aboutUs") },
+	{ href: "/rastreig", label: t("home.screens.tracking.label") },
 ]);
 
 const legalLinks = computed(() => [

@@ -1,8 +1,12 @@
 import { z } from "zod";
 import { isRole } from "#shared/acl";
-import { setSessionUser } from "../../utils/auth";
+import { auth } from "../../auth";
+import {
+	adoptAuthResponse,
+	authErrorMessage,
+	webHeaders,
+} from "../../utils/auth";
 import { createLogger } from "../../utils/logger";
-import { verifyPasskey } from "../../utils/passkey";
 
 const log = createLogger("api:auth:login");
 const loginSchema = z.object({
@@ -20,9 +24,10 @@ export default defineEventHandler(async (event) => {
 
 	const { username, passkey } = parsed.data;
 
+	// Pre-chequeo para mantener el contrato: roles corruptos y fantasmas
+	// anónimos (passkey vacío) nunca autentican, igual que antes.
 	const user = await prisma().user.findUnique({ where: { username } });
-	// Fantasmas anónimos (passkey "") y roles corruptos nunca autentican.
-	if (!user || !isRole(user.role) || !verifyPasskey(passkey, user.passkey)) {
+	if (!user || !isRole(user.role)) {
 		log.warn("Login failed", { username });
 		throw createError({
 			statusCode: 401,
@@ -30,11 +35,37 @@ export default defineEventHandler(async (event) => {
 		});
 	}
 
-	await setSessionUser(event, {
-		id: user.id,
-		username: user.username,
-		role: user.role,
-	});
+	// Con `asResponse: true` Better Auth NO lanza en credenciales malas:
+	// devuelve un Response 4xx, así que hay que comprobar el estado.
+	let signedIn = false;
+	try {
+		const response = await auth.api.signInUsername({
+			body: { username, password: passkey },
+			headers: webHeaders(event),
+			asResponse: true,
+		});
+		signedIn = adoptAuthResponse(event, response);
+		if (!signedIn) {
+			log.warn("Login rejected by Better Auth", {
+				username,
+				status: response.status,
+				reason: authErrorMessage(response),
+			});
+		}
+	} catch (error) {
+		log.warn("Login error", {
+			username,
+			reason: error instanceof Error ? error.message : "unknown",
+		});
+	}
+
+	if (!signedIn) {
+		throw createError({
+			statusCode: 401,
+			statusMessage: "Credencials invàlides",
+		});
+	}
+
 	log.info("Login successful", { userId: user.id, role: user.role });
 
 	return {

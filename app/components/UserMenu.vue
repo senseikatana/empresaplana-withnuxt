@@ -120,7 +120,11 @@ async function purgePlanaCaches() {
 		:items="items"
 		:content="{ align: 'center', collisionPadding: 12 }"
 		:ui="{
-			content: collapsed ? 'w-48' : 'w-(--reka-dropdown-menu-trigger-width)',
+			// El trigger solo mide lo que ocupa el nombre, así que el menú se
+			// quedaba tan estrecho como él y cortaba etiquetas
+			// ('Torna a la w…', 'Tancar la se…'). `min-w-52` fija un ancho
+			// mínimo legible sin dejar de seguir al trigger si este es más ancho.
+			content: collapsed ? 'w-48' : 'w-(--reka-dropdown-menu-trigger-width) min-w-52',
 		}"
 	>
 		<UButton

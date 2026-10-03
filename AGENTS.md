@@ -10,7 +10,7 @@ Target: `https://empresaplana.cat`. Repo público: nunca commitear datos sensibl
 - **@comark/nuxt** para markdown (`app/components/AppMarkdown.ts`), **ai v7 + @ai-sdk/vue + @ai-sdk/openai-compatible** para el asistente.
 - **Prisma 7** (`prisma-client` generator → `generated/prisma/`) + `@prisma/adapter-pg` + `pg`. **Prisma es SOLO cliente: el DDL vive en migraciones InsForge.**
 - **DB: InsForge Postgres** (proyecto `empresaplana.cat`, eu-central). `DATABASE_URL` en `.env`.
-- **Auth**: jose HS256 JWT en cookie `ep_session` + scrypt. Roles `client | worker | admin`.
+- **Auth**: **Better Auth** (`server/auth.ts`) — sesiones en la tabla `Session` (revocables), credenciales en `Account.password`. Login por `username` + contraseña (scrypt, mismo formato `salt:hash` que antes). Roles `client | worker | admin`.
 - **ACL**: `shared/acl.ts` + `requireCapability()` (`server/utils/acl.ts`). Nada de `role === "..."` inline.
 - **Package manager + build: Bun** (`bun.lock`; `trustedDependencies` en `package.json` para los postinstall de Prisma/esbuild/workerd). Runtime de producción: **Node >= 22.12**. Formato/lint: **Biome**.
 
@@ -34,7 +34,7 @@ bun run deploy:demo      # data + build estático + wrangler deploy (Cloudflare 
 - **`tables.external` en `prisma.config.ts` (7 tablas: `transit_*`, `atm_*`, `payment_systems`) las blinda de Prisma Migrate. No quitar.**
 - Tras cualquier cambio de schema: `bun run db:diff` vacío. Si no, alinear DB/schema por migración InsForge (no por push).
 - **Ownership**: las tablas creadas por Prisma pertenecen a `postgres`; las migraciones corren como `project_admin`. Antes de alterar/dropear una tabla Prisma desde una migración: `ALTER TABLE ... OWNER TO project_admin;` (con `psql "$DATABASE_URL"`). El runner de migraciones **no** puede cambiar ownership (falla con `must be owner of table`): el `ALTER ... OWNER` va aparte con `psql`, la migración solo contiene el DDL.
-- Migraciones aplicadas: `canonical-transit`, `fix-atm-fares-pk`, `assistant-chat`, `cms-tables`, `align-assistant-tables`, `drop-legacy-demo-tables`, `profile-avatar`.
+- Migraciones aplicadas: `canonical-transit`, `fix-atm-fares-pk`, `assistant-chat`, `cms-tables`, `align-assistant-tables`, `drop-legacy-demo-tables`, `profile-avatar`, `better-auth-sessions`, `better-auth-user-columns`, `better-auth-user-defaults`, `better-auth-user-email-unique`.
 - Consultas puntuales: `npx -y @insforge/cli db query "SELECT ..."`.
 - La tabla `assistant_conversations.title` es `text` (no varchar) y los timestamps del asistente son `timestamptz(6)` a propósito.
 
@@ -80,6 +80,44 @@ npx -y @insforge/cli compute deploy . --name empresaplana --port 3000 --region f
 - Favicons de marca (`public/favicon.svg` simplificado + `favicon.ico` multi-tamaño) declarados en `app/head.link` de `nuxt.config.ts`. `og:image` = `/img/thumbnail.jpg` (1200×630, se regenera desde `thumbnail.svg` con ImageMagick).
 - `public/sitemap.xml` estático (9 páginas públicas × 4 locales con hreflang). Si se agregan páginas, regenerarlo. La ruta dinámica `/sitemap.xml` se eliminó: el archivo público gana y también sirve al demo estático.
 - PWA "nativa": `public/sw.js` con scope `/dashboard/` (network-first shell, assets/fuentes SWR, nunca intercepta `/api` ni la web pública), registrado por `app/plugins/pwa.client.ts` (se salta en dev). El manifest apunta a `/dashboard/`.
+
+## Auth — Better Auth
+
+Antes: JWT stateless (`nuxt-auth-utils`) en cookie `ep_session`. El logout solo
+borraba la cookie y el token seguía válido 7 días. Ahora la sesión es una fila
+en `Session` y **se revoca de verdad**.
+
+- **Instancia**: `server/auth.ts`. Adaptador de h3 → Better Auth en
+  `server/utils/auth.ts` (`getSessionUser` / `getSessionFromHeaders` /
+  `clearSessionUser` / `webHeaders` / `adoptAuthResponse`).
+- **Endpoints del panel intactos**: `/api/auth/{login,register,logout,resend-verification}`
+  conservan su contrato (401 / 409 `username_exists` / `{ok}`); internamente
+  llaman a `auth.api.*`. El handler nativo de Better Auth está en
+  `server/api/auth/[...all].ts` (las rutas concretas tienen prioridad).
+- **Esquema**: `User` es el modelo de usuario ya existente. `Session`,
+  `Account` y `Verification` son tablas nuevas (migración
+  `better-auth-sessions`). La contraseña vive en `Account.password`.
+- **Gotchas de Better Auth** (todos verificados con la integración real):
+  - `advanced.database.generateId` **debe ser `"serial"`, no `false`**: `false`
+    hace que el adapter lea `user.id` como *string* y las consultas a
+    columnas `Int` revientan con `PrismaClientValidationError`.
+  - `auth.api.*( { asResponse: true } )` **no lanza** en errores: devuelve un
+    `Response` 4xx. Sin comprobar `response.ok`, un login con contraseña mala
+    se registraría como exitoso.
+  - `webHeaders()` usa `getRequestHeaders(event)`: `Object.entries()` sobre
+    una instancia `Headers` de h3 devuelve `[]` y la cookie se pierde (la
+    sesión no se leería nunca).
+  - `databaseHooks.user` **no sirve**: colisiona con el `databaseHooks.user`
+    del plugin `username`. Las columnas que Better Auth no escribe
+    (`passkey`, `fullName`, `phone`) llevan **defaults en la BD**.
+- **Contraseña**: `emailAndPassword.password.hash/verify` reutilizan
+  `server/utils/passkey.ts`, así que todos los hashes existentes siguen
+  sirviendo. El cambio de contraseña (`PATCH /api/account`) escribe en
+  `Account`, no en `User.passkey` (ese campo ya no lo lee nadie).
+- **Rate limit**: `rateLimit` de Better Auth para `/sign-in|/sign-up`, más el
+  `rateLimit()` propio del proyecto en los endpoints del panel.
+- **Verificación de email**: se mantiene el flujo propio del proyecto
+  (JWT + `server/routes/verify-email` + `/dashboard/pending`).
 
 ## Dashboard / intranet
 
