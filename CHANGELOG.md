@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.5.0] - 2026-10-03
+
+### Changed
+- docs(.env.example): update documentation in 18 files
+
 ## [1.4.4] - 2026-10-03
 
 ### Changed
