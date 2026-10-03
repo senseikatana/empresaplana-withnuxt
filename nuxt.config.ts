@@ -112,8 +112,6 @@ export default defineNuxtConfig({
 							"/es/dashboard/**",
 							"/en/dashboard",
 							"/en/dashboard/**",
-							"/fr/dashboard",
-							"/fr/dashboard/**",
 						],
 					},
 				}

@@ -8,38 +8,36 @@ El proyecto usa **Semantic Versioning** (SemVer): `MAJOR.MINOR.PATCH`.
 |-----------|-------------|
 | `package.json` | Campo `"version"` — fuente de verdad |
 | `CHANGELOG.md` | Registro de cambios por versión |
-| `scripts/bump-version.mjs` | Script que sincroniza ambos |
-| `.github/workflows/release.yml` | Workflow que ejecuta el bump en cada tag `v*` |
+| `scripts/bump-version.mjs` | Script que sincroniza ambos (`bun run release:bump`) |
+| `.github/workflows/release.yml` | Workflow que, en cada tag `v*`, crea/actualiza la GitHub Release con las notas del CHANGELOG |
 
 ## Flujo de versionado
 
 ### Manual
 
 ```bash
-# 1. Crear un tag
-git tag v1.2.0
+# 1. Bump: actualiza package.json y añade la sección al CHANGELOG
+bun run release:bump --version=1.2.0
 
-# 2. Ejecutar el bump
-bun run version:bump --version=1.2.0
-
-# 3. Commit y push
+# 2. Escribir las notas bajo "## [1.2.0]" y commitear
 git add package.json CHANGELOG.md
 git commit -m "chore(release): bump version to 1.2.0"
+
+# 3. Tag y push (dispara el workflow de releases)
+git tag v1.2.0
 git push && git push --tags
 ```
 
-### Automático (recomendado)
+### Release automática (tras el bump)
 
 1. Haz push de un tag `v*` al repositorio.
 2. El workflow `.github/workflows/release.yml` se ejecuta automáticamente:
-   - Checkout de la rama `main`.
-   - Ejecuta `node scripts/bump-version.mjs` con la versión del tag.
-   - Actualiza `package.json` y `CHANGELOG.md`.
-   - Hace commit y push de los cambios.
-   - Crea un GitHub Release con notas automáticas.
+   - Extrae la sección del tag de `CHANGELOG.md` (`scripts/release-notes.mjs`).
+   - Crea o actualiza la GitHub Release con esas notas.
+   - **No** toca `package.json` ni `CHANGELOG.md`: el bump es manual (arriba).
 
 ```bash
-# Crear y push un tag para触发 el workflow
+# Crear y push un tag para disparar el workflow
 git tag v1.2.0
 git push origin v1.2.0
 ```
@@ -49,11 +47,11 @@ git push origin v1.2.0
 ### Uso
 
 ```bash
-# Con versión explícita
-bun run version:bump --version=1.2.0
+# Con versión explícita (recomendado)
+bun run release:bump --version=1.2.0
 
-# Desde el último tag (requiere tags en el repo)
-bun run version:bump
+# Fallback: usa el último tag v* del repo (si no hay tag ni arg, falla)
+bun run release:bump
 ```
 
 ### Qué hace
@@ -61,25 +59,27 @@ bun run version:bump
 1. Lee la versión de `--version=` o del último tag `v*` en git.
 2. Valida que sea SemVer válido (`x.y.z` o `x.y.z-prerelease`).
 3. Actualiza `"version"` en `package.json` (preservando formato).
-4. Reemplaza `## [Unreleased]` en `CHANGELOG.md` con `## [x.y.z] - YYYY-MM-DD`.
+4. Inserta una sección nueva `## [x.y.z] - YYYY-MM-DD` (con `### Added /
+   Changed / Fixed` vacíos) justo después de la cabecera de `CHANGELOG.md`.
+   **No existe una sección `## [Unreleased]`**: las notas se escriben
+   directamente bajo la versión nueva.
 
 ### Ejemplo de CHANGELOG
 
-Antes:
-```markdown
-## [Unreleased]
+`bun run release:bump --version=1.2.0` inserta al principio (tras `---`):
 
-### Added
-- Nueva funcionalidad X
-```
-
-Después de `bun run version:bump --version=1.2.0`:
 ```markdown
 ## [1.2.0] - 2026-09-03
 
 ### Added
-- Nueva funcionalidad X
+
+### Changed
+
+### Fixed
 ```
+
+Si la versión ya existe en el CHANGELOG no la duplica (avisa y sale).
+Luego se rellenan las notas y se hace el tag.
 
 ## Convenciones de commits
 
@@ -98,9 +98,9 @@ El proyecto sigue **Conventional Commits**:
 
 Ejemplos:
 ```
-feat(deploy): convertir a sitio estático y configurar GitHub Pages
+feat(deploy): publicar la app en InsForge compute
 fix(search): corregir búsqueda de rutas con acentos
-chore(deps): actualizar Astro a 7.2.10
+chore(deps): actualizar Nuxt a 4.5.2
 docs(wiki): añadir documentación de componentes
 ```
 
@@ -122,4 +122,4 @@ feat/mi-feature → dev → main
 2. Desarrollar y commitear.
 3. Merge a `dev` (PR o merge directo).
 4. Merge a `main` cuando esté listo para producción.
-5. Crear tag `v*` para触发 el release.
+5. Crear tag `v*` para disparar el release.

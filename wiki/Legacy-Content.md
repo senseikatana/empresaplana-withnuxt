@@ -2,7 +2,10 @@
 
 ## Origen
 
-Los 10 archivos Markdown en `src/config/` fueron extraídos del sitio web original de Empresa Plana (`empresaplana.cat`) mediante **Firecrawl** el 3 de septiembre de 2026.
+Los 10 archivos Markdown (originalmente en `src/config/`, hoy ya no existen:
+`src/` se eliminó con el legado Astro) fueron extraídos del sitio web original
+de Empresa Plana (`empresaplana.cat`) mediante **Firecrawl** el 3 de septiembre
+de 2026. Este inventario queda como registro.
 
 ## Inventario de archivos
 
@@ -41,7 +44,8 @@ El contenido completo se documentó en un documento Word:
 docs/empresa-plana-contenido-web.docx
 ```
 
-Generado con `scripts/generate-doc.mjs` (requiere `docx` como devDependency).
+Generado con un script `generate-doc.mjs` (no incluido en este repo); el
+`.docx` resultante es el que queda en `docs/`.
 
 ## Características de los archivos
 
@@ -59,6 +63,8 @@ Estos archivos sirven como:
 3. **Auditoría de contenido** para verificar que no se pierda información en la migración.
 4. **Base para el documento Word** de documentación completa.
 
-## Limpieza futura
+## Estado
 
-Cuando el contenido esté completamente migrado al nuevo sitio (i18n, datos JSON, páginas), estos archivos pueden eliminarse del repositorio. El documento Word en `docs/` preserva la información de forma permanente.
+Los archivos Markdown ya no están en el repo (se eliminaron junto con el
+legado Astro): solo queda este inventario. El documento Word en `docs/`
+preserva la información de forma permanente.

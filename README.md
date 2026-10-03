@@ -3,17 +3,17 @@
 Website redesign of [empresaplana.cat](https://empresaplana.cat) for Empresa Plana
 (Costa Daurada / Camp de Tarragona transport company). Public site + admin panel
 (intranet/CMS, AI assistant) — bus lines, schedules, stops, ATM fares, airport
-transfers and discretionary services. Content is Catalan-first (`ca`, `es`, `en`, `fr`).
+transfers and discretionary services. Content is Catalan-first (`ca`, `es`, `en`).
 
 ## Tech stack
 
 | Layer     | Technology                                                                    |
 | --------- | ----------------------------------------------------------------------------- |
 | Framework | Nuxt 4 + Nitro 2 (`node_server`), Nuxt UI v4, Tailwind v4                     |
-| i18n      | `@nuxtjs/i18n` — `ca` default (root), `es`/`en`/`fr` prefixed                |
+| i18n      | `@nuxtjs/i18n` — `ca` default (root), `es`/`en` prefixed                |
 | Data      | Prisma 7 (`prisma-client` generator → `generated/prisma/`) + `@prisma/adapter-pg` |
 | DB        | InsForge Postgres (`empresaplana.cat`, eu-central) — **DDL via InsForge migrations** |
-| Auth      | **Better Auth** — sessions in DB (`Session` table, revocable), credentials in `Account.password` (scrypt), ACL (roles → capabilities) |
+| Auth      | **Better Auth** — sessions in DB (`Session` table, revocable), credentials in `Account.password` (scrypt), client via `better-auth/vue` (`app/lib/auth-client.ts`), ACL (roles → capabilities) |
 | Assistant | `ai` v7 + `@ai-sdk/vue` + OpenRouter (`openrouter/free` by default)          |
 | Markdown  | `@comark/nuxt` (changelog/releases)                                           |
 | Tooling   | **Bun** (package manager + build), Node `>= 22.12` runtime, Biome, TypeScript strict |
@@ -58,11 +58,19 @@ bun run db:diff             # must be empty (DB == schema)
 | `bun run deploy:demo`              | Data + build + `wrangler deploy` (Cloudflare Workers) |
 | `bun run release:bump --version=x.y.z` | Bump version + CHANGELOG entry                  |
 
+> ⚠️ Run `typecheck` / `build` / `bun install` only when `bun run dev` is **not**
+> running: they all invoke `nuxt prepare`, which silently breaks a live dev
+> server (every route returns 503/500 with nothing in its log). `bun run check`
+> (Biome) is safe. `vue-tsc` is pinned to `3.3.11` on purpose — don't bump it.
+
 ## Environment variables
 
 - `DATABASE_URL` — InsForge Postgres connection string.
 - `AUTH_SECRET` — random string Better Auth uses to sign session cookies (min. 32 chars).
-- `RESEND_API_KEY` / `MAIL_FROM` / `APP_URL` — transactional email (verification).
+- `APP_URL` — public origin of the app. **Required in production**: Better Auth
+  uses it as `baseURL`/`trustedOrigins`, so without it browser `sign-out` fails
+  with `403 MISSING_OR_NULL_ORIGIN` and verification links point to localhost.
+- `RESEND_API_KEY` / `MAIL_FROM` — transactional email (verification).
 - `OPENROUTER_API_KEY` / `ASSISTANT_MODEL` — AI assistant (default `openrouter/free`).
 - `MCP_SERVERS` — optional JSON list of MCP servers for the assistant.
 
@@ -73,11 +81,13 @@ Never commit `.env` or `.dev.vars`.
 ```
 app/               # pages, components, layouts, middleware, composables
   assets/css/      # main.css — Tailwind v4 @theme tokens (source of truth)
+  lib/             # auth-client.ts — Better Auth client (signIn/signUp/signOut)
 server/            # Nitro API (api/, routes/, middleware/, utils/)
   auth.ts          # Better Auth instance (DB sessions, credentials, rate limit)
+  api/auth/        # native Better Auth handler + legacy panel endpoints
   api/dashboard/   # protected intranet endpoints (requireCapability)
   middleware/      # dashboard-guard.ts (SSR session + email verification)
-i18n/locales/      # ca/es/en/fr dictionaries
+i18n/locales/      # ca/es/en dictionaries
 shared/            # code shared by app + server (ACL, transit search, day types)
 migrations/        # InsForge SQL migrations (DB source of truth)
 prisma/            # schema.prisma (client-only) + seed

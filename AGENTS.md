@@ -6,11 +6,11 @@ Target: `https://empresaplana.cat`. Repo público: nunca commitear datos sensibl
 ## Stack
 
 - **Nuxt 4** (`app/`, `server/`, `i18n/`) + Nitro (`node_server`) + Nuxt UI v4 + Tailwind v4.
-- **@nuxtjs/i18n** (default `ca` en `/`; `es`/`en`/`fr` con prefijo) + **@nuxtjs/color-mode** (tokens dark en `app/assets/css/main.css`).
+- **@nuxtjs/i18n** (default `ca` en `/`; `es`/`en` con prefijo — **`fr` se eliminó**: locale, diccionario, selector y sitemap) + **@nuxtjs/color-mode** (tokens dark en `app/assets/css/main.css`).
 - **@comark/nuxt** para markdown (`app/components/AppMarkdown.ts`), **ai v7 + @ai-sdk/vue + @ai-sdk/openai-compatible** para el asistente.
 - **Prisma 7** (`prisma-client` generator → `generated/prisma/`) + `@prisma/adapter-pg` + `pg`. **Prisma es SOLO cliente: el DDL vive en migraciones InsForge.**
 - **DB: InsForge Postgres** (proyecto `empresaplana.cat`, eu-central). `DATABASE_URL` en `.env`.
-- **Auth**: **Better Auth** (`server/auth.ts`) — sesiones en la tabla `Session` (revocables), credenciales en `Account.password`. Login por `username` + contraseña (scrypt, mismo formato `salt:hash` que antes). Roles `client | worker | admin`.
+- **Auth**: **Better Auth** (`server/auth.ts`) — sesiones en la tabla `Session` (revocables), credenciales en `Account.password`. Login por `username` + contraseña (scrypt, mismo formato `salt:hash` que antes). Roles `client | worker | admin`. Cliente de frontend en `app/lib/auth-client.ts` (`better-auth/vue` + `usernameClient`).
 - **ACL**: `shared/acl.ts` + `requireCapability()` (`server/utils/acl.ts`). Nada de `role === "..."` inline.
 - **Package manager + build: Bun** (`bun.lock`; `trustedDependencies` en `package.json` para los postinstall de Prisma/esbuild/workerd). Runtime de producción: **Node >= 22.12**. Formato/lint: **Biome**.
 
@@ -27,6 +27,11 @@ node scripts/seed-transit.mjs   # seed del dataset canónico (lee data/routes + 
 bun run deploy:demo      # data + build estático + wrangler deploy (Cloudflare Workers)
 ```
 
+> ⚠️ **`typecheck` / `build` / `bun install` solo con el dev server APAGADO**:
+> los tres ejecutan `nuxt prepare`, que con `bun run dev` vivo rompe el dev
+> server **en silencio** (todas las rutas pasan a 503/500 y no escribe ni un
+> error en su log). Ver Gotchas.
+
 ## Base de datos (InsForge) — reglas duras
 
 - DDL SIEMPRE por migraciones InsForge: `npx -y @insforge/cli db migrations new <name>` → editar `migrations/*.sql` → `npx -y @insforge/cli db migrations up --all`.
@@ -34,7 +39,7 @@ bun run deploy:demo      # data + build estático + wrangler deploy (Cloudflare 
 - **`tables.external` en `prisma.config.ts` (7 tablas: `transit_*`, `atm_*`, `payment_systems`) las blinda de Prisma Migrate. No quitar.**
 - Tras cualquier cambio de schema: `bun run db:diff` vacío. Si no, alinear DB/schema por migración InsForge (no por push).
 - **Ownership**: las tablas creadas por Prisma pertenecen a `postgres`; las migraciones corren como `project_admin`. Antes de alterar/dropear una tabla Prisma desde una migración: `ALTER TABLE ... OWNER TO project_admin;` (con `psql "$DATABASE_URL"`). El runner de migraciones **no** puede cambiar ownership (falla con `must be owner of table`): el `ALTER ... OWNER` va aparte con `psql`, la migración solo contiene el DDL.
-- Migraciones aplicadas: `canonical-transit`, `fix-atm-fares-pk`, `assistant-chat`, `cms-tables`, `align-assistant-tables`, `drop-legacy-demo-tables`, `profile-avatar`, `better-auth-sessions`, `better-auth-user-columns`, `better-auth-user-defaults`, `better-auth-user-email-unique`.
+- Migraciones aplicadas: `canonical-transit`, `fix-atm-fares-pk`, `assistant-chat`, `cms-tables`, `align-assistant-tables`, `drop-legacy-demo-tables`, `profile-avatar`, `better-auth-sessions`, `better-auth-user-columns`, `better-auth-user-defaults`, `better-auth-user-email-unique`, `resync-id-sequences`.
 - Consultas puntuales: `npx -y @insforge/cli db query "SELECT ..."`.
 - La tabla `assistant_conversations.title` es `text` (no varchar) y los timestamps del asistente son `timestamptz(6)` a propósito.
 
@@ -78,7 +83,7 @@ npx -y @insforge/cli compute deploy . --name empresaplana --port 3000 --region f
 - **No hay fotos del cliente todavía**: `public/img/*.svg` son placeholders de marca (hero, cards, mapa). `AppPicture` intenta `.avif`/`.webp`/`.jpg` y cae al `.svg`; al llegar fotos reales usar los mismos nombres base y ganan solas.
 - `AppPicture` recupera el 404 disparado antes de la hidratación con un check en `onMounted` (`complete && naturalWidth === 0`); no quitar.
 - Favicons de marca (`public/favicon.svg` simplificado + `favicon.ico` multi-tamaño) declarados en `app/head.link` de `nuxt.config.ts`. `og:image` = `/img/thumbnail.jpg` (1200×630, se regenera desde `thumbnail.svg` con ImageMagick).
-- `public/sitemap.xml` estático (9 páginas públicas × 4 locales con hreflang). Si se agregan páginas, regenerarlo. La ruta dinámica `/sitemap.xml` se eliminó: el archivo público gana y también sirve al demo estático.
+- `public/sitemap.xml` estático (9 páginas públicas × **3** locales: `ca`/`es`/`en`, con hreflang). Si se agregan páginas, regenerarlo. La ruta dinámica `/sitemap.xml` se eliminó: el archivo público gana y también sirve al demo estático. **`/fr/*` devuelve 404 a propósito: no hay locale francés.**
 - PWA "nativa": `public/sw.js` con scope `/dashboard/` (network-first shell, assets/fuentes SWR, nunca intercepta `/api` ni la web pública), registrado por `app/plugins/pwa.client.ts` (se salta en dev). El manifest apunta a `/dashboard/`.
 
 ## Auth — Better Auth
@@ -90,9 +95,27 @@ en `Session` y **se revoca de verdad**.
 - **Instancia**: `server/auth.ts`. Adaptador de h3 → Better Auth en
   `server/utils/auth.ts` (`getSessionUser` / `getSessionFromHeaders` /
   `clearSessionUser` / `webHeaders` / `adoptAuthResponse`).
+- **Cliente de frontend**: `app/lib/auth-client.ts` (`createAuthClient` de
+  `better-auth/vue` + `usernameClient()`). `usernameClient` se importa de
+  **`better-auth/client/plugins`, NO de `better-auth/plugins`**: el del server
+  arrastra `api/routes/session`/`db/schema`/`utils/password` al bundle cliente
+  (verificado: 0 chunks con `prismaAdapter` en `.output/public/_nuxt`).
+  - `login.vue` → `authClient.signIn.username({ username, password })`;
+    `register.vue` → `authClient.signUp.email({ name, username, email, password })`;
+    `UserMenu.vue` → `authClient.signOut()` (revoca la fila en BD, no solo limpia
+    cookie). Better Auth **no lanza**: devuelve `{ error }`, hay que comprobarlo.
+  - **Códigos del registro nativo (el formulario usa este flujo)**: username
+    duplicado → **400** `USERNAME_IS_ALREADY_TAKEN`; email duplicado → **422**
+    `USER_ALREADY_EXISTS_USE_ANOTHER_EMAIL`. Helper `isAlreadyTaken()` en
+    `register.vue`. El **409** solo lo da el endpoint del panel
+    `/api/auth/register` (pre-chequeo), que el formulario ya no llama.
+  - `/api/me` sigue existiendo y lo usan `useSession()`, el middleware y los
+    consumidores: la sesión de Better Auth **no** trae `hasAvatar`/`avatarVersion`.
 - **Endpoints del panel intactos**: `/api/auth/{login,register,logout,resend-verification}`
   conservan su contrato (401 / 409 `username_exists` / `{ok}`); internamente
-  llaman a `auth.api.*`. El handler nativo de Better Auth está en
+  llaman a `auth.api.*`. Hoy solo los consume la UI `pending.vue`
+  (`resend-verification` + `logout`); el login/registro del formulario pasaron
+  a los endpoints nativos. El handler nativo de Better Auth está en
   `server/api/auth/[...all].ts` (las rutas concretas tienen prioridad).
 - **Esquema**: `User` es el modelo de usuario ya existente. `Session`,
   `Account` y `Verification` son tablas nuevas (migración
@@ -114,8 +137,20 @@ en `Session` y **se revoca de verdad**.
   `server/utils/passkey.ts`, así que todos los hashes existentes siguen
   sirviendo. El cambio de contraseña (`PATCH /api/account`) escribe en
   `Account`, no en `User.passkey` (ese campo ya no lo lee nadie).
-- **Rate limit**: `rateLimit` de Better Auth para `/sign-in|/sign-up`, más el
-  `rateLimit()` propio del proyecto en los endpoints del panel.
+- **Rate limit**: `rateLimit` de Better Auth para `/sign-in|/sign-up` —
+  `/sign-in/*` window 900 max 10 (10/15min) y `/sign-up/*` window 3600 max 5
+  (5/hora), que **replican los límites del endpoint antiguo** (los defaults de
+  Better Auth son 10/min y 5/min, mucho más permisivos), más el `rateLimit()`
+  propio del proyecto en los endpoints del panel.
+- **Plugin `username`**: `minUsernameLength: 3`, `maxUsernameLength: 60` y
+  `usernameValidator: /^[a-z0-9._-]+$/i` — alineado al schema del formulario
+  (`register.vue`) porque los defaults de Better Auth (sin guion, máx 30)
+  rechazaban lo que el cliente aceptaba.
+- **`APP_URL` es OBLIGATORIA en producción**: `appUrl()` =
+  `process.env.APP_URL ?? "http://localhost:3000"`. Sin ella: (1) `sign-out`
+  desde el navegador → **403 `MISSING_OR_NULL_ORIGIN`** (nadie puede cerrar
+  sesión), (2) los links de verificación por email apuntan a localhost. Ver
+  `docs/DEPLOYMENT.md` y `wiki/Deployment.md`.
 - **Verificación de email**: se mantiene el flujo propio del proyecto
   (JWT + `server/routes/verify-email` + `/dashboard/pending`).
 
@@ -160,6 +195,21 @@ en `Session` y **se revoca de verdad**.
 
 ## Gotchas
 
+- **Dev server vs `nuxt prepare` (muerde siempre)**: nunca correr
+  `bun run typecheck` / `build` / `bun install` con `bun run dev` vivo. Los tres
+  ejecutan `nuxt prepare`, que **rompe el dev server en silencio**: todas las
+  rutas pasan a 503/500 y no se escribe ni un error en su log (antes de
+  `nuxi prepare` todo 200/302; después, todo 503). Recuperación: reiniciar el
+  dev. **No hace falta borrar `.nuxt`.** Seguro con el dev vivo: `bun run check`.
+- **`vue-tsc` fijado a `3.3.11`** (sin caret) en `package.json`: el bump a
+  3.3.12 produce 6 errores `TS2304: Cannot find name 'version'` en
+  `app/pages/dashboard/novedades.vue` **y** un cuelgue de 40 min en
+  `bun run typecheck`. Con 3.3.11 termina en <4 min con 0 errores.
+  `skipLibCheck: true` ya está en el tsconfig de Nuxt.
+- **Symlink `dist`**: `nuxt generate` crea `dist -> .output/public`; el patrón
+  `dist/` (solo directorios) no lo ignoraba, así que `.gitignore` lleva `dist`
+  (sin barra) además de `dist/`. `wrangler.jsonc` apunta a `.output/public`
+  directamente: nada usa `dist`.
 - El generador Prisma es `prisma-client` (output `generated/prisma`), no `prisma-client-js`.
 - `pg-native` tiene stub + alias en Nitro (`server/utils/pg-native-stub.ts`); no quitar.
 - `prisma.config.ts` vive en la raíz (Prisma 7 no lo detecta en `prisma/`).

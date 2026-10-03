@@ -41,7 +41,9 @@ bun run db:diff                                  # debe salir vacío
   como `project_admin`. Antes de alterar una tabla Prisma desde una migración:
   `ALTER TABLE … OWNER TO project_admin;`.
 - Aplicadas: `canonical-transit`, `fix-atm-fares-pk`, `assistant-chat`, `cms-tables`,
-  `align-assistant-tables`, `drop-legacy-demo-tables`.
+  `align-assistant-tables`, `drop-legacy-demo-tables`, `profile-avatar`,
+  `better-auth-sessions`, `better-auth-user-columns`, `better-auth-user-defaults`,
+  `better-auth-user-email-unique`, `resync-id-sequences`.
 
 ### Seeds
 
@@ -53,8 +55,10 @@ bun run db:diff                                  # debe salir vacío
 
 ## Secrets
 
-- `AUTH_SECRET`, `DATABASE_URL`, `OPENROUTER_API_KEY`, `RESEND_API_KEY`… solo en `.env`
-  (gitignored) y como envs del compute. **Nunca commitear.**
+- `AUTH_SECRET`, `DATABASE_URL`, `APP_URL`, `OPENROUTER_API_KEY`, `RESEND_API_KEY`…
+  solo en `.env` (gitignored) y como envs del compute. **Nunca commitear.**
+  `APP_URL` es **obligatoria en producción** (Better Auth la usa como `baseURL`
+  y `trustedOrigins`; sin ella el logout del navegador falla con 403).
 - Rotar cualquier credencial que haya pasado por chat.
 
 ## Deploy (InsForge Compute)

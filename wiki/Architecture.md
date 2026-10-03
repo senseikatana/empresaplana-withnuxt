@@ -21,7 +21,8 @@ la aplicación vive en `app/` + `server/`.
 
 ### SSR con Nitro (`node_server`)
 
-Preset `node_server` como target primario (Render). `NITRO_PRESET=cloudflare_pages`
+Preset `node_server` como target primario (deploy en **InsForge compute**;
+`render.yaml` queda como legado descartado). `NITRO_PRESET=cloudflare_pages`
 queda reversible; bloqueado por Prisma #28657 (WASM en workerd).
 
 ### Prisma como única fuente de verdad
@@ -43,10 +44,12 @@ tema Nuxt UI mapeado en `app/app.config.ts` (primary navy, secondary teal).
 
 ```
 app/               # Nuxt srcDir: pages, components, layouts, middleware
+  lib/             # auth-client.ts (cliente Better Auth para la UI)
 server/            # Nitro: server/api/*, server/utils/* (auth, prisma, passkey)
-i18n/locales/      # diccionarios ca/es/en/fr (contenido real exportado)
+i18n/locales/      # diccionarios ca/es/en (contenido real exportado)
 prisma/            # schema + seed + seed-data/
 generated/prisma/  # client generado (no editar)
+migrations/        # migraciones InsForge (DDL de la BD)
 ```
 
 ## Flujo de datos

@@ -2,7 +2,7 @@ import { z } from "zod";
 
 /**
  * Traduce los mensajes de validación de Zod según el locale activo de i18n.
- * zod v4 incluye locales (ca/es/en/fr) — no hace falta mantener mensajes a mano.
+ * zod v4 incluye locales (ca/es/en) — no hace falta mantener mensajes a mano.
  */
 export default defineNuxtPlugin((nuxtApp) => {
 	const i18n = nuxtApp.$i18n as { locale: { value: string } };

@@ -1,4 +1,9 @@
 # build output
+# Sin la barra final a propósito: `nuxt generate` crea un SYMLINK `dist` ->
+# `.output/public`, y el patrón `dist/` solo casa con directorios, así que el
+# symlink se colaba en `git status` (y el auto-committer podía versionarlo
+# con una ruta absoluta local).
+dist
 dist/
 
 # Nuxt

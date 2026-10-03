@@ -16,8 +16,8 @@ git checkout -b feat/mi-feature
 # Servidor de desarrollo
 bun run dev
 
-# Verificar tipos
-bunx astro check
+# Verificar tipos (solo con el dev APAGADO: ver Checklist)
+bun run typecheck
 
 # Linting y formato
 bun run check
@@ -52,9 +52,12 @@ git push origin main
 ### 6. Release (opcional)
 
 ```bash
+bun run release:bump --version=1.2.0   # package.json + entrada en CHANGELOG.md
+git add package.json CHANGELOG.md
+git commit -m "chore(release): bump version to 1.2.0"
 git tag v1.2.0
-git push origin v1.2.0
-# El workflow de GitHub Actions ejecuta el bump automáticamente
+git push origin dev v1.2.0
+# El workflow release.yml crea/actualiza la GitHub Release con las notas del CHANGELOG
 ```
 
 ## Convenciones de código
@@ -81,7 +84,7 @@ git push origin v1.2.0
 ### i18n
 
 - Todo el texto visible va en los diccionarios `i18n/locales/*.json`.
-- Añadir claves en los 4 idiomas (CA, ES, EN, FR).
+- Añadir claves en los 3 idiomas (CA, ES, EN).
 - Usar `useI18n()` y `useLocalePath()` en las páginas.
 
 ## Estructura de commits
@@ -117,9 +120,10 @@ Si se usa el flujo de PRs:
 
 ## Checklist antes de merge
 
-- [ ] `bun run build` compila sin errores
-- [ ] `bunx astro check` no muestra errores de tipos
 - [ ] `bun run check` pasa linting y formato
-- [ ] Los enlaces internos usan el prefijo `/empresaplana-website/`
-- [ ] Los textos están en los 3 diccionarios i18n
+- [ ] `bun run typecheck` no muestra errores (con el dev server **apagado**:
+      `typecheck`/`build`/`bun install` corren `nuxt prepare` y rompen el dev
+      server en silencio — 503/500 sin error en el log)
+- [ ] `bun run build` compila sin errores (igual: sin dev vivo)
+- [ ] Los textos están en los 3 diccionarios i18n (CA, ES, EN)
 - [ ] Los tokens de diseño se usan correctamente (no colores hardcodeados)
