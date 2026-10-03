@@ -7,7 +7,9 @@ Blueprint `render.yaml` en la raíz (Infrastructure as Code):
 - Build: `render:build` (preset `node_server`).
 - Start: `node .output/server/index.mjs`.
 - Health check: `/api/health`.
-- Secretos: `DATABASE_URL` (`sync: false`), `AUTH_SECRET` (generado).
+- Secretos: `DATABASE_URL` (`sync: false`), `AUTH_SECRET` (generado), `APP_URL` (origen real
+  del sitio; sin ella Better Auth rechaza el logout con 403 y los links de verificación
+  apuntan a `localhost`).
 
 Ver también `docs/DEPLOYMENT.md`.
 

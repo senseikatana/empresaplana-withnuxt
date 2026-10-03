@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { DropdownMenuItem } from "@nuxt/ui";
 import { hasCapability, isRole } from "#shared/acl";
+import { authClient } from "~/lib/auth-client";
 
 defineProps<{ collapsed?: boolean }>();
 
@@ -78,7 +79,9 @@ const items = computed<DropdownMenuItem[][]>(() => [
 			label: t("app.panel.logout"),
 			icon: "i-lucide-log-out",
 			onSelect: async () => {
-				await $fetch("/api/auth/logout", { method: "POST" });
+				// Cliente oficial: borra la fila de sesión en la BD, así que una
+				// cookie robada deja de valer. No es solo limpiar la cookie.
+				await authClient.signOut();
 				await purgePlanaCaches();
 				clear();
 				await navigateTo(localePath("/dashboard/login"));

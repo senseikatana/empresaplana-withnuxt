@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { FormSubmitEvent } from "@nuxt/ui";
 import { z } from "zod";
+import { authClient } from "~/lib/auth-client";
 
 definePageMeta({ layout: "auth" });
 
@@ -34,23 +35,47 @@ useHead({
 	meta: [{ name: "robots", content: "noindex, nofollow" }],
 });
 
+/**
+ * Better Auth no devuelve 409 como el endpoint anterior: el username tomado
+ * es 400 (`USERNAME_IS_ALREADY_TAKEN`) y el email tomado 422
+ * (`USER_ALREADY_EXISTS_USE_ANOTHER_EMAIL`). El código se lee de forma
+ * defensiva porque `BetterFetchError` lo expone tanto plano como anidado.
+ */
+function isAlreadyTaken(err: unknown): boolean {
+	const e = err as {
+		status?: number;
+		code?: string;
+		error?: { code?: string };
+	};
+	const code = e?.code ?? e?.error?.code;
+	if (code === "USERNAME_IS_ALREADY_TAKEN") return true;
+	if (code === "USER_ALREADY_EXISTS_USE_ANOTHER_EMAIL") return true;
+	return e?.status === 409;
+}
+
 async function onSubmit(event: FormSubmitEvent<Schema>) {
 	error.value = null;
 	pending.value = true;
 	try {
-		await $fetch("/api/auth/register", { method: "POST", body: event.data });
-		await navigateTo(localePath("/dashboard"));
-	} catch (e) {
-		const status = (e as { statusCode?: number })?.statusCode;
-		const msg = (e as { data?: { statusMessage?: string } })?.data
-			?.statusMessage;
-		if (status === 409 || msg === "username_exists") {
-			form.value?.setErrors([
-				{ name: "username", message: t("app.register.taken") },
-			]);
-		} else {
-			error.value = t("app.register.invalid");
+		const { error: err } = await authClient.signUp.email({
+			name: event.data.name,
+			username: event.data.username,
+			email: event.data.email,
+			password: event.data.password,
+		});
+		if (err) {
+			if (isAlreadyTaken(err)) {
+				form.value?.setErrors([
+					{ name: "username", message: t("app.register.taken") },
+				]);
+			} else {
+				error.value = t("app.register.invalid");
+			}
+			return;
 		}
+		await navigateTo(localePath("/dashboard"));
+	} catch {
+		error.value = t("app.register.invalid");
 	} finally {
 		pending.value = false;
 	}

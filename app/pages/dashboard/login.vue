@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { FormSubmitEvent } from "@nuxt/ui";
 import { z } from "zod";
+import { authClient } from "~/lib/auth-client";
 
 definePageMeta({ layout: "auth" });
 
@@ -41,12 +42,18 @@ async function login(username: string, passkey: string) {
 	error.value = null;
 	pending.value = true;
 	try {
-		await $fetch("/api/auth/login", {
-			method: "POST",
-			body: { username, passkey },
+		// Cliente oficial: POST /api/auth/sign-in/username y actualiza la
+		// sesión reactiva. Better Auth NO lanza en credenciales malas:
+		// devuelve { error }, así que hay que comprobarlo.
+		const { error: err } = await authClient.signIn.username({
+			username,
+			password: passkey,
 		});
+		if (err) throw err;
 		await navigateTo(localePath("/dashboard"));
 	} catch {
+		// Mismo mensaje genérico que antes: no se distingue usuario
+		// inexistente de contraseña incorrecta (evita enumeración de cuentas).
 		error.value = t("app.auth.invalid");
 	} finally {
 		pending.value = false;

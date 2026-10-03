@@ -29,6 +29,11 @@ npx -y @insforge/cli compute deploy . --name empresaplana --port 3000 \
 - Envs del servicio: las de `.env` (`DATABASE_URL`, `AUTH_SECRET`, `OPENROUTER_API_KEY`,
   `RESEND_API_KEY`…). Rotar una sola: `npx -y @insforge/cli compute update <service-id> --env-set KEY=value`.
 - Región `fra` a propósito: la DB está en eu-central (latencia).
+- **`APP_URL` es obligatoria en producción** (ej. `--env-set APP_URL=https://empresaplana.cat`).
+  Better Auth la usa como `baseURL` **y** como `trustedOrigins`: si no está definida cae a
+  `http://localhost:3000` y entonces (1) el `sign-out` desde el navegador responde
+  **403 `MISSING_OR_NULL_ORIGIN`** —nadie podría cerrar sesión— y (2) los links de
+  verificación de email saldrían apuntando a localhost.
 
 ## Demo portfolio (Cloudflare Workers Static Assets)
 

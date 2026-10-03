@@ -25,6 +25,16 @@ import { appUrl, sendVerificationEmail } from "./utils/verification";
 export const auth = betterAuth({
 	database: prismaAdapter(prisma(), { provider: "postgresql" }),
 	secret: process.env.AUTH_SECRET,
+	/**
+	 * OJO en producción: `APP_URL` tiene que ser el origen real del sitio.
+	 * Si no está definida, `appUrl()` cae a `http://localhost:3000` y Better
+	 * Auth rechaza con 403 `MISSING_OR_NULL_ORIGIN` cualquier `sign-out`
+	 * llegado del navegador (nadie podría cerrar sesión), además de que los
+	 * links de verificación de email saldrían apuntando a localhost.
+	 *
+	 * En dev el default es correcto. En InsForge: `compute update <id>
+	 * --env-set APP_URL=https://empresaplana.cat`.
+	 */
 	baseURL: appUrl(),
 	trustedOrigins: [appUrl()],
 
@@ -71,8 +81,12 @@ export const auth = betterAuth({
 		window: 60,
 		max: 100,
 		customRules: {
-			"/sign-in/*": { window: 60, max: 10 },
-			"/sign-up/*": { window: 60, max: 5 },
+			// Los defaults de Better Auth son 10/min y 5/min: al pasar el panel
+			// a los endpoints nativos se habrían perdido los límites del
+			// endpoint antiguo. Aquí se replica exactamente los que había:
+			// login 10 intentos / 15 min y registro 5 / hora.
+			"/sign-in/*": { window: 900, max: 10 },
+			"/sign-up/*": { window: 3600, max: 5 },
 			"/forget-password": { window: 60, max: 3 },
 			"/send-verification": { window: 60, max: 3 },
 		},
@@ -126,7 +140,25 @@ export const auth = betterAuth({
 		},
 	},
 
-	plugins: [username()],
+	plugins: [
+		/**
+		 * Los defaults de Better Auth no coinciden con el schema del formulario
+		 * de registro (`app/pages/dashboard/register.vue`), y ese desfase
+		 * hacía que el cliente aceptara lo que el server rechazaba:
+		 *
+		 * - caracteres: el default es `/^[a-zA-Z0-9_.]+$/` → **sin guion**,
+		 *   mientras que el schema propio es `^[a-z0-9._-]+$` (y la BD ya
+		 *   tiene usernames con guion).
+		 * - longitud: el default corta en **30**, el schema propio permite 60.
+		 *
+		 * Se alinea el server con el contrato histórico del proyecto.
+		 */
+		username({
+			minUsernameLength: 3,
+			maxUsernameLength: 60,
+			usernameValidator: (u: string) => /^[a-z0-9._-]+$/i.test(u),
+		}),
+	],
 });
 
 export type Session = typeof auth.$Infer.Session;
