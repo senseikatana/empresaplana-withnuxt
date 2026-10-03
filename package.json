@@ -43,18 +43,18 @@
 		"typecheck": "nuxi typecheck"
 	},
 	"dependencies": {
-		"@ai-sdk/openai-compatible": "^3.0.57",
-		"@ai-sdk/vue": "^4.0.118",
+		"@ai-sdk/openai-compatible": "^3.0.62",
+		"@ai-sdk/vue": "^4.0.127",
 		"@comark/nuxt": "^0.7.0",
 		"@internationalized/date": "^3.12.4",
 		"@nuxt/fonts": "^0.14.0",
-		"@nuxt/ui": "^4.11.1",
+		"@nuxt/ui": "^4.11.3",
 		"@nuxtjs/color-mode": "^4.0.1",
 		"@nuxtjs/i18n": "^10.6.0",
 		"@prisma/adapter-pg": "^7.10.0",
 		"@prisma/client": "^7.10.0",
 		"@tailwindcss/vite": "^4.3.3",
-		"ai": "^7.0.118",
+		"ai": "^7.0.127",
 		"better-auth": "^1.7.7",
 		"chart.js": "^4.5.1",
 		"dotenv": "^17.4.2",
@@ -62,21 +62,21 @@
 		"jose": "^6.2.12",
 		"katanakit-js": "^3.2.2",
 		"nuxt": "^4.5.2",
-		"pg": "^8.23.0",
+		"pg": "^8.23.1",
 		"sharp": "^0.35.5",
 		"tailwindcss": "^4.3.3",
-		"zod": "^4.6.2"
+		"zod": "^4.6.5"
 	},
 	"devDependencies": {
-		"@biomejs/biome": "^2.5.13",
+		"@biomejs/biome": "^2.5.15",
 		"@iconify-json/lucide": "^1.2.139",
-		"@types/node": "^26.5.1",
+		"@types/node": "^26.6.4",
 		"@types/pg": "^8.23.1",
 		"prisma": "^7.10.0",
-		"tsx": "^4.23.13",
+		"tsx": "^4.23.15",
 		"typescript": "^6.0.3",
-		"vue-tsc": "^3.3.11",
-		"wrangler": "^4.131.1"
+		"vue-tsc": "^3.3.12",
+		"wrangler": "^4.147.0"
 	},
 	"author": "Sergio Jurado - @senseikatana",
 	"description": "Website redesign of https://empresaplana.cat at Catalonia Transports Company"
