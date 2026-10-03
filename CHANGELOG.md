@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.4.3] - 2026-10-03
+
+### Added
+- **components**: add changes to 9 files
+
 ## [1.4.2] - 2026-10-03
 
 ### Fixed
